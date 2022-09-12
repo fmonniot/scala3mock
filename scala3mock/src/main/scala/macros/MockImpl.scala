@@ -166,7 +166,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
       Apply(TypedNewTuple, List(Literal(StringConstant(name)), createMF)).asExprOf[Tuple2[String, MockFunction]]
     }
 
-object MockImpl:
+private[macros] object MockImpl:
 
   inline def apply[T](using ctx: MockContext): T & Mock = // TODO T & Mock (or do I need the second part?)
     ${impl[T]('ctx)}

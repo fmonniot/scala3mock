@@ -1,30 +1,42 @@
 package macros
 
-import functions.{MockFunction, MockFunction0, MockFunction1}
+import functions.*
+import context.Mock
 
-object WhenImpl:
+private[macros] object WhenImpl:
 
   import scala.quoted.*
 
   inline def apply[R](inline f: () => R): MockFunction0[R] =
     ${impl('f)}
 
-  def impl[R](expr: Expr[() => R])(using Type[R], Quotes): Expr[MockFunction0[R]] =
-    '{${createAccessor(expr)}.asInstanceOf[MockFunction0[R]]}
-
   inline def apply[T1, R](inline f: T1 => R): MockFunction1[T1, R] =
     ${impl('f)}
 
-  def impl[T1, R](expr: Expr[T1 => R])(using Type[T1], Type[R], Quotes): Expr[MockFunction1[T1, R]] =
-    '{${createAccessor(expr)}.asInstanceOf[MockFunction1[T1, R]]}
+  inline def apply[T1, T2, R](inline f: (T1, T2) => R): MockFunction2[T1, T2, R] =
+    ${impl('f)}
 
-  def createAccessor(expr: Expr[Any])(using Quotes): Expr[MockFunction] =
+
+  def impl[R](f: Expr[() => R])(using Type[R], Quotes): Expr[MockFunction0[R]] =
+    '{${createMockFunction(f)}.asInstanceOf[MockFunction0[R]]}
+
+  def impl[T1, R](f: Expr[T1 => R])(using Type[T1], Type[R], Quotes): Expr[MockFunction1[T1, R]] =
+    '{${createMockFunction(f)}.asInstanceOf[MockFunction1[T1, R]]}
+
+  def impl[T1, T2, R](f: Expr[(T1, T2) => R])(using Type[T1], Type[T2], Type[R], Quotes): Expr[MockFunction2[T1, T2, R]] =
+    '{${createMockFunction(f)}.asInstanceOf[MockFunction2[T1, T2, R]]}
+
+
+  def createMockFunction(expr: Expr[Any])(using Quotes): Expr[MockFunction] =
     import quotes.reflect.*
 
     val (obj, name) = transcribeTree(expr.asTerm)
-    val ap2 = Apply(Select.unique(obj, "accessMockFunction"), List(Literal(StringConstant(name))))
 
-    ap2.asExprOf[MockFunction]
+    '{ 
+      if ${obj.asExprOf[Any]}.isInstanceOf[Mock]
+      then ${obj.asExprOf[Any]}.asInstanceOf[Mock].accessMockFunction(${Expr(name)})
+      else throw Mock.ReceiverIsNotAMock
+    }
 
 
   def transcribeTree(using quotes: Quotes)(tree: quotes.reflect.Term): (quotes.reflect.Term, String) = {

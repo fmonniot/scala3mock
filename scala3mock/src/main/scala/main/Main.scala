@@ -49,13 +49,7 @@ def functionUnderTest(dep: TestTrait, i: Int) = dep.add(i)
     //val ttp = mock[TestTypeParam[String]]
     //val ttmtp = mock[TestTypeMethodTypeParam[String]]
 
-    // TODO Update the `when` macro to do an isInstanceOf/asInstanceOf check
-    // that way we don't have to expose the Mock trait anymore, and it
-    // can remain an implementation detail.
-    //when(() => foo.foo())
-    foo.asInstanceOf[Mock]
-      .accessMockFunction("foo")
-      .asInstanceOf[functions.MockFunction0[Unit]]
+    when(() => foo.foo())
       .expects()
       .returns(())
 
