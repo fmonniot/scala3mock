@@ -4,15 +4,14 @@ import functions.{FakeFunction, FunctionAdapter0, FunctionAdapter1, FunctionAdap
 import context.Call
 import matchers.{ArgumentMatcher, MockParameter}
 
-class CallHandler[R]( val target: FakeFunction,  val argumentMatcher: Product => Boolean) extends Handler {
+class CallHandler[R]( val target: FakeFunction,  val argumentMatcher: Product => Boolean) extends Handler:
   import handlers.CallHandler._
 
   type Derived <: CallHandler[R]
 
-  def repeat(range: Range) = {
+  def repeat(range: Range) =
     expectedCalls = range
     this.asInstanceOf[Derived]
-  }
 
   def repeat(count: Int): CallHandler[R] = repeat(count to count)
 
@@ -37,13 +36,12 @@ class CallHandler[R]( val target: FakeFunction,  val argumentMatcher: Product =>
   def throws(e: Throwable) = onCall({_ => throw e})
   def throwing(e: Throwable) = throws(e)
 
-  def onCall(handler: Product => R) = {
+  def onCall(handler: Product => R) =
     onCallHandler = handler
     this.asInstanceOf[Derived]
-  }
 
-  override def toString = {
-    val expected = expectedCalls match {
+  override def toString =
+    val expected = expectedCalls match
       case NEVER => "never"
       case ONCE => "once"
       case TWICE => "twice"
@@ -54,38 +52,32 @@ class CallHandler[R]( val target: FakeFunction,  val argumentMatcher: Product =>
       case NO_MORE_THAN_TWICE => "no more than twice"
       case r if r.size == 1 => s"${r.start} times"
       case r => s"between ${r.start} and ${r.end} times"
-    }
-    val actual = actualCalls match {
+    val actual = actualCalls match
       case 0 => "never called"
       case 1 => "called once"
       case 2 => "called twice"
       case n => s"called $n times"
-    }
     val satisfied = if isSatisfied then "" else " - UNSATISFIED"
     s"$target$argumentMatcher $expected ($actual$satisfied)"
-  }
 
-   def handle(call: Call) = {
-    if target == call.target && !isExhausted && argumentMatcher(call.arguments) then {
+  def handle(call: Call) =
+    if target == call.target && !isExhausted && argumentMatcher(call.arguments) then
       actualCalls += 1
       Some(onCallHandler(call.arguments))
-    } else {
+    else
       None
-    }
-  }
 
-   def verify(call: Call) = false
+  def verify(call: Call) = false
 
-   def isSatisfied = expectedCalls contains actualCalls
+  def isSatisfied = expectedCalls contains actualCalls
 
-   def isExhausted = expectedCalls.last <= actualCalls
+  def isExhausted = expectedCalls.last <= actualCalls
 
-   var expectedCalls: Range = 1 to 1
-   var actualCalls: Int = 0
-   var onCallHandler: Product => R = {_ => ??? /*implicitly[Defaultable[R]].default*/ }
-}
+  var expectedCalls: Range = 1 to 1
+  var actualCalls: Int = 0
+  var onCallHandler: Product => R = {_ => ??? /*implicitly[Defaultable[R]].default*/ }
 
-object CallHandler {
+object CallHandler:
 
    val NEVER = 0 to 0
    val ONCE = 1 to 1
@@ -97,19 +89,16 @@ object CallHandler {
 
    val NO_MORE_THAN_ONCE = 0 to 1
    val NO_MORE_THAN_TWICE = 0 to 2
-}
 
 trait Verify { self: CallHandler[_] =>
 
    override def handle(call: Call) = sys.error("verify should appear after all code under test has been exercised")
 
-   override def verify(call: Call) = {
-    if self.target == call.target && argumentMatcher(call.arguments) then {
+   override def verify(call: Call) =
+    if self.target == call.target && argumentMatcher(call.arguments) then
       actualCalls += 1
       true
-    } else {
+    else
       false
-    }
-  }
 }
 

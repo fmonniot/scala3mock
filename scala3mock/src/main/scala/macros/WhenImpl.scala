@@ -39,10 +39,10 @@ private[macros] object WhenImpl:
     }
 
 
-  def transcribeTree(using quotes: Quotes)(tree: quotes.reflect.Term): (quotes.reflect.Term, String) = {
+  def transcribeTree(using quotes: Quotes)(tree: quotes.reflect.Term): (quotes.reflect.Term, String) =
     import quotes.reflect.*
 
-    tree match {
+    tree match
       case Inlined(_, _, body) => transcribeTree(body)
       case Select(qualifier, name) =>
         //println(s"Found a select from $qualifier to $name")
@@ -64,5 +64,3 @@ private[macros] object WhenImpl:
       case _ => throw new MatchError(
         s"ScalaMock: Unrecognised structure: ${tree.show(using Printer.TreeStructure)}." +
           "Please open a ticket at https://github.com/fmonniot/scala3mock/issues")
-    }
-  }

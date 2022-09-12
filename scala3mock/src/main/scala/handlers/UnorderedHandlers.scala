@@ -3,18 +3,17 @@ package handlers
 import context.Call
 import scala.util.control.NonLocalReturns.*
 
-class UnorderedHandlers(logging: Boolean = false) extends Handlers {
+class UnorderedHandlers(logging: Boolean = false) extends Handlers:
 
   def handle(call: Call): Option[Any] = this.synchronized {
     if logging then println(s"handling unordered call $call")
 
     // TODO Rewrite
     returning {
-      for handler <- handlers do {
+      for handler <- handlers do
         val r = handler.handle(call)
         if r.isDefined then
           throwReturn(r)
-      }
       None
     }
   }
@@ -24,13 +23,11 @@ class UnorderedHandlers(logging: Boolean = false) extends Handlers {
     
     // TODO rewrite
     returning {
-      for handler <- handlers do {
+      for handler <- handlers do
         if handler.verify(call) then
           throwReturn(true)
-      }
       false
     }
   }
 
   protected val prefix = "inAnyOrder"
-}

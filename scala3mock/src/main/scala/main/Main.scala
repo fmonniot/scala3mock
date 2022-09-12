@@ -9,36 +9,30 @@ import scala.annotation.unused
 import scala.collection.mutable.ListBuffer
 import scala.util.control.NonFatal
 
-trait Foo {
+trait Foo:
   def foo(): Unit
-}
 
-trait TestTrait {
+trait TestTrait:
   def add(n: Int): Int = n + 1
-}
 
-class TestClass {
+class TestClass:
   def ac(number: Int): Int = number + 1
-}
 
 type TestTypeAlias = TestClass
 
-trait TestMethodTypeParam {
+trait TestMethodTypeParam:
   def ad[X](a: Int, b: X): Int
-}
 
-trait TestTypeParam[X] {
+trait TestTypeParam[X]:
   def ae(a: Int, b: X): Int
-}
 
-trait TestTypeMethodTypeParam[X] {
+trait TestTypeMethodTypeParam[X]:
   def af[Y, Y2](a: Int, b: X)(c: Y): Int
-}
 
 def functionUnderTest(dep: TestTrait, i: Int) = dep.add(i)
 
 
-@main def main(): Unit = {
+@main def main(): Unit =
   runWithExpectation {
     val foo: Foo = mock[Foo]
     val tt = mock[TestTrait]
@@ -81,7 +75,6 @@ def functionUnderTest(dep: TestTrait, i: Int) = dep.add(i)
     assert(r2 == 43)
     assert(r3 == 44)
   }
-}
 
 
 

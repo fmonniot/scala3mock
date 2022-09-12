@@ -2,7 +2,7 @@ package handlers
 
 import scala.collection.mutable.ListBuffer
 
-abstract class Handlers extends Handler {
+abstract class Handlers extends Handler:
 
   def add(handler: Handler): Unit = handlers += handler
 
@@ -15,4 +15,3 @@ abstract class Handlers extends Handler {
   protected var handlers = new ListBuffer[Handler]
 
   protected val prefix: String
-}

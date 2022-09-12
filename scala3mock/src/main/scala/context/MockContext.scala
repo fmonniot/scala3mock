@@ -4,7 +4,7 @@ import handlers.{CallHandler, Handlers}
 
 import scala.collection.mutable.ListBuffer
 
-trait MockContext {
+trait MockContext:
   type ExpectationException <: Throwable
   def newExpectationException(message: String, methodName: Option[String] = None): ExpectationException
 
@@ -13,11 +13,10 @@ trait MockContext {
   var expectationContext: Handlers = _
   //val mockNameGenerator: MockNameGenerator = new MockNameGenerator()
 
-  def add[E <: CallHandler[_]](e: E): E = {
+  def add[E <: CallHandler[_]](e: E): E =
     assert(currentExpectationContext != null, "Null expectation context - missing withExpectations?")
     currentExpectationContext.add(e)
     e
-  }
 
   def reportUnexpectedCall(call: Call) =
     throw newExpectationException(s"Unexpected call: $call\n\n${errorContext(callLog, expectationContext)}", Some(call.target.name))
@@ -28,4 +27,3 @@ trait MockContext {
   def errorContext(callLog: ListBuffer[Call] , expectationContext: Handlers) =
     s"Expected:\n$expectationContext\n\nActual:\n$callLog"
 
-}

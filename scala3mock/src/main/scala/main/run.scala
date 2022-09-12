@@ -13,26 +13,24 @@ class TestExpectationEx(message: String, methodName: Option[String]) extends Thr
 
 // A standalone function to run a test with a mock context, asserting all expectations at the end.
 // In theory, that's the only bit that needs to be reimplemented when integrating a new test framework.
-def runWithExpectation[A](f: MockContext ?=> A): A = {
+def runWithExpectation[A](f: MockContext ?=> A): A =
 
-  val ctx = new MockContext {
+  val ctx = new MockContext:
     override type ExpectationException = TestExpectationEx
 
     override def newExpectationException(message: String, methodName: Option[String]): ExpectationException =
       new TestExpectationEx(message, methodName)
 
     override def toString() = s"MockContext(callLog = $callLog)"
-  }
 
-  def initializeExpectations(): Unit = {
+  def initializeExpectations(): Unit =
     val initialHandlers = new UnorderedHandlers
 
     ctx.callLog = new ListBuffer[Call]
     ctx.expectationContext = initialHandlers
     ctx.currentExpectationContext = initialHandlers
-  }
 
-  def verifyExpectations(): Unit = {
+  def verifyExpectations(): Unit =
     ctx.callLog foreach ctx.expectationContext.verify _
 
     val oldCallLog = ctx.callLog
@@ -40,21 +38,18 @@ def runWithExpectation[A](f: MockContext ?=> A): A = {
 
     if !oldExpectationContext.isSatisfied then
       ctx.reportUnsatisfiedExpectation(oldCallLog, oldExpectationContext)
-  }
 
-  try {
+  try
     initializeExpectations()
     val result = f(using ctx)
     verifyExpectations()
     result
-  } catch {
+  catch
     case NonFatal(ex) =>
       // do not verify expectations - just clear them. Throw original exception
       // see issue #72
       throw ex
-  }
 
-}
 
 
 

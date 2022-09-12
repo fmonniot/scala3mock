@@ -7,7 +7,7 @@ package matchers
 // [error] constructor MockParameter:(value: AnyRef)org.scalamock.matchers.MockParameter[T]
 // [error] have same type after erasure: (v: java.lang.Object)org.scalamock.matchers.MockParameter
 
-class MockParameter[T] protected (val value: AnyRef, dummy: Boolean = false) {
+class MockParameter[T] protected (val value: AnyRef, dummy: Boolean = false):
 
   def this(v: T) = this(v.asInstanceOf[AnyRef], dummy = false)
   def this(v: MatcherBase) = this(v.asInstanceOf[AnyRef], dummy = false)
@@ -17,4 +17,3 @@ class MockParameter[T] protected (val value: AnyRef, dummy: Boolean = false) {
   override def equals(that: Any) = value equals that
 
   override def toString = value.toString
-}

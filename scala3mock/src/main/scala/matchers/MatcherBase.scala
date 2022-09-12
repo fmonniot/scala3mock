@@ -5,7 +5,6 @@ package matchers
  *
  * If you want to write a custom matcher please extend the [[Matcher]] trait.
  */
-trait MatcherBase extends Equals {
+trait MatcherBase extends Equals:
   override def toString: String = "Matcher"
-}
 
