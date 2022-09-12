@@ -1,7 +1,7 @@
 package functions
 
 import context.{Call, MockContext}
-import handlers.{CallHandler0, CallHandler1, CallHandler3}
+import handlers.*
 import matchers.MockParameter
 
 trait MockFunction {
@@ -25,6 +25,13 @@ class MockFunction1[T1, R](mockContext: MockContext, name: String)
   def expects(v1: T1): CallHandler1[T1, R] = mockContext.add(new CallHandler1[T1, R](this, new MockParameter[T1](v1)))
 
   def expects(matcher: FunctionAdapter1[T1, Boolean]): CallHandler1[T1, R] = mockContext.add(new CallHandler1[T1, R](this, matcher))
+}
+
+class MockFunction2[T1, T2, R](mockContext: MockContext, name: String)
+  extends FakeFunction2[T1, T2, R](mockContext, name) with MockFunction {
+
+  def expects(v1: T1, v2: T2) = mockContext.add(new CallHandler2[T1, T2, R](this, new MockParameter(v1), new MockParameter(v2)))
+  def expects(matcher: FunctionAdapter2[T1, T2, Boolean]) = mockContext.add(new CallHandler2[T1, T2, R](this, matcher))
 }
 
 class MockFunction3[T1, T2, T3, R](mockContext: MockContext, name: String)

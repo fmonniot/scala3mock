@@ -41,6 +41,12 @@ abstract class FakeFunction1[T1, R](mockContext: MockContext, name: String)
   def apply(v1: T1): R = handle(Tuple1(v1)).asInstanceOf[R]
 }
 
+abstract class FakeFunction2[T1, T2, R](mockContext: MockContext, name: String)
+  extends ((T1, T2) => R) with FakeFunction(mockContext, name) {
+
+  def apply(v1: T1, v2: T2): R = handle((v1, v2)).asInstanceOf[R]
+}
+
 abstract class FakeFunction3[T1, T2, T3, R](mockContext: MockContext, name: String)
   extends ((T1, T2, T3) => R) with FakeFunction(mockContext, name) {
 
