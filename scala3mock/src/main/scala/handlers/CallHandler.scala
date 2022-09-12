@@ -9,26 +9,26 @@ class CallHandler[R]( val target: FakeFunction,  val argumentMatcher: Product =>
 
   type Derived <: CallHandler[R]
 
-  def repeat(range: Range) =
+  def repeat(range: Range): Derived =
     expectedCalls = range
     this.asInstanceOf[Derived]
 
-  def repeat(count: Int): CallHandler[R] = repeat(count to count)
+  def repeat(count: Int): Derived = repeat(count to count)
 
-  def never() = repeat(NEVER)
-  def once() = repeat(ONCE)
-  def twice() = repeat(TWICE)
+  def never = repeat(NEVER)
+  def once = repeat(ONCE)
+  def twice = repeat(TWICE)
 
-  def anyNumberOfTimes() = repeat(ANY_NUMBER_OF_TIMES)
-  def atLeastOnce() = repeat(AT_LEAST_ONCE)
-  def atLeastTwice() = repeat(AT_LEAST_TWICE)
+  def anyNumberOfTimes = repeat(ANY_NUMBER_OF_TIMES)
+  def atLeastOnce = repeat(AT_LEAST_ONCE)
+  def atLeastTwice = repeat(AT_LEAST_TWICE)
 
-  def noMoreThanOnce() = repeat(NO_MORE_THAN_ONCE)
-  def noMoreThanTwice() = repeat(NO_MORE_THAN_TWICE)
+  def noMoreThanOnce = repeat(NO_MORE_THAN_ONCE)
+  def noMoreThanTwice = repeat(NO_MORE_THAN_TWICE)
 
+  // TODO repeated is just a name alias. Do we want to keep it stiff?
   def repeated(range: Range) = repeat(range)
   def repeated(count: Int) = repeat(count)
-  def times() = this.asInstanceOf[Derived]
 
   def returns(value: R) = onCall({_ => value})
   def returning(value: R) = returns(value)
@@ -75,6 +75,7 @@ class CallHandler[R]( val target: FakeFunction,  val argumentMatcher: Product =>
 
   var expectedCalls: Range = 1 to 1
   var actualCalls: Int = 0
+  // TODO This will fail on AnyVal. Does that mean we need to bring the Default type class?
   var onCallHandler: Product => R = {_ => ??? /*implicitly[Defaultable[R]].default*/ }
 
 object CallHandler:

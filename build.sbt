@@ -24,5 +24,5 @@ lazy val scala3mock = project.in(file("./scala3mock"))
     // details of classes. Without it, only the signatures are available.
     //scalacOptions += "-Yretain-trees", // For debugging when writing macros
 
-    libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test
+    libraryDependencies += "org.scalameta" %% "munit" % "1.0.0-M6" % Test
   )

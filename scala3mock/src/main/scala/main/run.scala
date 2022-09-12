@@ -13,7 +13,7 @@ class TestExpectationEx(message: String, methodName: Option[String]) extends Thr
 
 // A standalone function to run a test with a mock context, asserting all expectations at the end.
 // In theory, that's the only bit that needs to be reimplemented when integrating a new test framework.
-def runWithExpectation[A](f: MockContext ?=> A): A =
+def withExpectations[A](verifyAfterRun: Boolean = true)(f: MockContext ?=> A): A =
 
   val ctx = new MockContext:
     override type ExpectationException = TestExpectationEx
@@ -42,7 +42,7 @@ def runWithExpectation[A](f: MockContext ?=> A): A =
   try
     initializeExpectations()
     val result = f(using ctx)
-    verifyExpectations()
+    if verifyAfterRun then verifyExpectations()
     result
   catch
     case NonFatal(ex) =>

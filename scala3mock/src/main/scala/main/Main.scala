@@ -33,7 +33,7 @@ def functionUnderTest(dep: TestTrait, i: Int) = dep.add(i)
 
 
 @main def main(): Unit =
-  runWithExpectation {
+  withExpectations() {
     val foo: Foo = mock[Foo]
     val tt = mock[TestTrait]
     val tc = mock[TestClass]
@@ -49,17 +49,17 @@ def functionUnderTest(dep: TestTrait, i: Int) = dep.add(i)
 
     when(tt.add)
       .expects(12)
-      .atLeastOnce()
+      .atLeastOnce
       .returns(42)
 
     when(tc.ac)
       .expects(13)
-      .atLeastOnce()
+      .atLeastOnce
       .returns(43)
 
     when(tta.ac)
       .expects(14)
-      .atLeastOnce()
+      .atLeastOnce
       .returns(44)
 
 
