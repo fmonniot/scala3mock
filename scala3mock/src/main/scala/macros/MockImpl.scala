@@ -47,7 +47,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
     // Start by declaring the "signature" of the class. That includes all its interfaces, but not the implementation
     val name: String = "mock" // TODO Add the mocked type as a suffix
 
-    val parents = if(isTrait) List(TypeTree.of[Object], TypeTree.of[T], TypeTree.of[Mock])
+    val parents = if isTrait then List(TypeTree.of[Object], TypeTree.of[T], TypeTree.of[Mock])
     else List(TypeTree.of[T], TypeTree.of[Mock])
 
     val functionsToMock = members.map { sym =>

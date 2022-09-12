@@ -38,7 +38,7 @@ def runWithExpectation[A](f: MockContext ?=> A): A = {
     val oldCallLog = ctx.callLog
     val oldExpectationContext = ctx.expectationContext
 
-    if (!oldExpectationContext.isSatisfied)
+    if !oldExpectationContext.isSatisfied then
       ctx.reportUnsatisfiedExpectation(oldCallLog, oldExpectationContext)
   }
 

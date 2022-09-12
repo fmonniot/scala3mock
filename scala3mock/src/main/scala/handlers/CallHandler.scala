@@ -61,12 +61,12 @@ class CallHandler[R]( val target: FakeFunction,  val argumentMatcher: Product =>
       case 2 => "called twice"
       case n => s"called $n times"
     }
-    val satisfied = if (isSatisfied) "" else " - UNSATISFIED"
+    val satisfied = if isSatisfied then "" else " - UNSATISFIED"
     s"$target$argumentMatcher $expected ($actual$satisfied)"
   }
 
    def handle(call: Call) = {
-    if (target == call.target && !isExhausted && argumentMatcher(call.arguments)) {
+    if target == call.target && !isExhausted && argumentMatcher(call.arguments) then {
       actualCalls += 1
       Some(onCallHandler(call.arguments))
     } else {
@@ -104,7 +104,7 @@ trait Verify { self: CallHandler[_] =>
    override def handle(call: Call) = sys.error("verify should appear after all code under test has been exercised")
 
    override def verify(call: Call) = {
-    if (self.target == call.target && argumentMatcher(call.arguments)) {
+    if self.target == call.target && argumentMatcher(call.arguments) then {
       actualCalls += 1
       true
     } else {

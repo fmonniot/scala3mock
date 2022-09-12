@@ -13,7 +13,7 @@ trait FakeFunction(protected val mockContext: MockContext, val name: String) {
   private def expectationContext = mockContext.expectationContext
 
   def handle(arguments: Product): Any = {
-    if (callLog != null) {
+    if callLog != null then {
       val call = Call(this, arguments)
       callLog += call
       expectationContext.handle(call) getOrElse onUnexpected(call)
