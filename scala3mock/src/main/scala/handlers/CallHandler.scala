@@ -3,8 +3,9 @@ package handlers
 import functions.{FakeFunction, FunctionAdapter0, FunctionAdapter1, FunctionAdapter3}
 import context.Call
 import matchers.{ArgumentMatcher, MockParameter}
+import main.Default
 
-class CallHandler[R]( val target: FakeFunction,  val argumentMatcher: Product => Boolean) extends Handler:
+class CallHandler[R: Default]( val target: FakeFunction,  val argumentMatcher: Product => Boolean) extends Handler:
   import handlers.CallHandler._
 
   type Derived <: CallHandler[R]
@@ -75,8 +76,7 @@ class CallHandler[R]( val target: FakeFunction,  val argumentMatcher: Product =>
 
   var expectedCalls: Range = 1 to 1
   var actualCalls: Int = 0
-  // TODO This will fail on AnyVal. Does that mean we need to bring the Default type class?
-  var onCallHandler: Product => R = {_ => ??? /*implicitly[Defaultable[R]].default*/ }
+  var onCallHandler: Product => R = {_ => Default[R].default }
 
 object CallHandler:
 
