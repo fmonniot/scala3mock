@@ -16,6 +16,9 @@ private[macros] object WhenImpl:
   inline def apply[T1, T2, R](inline f: (T1, T2) => R): MockFunction2[T1, T2, R] =
     ${impl('f)}
 
+  inline def apply[T1, T2, T3, R](inline f: (T1, T2, T3) => R): MockFunction3[T1, T2, T3, R] =
+    ${impl('f)}
+
 
   def impl[R](f: Expr[() => R])(using Type[R], Quotes): Expr[MockFunction0[R]] =
     '{${createMockFunction(f)}.asInstanceOf[MockFunction0[R]]}
@@ -25,6 +28,9 @@ private[macros] object WhenImpl:
 
   def impl[T1, T2, R](f: Expr[(T1, T2) => R])(using Type[T1], Type[T2], Type[R], Quotes): Expr[MockFunction2[T1, T2, R]] =
     '{${createMockFunction(f)}.asInstanceOf[MockFunction2[T1, T2, R]]}
+
+  def impl[T1, T2, T3, R](f: Expr[(T1, T2, T3) => R])(using Type[T1], Type[T2], Type[T3], Type[R], Quotes): Expr[MockFunction3[T1, T2, T3, R]] =
+    '{${createMockFunction(f)}.asInstanceOf[MockFunction3[T1, T2, T3, R]]}
 
 
   def createMockFunction(expr: Expr[Any])(using Quotes): Expr[MockFunction] =
