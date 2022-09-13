@@ -4,8 +4,8 @@ import main.withExpectations
 import functions.MockFunctions
 import main.TestExpectationEx
 
-// TODO Most tests are failing because there is no Default value for the return type
-// It might actually be something to bring in after all
+import scala.language.implicitConversions
+
 class CallCountSuite extends munit.FunSuite with MockFunctions {
 
     test("should fail if an unexpected call is made") {
