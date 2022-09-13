@@ -21,6 +21,68 @@ Some resources for macros:
 class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
   import quotes.reflect.*
 
+  // Takes a symbol as parameter, and inspect it to find all the interesting characteristic
+  // necesarry to rebuild a mocked version of itself.
+  private def buildOverrideType(symbol: Symbol): TypeRepr = 
+    symbol.tree match
+      case DefDef(_, Nil, returnTpt, _) =>
+        // If the parameter list is empty, we are looking at a nullary function
+        ByNameType(returnTpt.tpe)
+
+      case DefDef(name, params, returnTpt, _) =>
+        // safe because we have excluded the case where params is empty in an
+        // earlier pattern match case.
+        val head :: tail = params: @unchecked
+
+        val iter = tail.iterator
+
+        def transform: ParamClause => TypeRepr = {
+          case term: TermParamClause => 
+            val names = term.params.map(_.name)
+            val types = term.params.map(_.tpt.tpe)
+            
+            MethodType(names)(_ => types, { mt =>
+              println(s"mt = $mt")
+
+              if iter.hasNext then transform(iter.next()) else returnTpt.tpe
+            })
+
+          case tpe: TypeParamClause => ???
+        }
+
+        transform(head)
+
+      case tree =>
+        report.error(s"unexpected tree: $tree")
+        throw new UnsupportedOperationException(
+          s"Unexpected tree found at symbol ${symbol.name}. "+
+          "Report your use case to the library author."
+        )
+
+  // Given a symbol, return the MockFunction symbol as well as its type parameters
+  private def buildMockFunctionType(symbol: Symbol): (Symbol, List[TypeRepr]) = 
+    symbol.tree match
+      case DefDef(_, Nil, returnTpt, _) =>
+        // If the parameter list is empty, we are looking at a nullary function
+        (Symbol.requiredClass("functions.MockFunction0"), List(returnTpt.tpe))
+
+      case DefDef(name, params, returnTpt, _) =>
+        val args = params.flatMap {
+          case TermParamClause(vals) => vals
+          case TypeParamClause(_) => List.empty
+        }
+
+        val types = args.map(_.tpt.tpe) :+ returnTpt.tpe
+
+        (Symbol.requiredClass(s"functions.MockFunction${args.length}"), types)
+
+      case tree =>
+        report.error(s"unexpected tree: $tree")
+        throw new UnsupportedOperationException(
+          s"Unexpected tree found at symbol ${symbol.name}. "+
+          "Report your use case to the library author."
+        )
+
   @experimental def generate: Expr[T & Mock] =
     val ctxTerm = ctx.asTerm match
       case i: Inlined => i.body
@@ -50,36 +112,21 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
     val parents = if isTrait then List(TypeTree.of[Object], TypeTree.of[T], TypeTree.of[Mock])
     else List(TypeTree.of[T], TypeTree.of[Mock])
 
-    val functionsToMock = members.map { sym =>
-      val (tParams, terms) = sym.signature.paramSigs.partitionMap {
-        case i: Int => Left(i)
-        case s: String => Right(s)
-      }
-
-      FunctionToMock(sym.name, tParams.headOption, terms, sym.signature.resultSig)
-    }
-
     def declarations(cls: Symbol): List[Symbol] =
       val mocks = Symbol.newVal(cls, "mocks", TypeRepr.of[Map[String, MockFunction]], Flags.Private, Symbol.noSymbol)
       val accessMockFunction = Symbol.newMethod(cls, "accessMockFunction", MethodType(List("name"))(_ => List(TypeRepr.of[String]), _ => TypeRepr.of[MockFunction]))
 
       val overrides = members.map { m =>
-        // TODO Use the functionsToMock as a source instead?
-        val signature: Signature = m.signature
-        val (tParams, terms) = signature.paramSigs.partitionMap {
-          case i: Int => Left(i)
-          case s: String => Right(s)
-        }
-
-        val (argNames, argTypes) = terms.zipWithIndex.flatMap {
-          case (tpe, i) => List(Left(s"arg$i"), Right(Symbol.requiredClass(tpe).typeRef))
-        }.partitionMap(identity)
-
-        val retType = Symbol.requiredClass(m.signature.resultSig).typeRef
-
-        // TODO Doesn't support polymorphic functions, nor multiple argument lists
-        val tpe = MethodType(argNames)(_ => argTypes, _ => retType)
-        Symbol.newMethod(cls, m.name, tpe, flags = Flags.Override, Symbol.noSymbol)
+        
+        // I don't know of a way to remove flags, so instead we have an allowlist of all
+        // the known flags we want to keep. Let's see if that scale with the number of use case.
+        val keepThoseFlags = Flags.Erased | Flags.Given | Flags.Implicit | Flags.Lazy | Flags.PrivateLocal
+        
+        val flags = (m.flags & keepThoseFlags) | Flags.Override
+        val privateWithin = m.privateWithin.map(_.typeSymbol).getOrElse(Symbol.noSymbol)
+        val tpe = buildOverrideType(m)
+        
+        Symbol.newMethod(cls, m.name, tpe, flags, privateWithin)
       }
 
       accessMockFunction :: mocks +: overrides
@@ -90,7 +137,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
 
 
     // mocks map
-    val tuplesAsExpression = Expr.ofSeq(buildMocksSeq(functionsToMock, ctxTerm))
+    val tuplesAsExpression = Expr.ofSeq(buildMocksSeq(members, ctxTerm))
     val mocksValSym = cls.declaredField("mocks")
     val mocksVal = ValDef(mocksValSym, Some('{Map.from(${tuplesAsExpression})}.asTerm))
 
@@ -98,37 +145,37 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
     val accessMockFunctionSym = cls.declaredMethod("accessMockFunction").head
     val accessMockFunctionDef = DefDef(accessMockFunctionSym, {
       case List(List(arg: Term)) => Some(Apply(Select.unique(Ref(mocksValSym), "apply"), List(arg)))
-      case _ => throw new UnsupportedOperationException("report your use case to the library author")
+      case args =>
+        report.error(s"unexpected arguments received: ${args}")
+        throw new UnsupportedOperationException("this is a bug. report your use case to the library author")
     })
 
     // and all overridden methods
-    val overriddenMethodsDef = functionsToMock.map {
-      case FunctionToMock(name, _, paramTypes, resultSigType) =>
-        val sym = cls.declaredMethod(name).head
+    val overriddenMethodsDef = members.map { origSym =>
+      val (mockFunctionClsSym, mockFnTypeArgs) = buildMockFunctionType(origSym)
 
-        DefDef(sym, {
-          case List(args) =>
-            val termArgs = args.flatMap {
-              case t: Term => Some(t)
-              case a =>
-                report.warning(s"Found a non-term in argument list: $a")
-                None
-            }
+      DefDef(cls.declaredMethod(origSym.name).head, {
+        case argss =>
+          //println(s"argss: $argss; sym = ${sym.tree.asInstanceOf[DefDef].returnTpt.tpe}")
+          val args = argss.flatten
+          val termArgs = args.flatMap {
+            case t: Term => Some(t)
+            case a =>
+              report.warning(s"Found a non-term in argument list: $a")
+              None
+          }
 
-            val mockFunctionClsSym = Symbol.requiredClass(s"functions.MockFunction${paramTypes.length}").typeRef
-            val mockFnTypeArgs = (paramTypes.map(t => Symbol.requiredClass(t).typeRef) :+ Symbol.requiredClass(resultSigType).typeRef)
-            val mockFnType = AppliedType(mockFunctionClsSym, mockFnTypeArgs)
+          val mockFnType = AppliedType(mockFunctionClsSym.typeRef, mockFnTypeArgs)
 
-            val stat1 = Select.unique(Ref(mocksValSym), "apply")
-            val stat2 = Apply(stat1, List(Literal(StringConstant(name))))
-            val stat3 = Select.unique(stat2, "asInstanceOf")
-            val stat4 = TypeApply(stat3, List(Inferred(mockFnType)))
-            val stat5 = Select.unique(stat4, "apply")
-            val stat6 = Apply(stat5, termArgs)
+          val stat1 = Select.unique(Ref(mocksValSym), "apply")
+          val stat2 = Apply(stat1, List(Literal(StringConstant(name))))
+          val stat3 = Select.unique(stat2, "asInstanceOf")
+          val stat4 = TypeApply(stat3, List(Inferred(mockFnType)))
+          val stat5 = Select.unique(stat4, "apply")
+          val stat6 = Apply(stat5, termArgs)
 
-            Some(stat6)
-          case _ => throw new UnsupportedOperationException("report your use case to the library author")
-        })
+          Some(stat6)
+      })
     }
 
     // And we can now wire the class definition together
@@ -137,20 +184,21 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
     val block = Block(List(clsDef), newCls)
 
     utils.debug(s"Generated code:")
-    utils.debug(s"Tree Structure: ${block.show(using Printer.TreeStructure)}")
+    //utils.debug(s"Tree Structure: ${block.show(using Printer.TreeStructure)}")
     utils.debug(s"Tree Code: ${block.show(using Printer.TreeAnsiCode)}")
 
     block.asExprOf[T & Mock]
 
-  private def buildMocksSeq(functionsToMock: List[FunctionToMock], ctxTerm: Term): List[Expr[(String, MockFunction)]] =
+  private def buildMocksSeq(functionsToMock: List[Symbol], ctxTerm: Term): List[Expr[(String, MockFunction)]] =
 
-    functionsToMock.map { case FunctionToMock(name, typeParametersNum, paramTypes, resultSigType) =>
-      val mockFunctionSym = Symbol.requiredClass(s"functions.MockFunction${paramTypes.length}")
+    functionsToMock.map { sym =>
+      val name = sym.name
+      val (mockFunctionSym, mockFunctionTypeParams) = buildMockFunctionType(sym)
       val mockFunctionTerm = Ident(mockFunctionSym.termRef) // TODO missing type parameters
 
       val newMockFunction = TypeApply(
         Select(New(TypeIdent(mockFunctionSym)), mockFunctionSym.primaryConstructor),
-        (paramTypes.map(t => Symbol.requiredClass(t).typeRef) :+ Symbol.requiredClass(resultSigType).typeRef).map(ref => Inferred(ref))
+        mockFunctionTypeParams.map(ref => Inferred(ref))
       )
 
       val createMF = Apply(newMockFunction, List(ctxTerm, Literal(StringConstant(name))))

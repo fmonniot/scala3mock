@@ -34,6 +34,7 @@ trait TestTypeMethodTypeParam[X]:
 def functionUnderTest(dep: TestTrait, i: Int) = dep.add(i)
 
 
+/*
 @main def main(): Unit =
   withExpectations() {
     val foo: Foo = mock[Foo]
@@ -77,7 +78,7 @@ def functionUnderTest(dep: TestTrait, i: Int) = dep.add(i)
     assert(r2 == 43)
     assert(r3 == 44)
   }
-
+*/
 
 
 
