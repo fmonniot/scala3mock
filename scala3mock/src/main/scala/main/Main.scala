@@ -9,6 +9,8 @@ import scala.annotation.unused
 import scala.collection.mutable.ListBuffer
 import scala.util.control.NonFatal
 
+import scala.language.implicitConversions
+
 trait Foo:
   def foo(): Unit
 

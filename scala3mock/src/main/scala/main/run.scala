@@ -9,7 +9,8 @@ import scala.collection.mutable.ListBuffer
 import scala.util.control.NonFatal
 
 
-class TestExpectationEx(message: String, methodName: Option[String]) extends Throwable
+class TestExpectationEx(message: String, methodName: Option[String]) extends Throwable:
+  override def getMessage(): String = message
 
 // A standalone function to run a test with a mock context, asserting all expectations at the end.
 // In theory, that's the only bit that needs to be reimplemented when integrating a new test framework.

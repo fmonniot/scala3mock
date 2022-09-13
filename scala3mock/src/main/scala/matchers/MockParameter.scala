@@ -17,3 +17,7 @@ class MockParameter[T] protected (val value: AnyRef, dummy: Boolean = false):
   override def equals(that: Any) = value equals that
 
   override def toString = value.toString
+
+object MockParameter:
+  given [T]: Conversion[MatcherBase, MockParameter[T]] = t => new MockParameter(t)
+  given [T]: Conversion[T, MockParameter[T]] = t => new MockParameter(t)
