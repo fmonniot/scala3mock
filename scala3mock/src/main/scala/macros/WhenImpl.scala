@@ -37,6 +37,7 @@ private[macros] object WhenImpl:
     import quotes.reflect.*
 
     val (obj, name) = transcribeTree(expr.asTerm)
+    println(s"access mock with the name $name")
 
     '{ 
       if ${obj.asExprOf[Any]}.isInstanceOf[Mock]
@@ -50,9 +51,34 @@ private[macros] object WhenImpl:
 
     tree match
       case Inlined(_, _, body) => transcribeTree(body)
-      case Select(qualifier, name) =>
-        //println(s"Found a select from $qualifier to $name")
-        qualifier -> name
+      case s@Select(qualifier, name) =>
+        val qualTpe = qualifier.tpe
+        val clsMethods = qualifier.tpe.classSymbol.map(_.methodMembers)
+
+        val n = s.signature match
+          case None =>
+            // No signature means a nullary function. The mock name will always be the
+            // same as the function name (no overload possible with nullary)
+            name 
+          
+          case Some(signature) =>
+            clsMethods match
+              case None => ??? // TODO Is it possible ?
+              case Some(methods) =>
+                val overload = utils.sortSymbolsViaSignature(methods.filter(_.name == name))
+
+                // If there are no overload, let's use the method name as the mock key. Otherwise
+                // append the index of the overload. Using the same sort here and in the mock
+                // declaration is important for the indices to match.
+                if overload.length == 1 then name
+                else {
+                  val idx = overload.indexWhere(_.signature == signature)
+
+                  s"${name}-$idx"
+                }
+        
+        qualifier -> n
+
       case Block(stats, _) =>
         //println(stats.map(_.getClass))
 

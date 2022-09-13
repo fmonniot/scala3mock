@@ -42,8 +42,6 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
             val types = term.params.map(_.tpt.tpe)
             
             MethodType(names)(_ => types, { mt =>
-              println(s"mt = $mt")
-
               if iter.hasNext then transform(iter.next()) else returnTpt.tpe
             })
 
@@ -133,11 +131,33 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
 
     val cls = Symbol.newClass(Symbol.spliceOwner, name, parents.map(_.tpe), declarations, selfType = None)
 
+    // List all the symbols to override and associate them with the mock name.
+    // We can't use the symbol name directly because overload would result with
+    // multiple symbols having the same key.
+    val clsMethodMembers = cls.methodMembers
+    val overrides = clsMethodMembers
+      .filter(sym => members.exists(_.name == sym.name))
+      .zipWithIndex
+      .map { case (sym, idx) =>
+        // Let's find out if there are more than one method with the same name. If yes, we need
+        // to change the mock name to distinguish between the various overload. We use the
+        // position of the overload as such distinguisher. Note that the sort must be the same
+        // at declaration time (here) and at invokation time (the when macro).
+        val overload = utils.sortSymbolsViaSignature(clsMethodMembers.filter(_.name == sym.name))
+
+        if overload.length == 1 then sym.name -> sym
+        else {
+          val idx = overload.indexWhere(_ == sym)
+
+          s"${sym.name}-$idx" -> sym
+        }
+      }
+
     // Now that we have our symbols created, let's do the implementation
 
 
     // mocks map
-    val tuplesAsExpression = Expr.ofSeq(buildMocksSeq(members, ctxTerm))
+    val tuplesAsExpression = Expr.ofSeq(buildMocksSeq(overrides, ctxTerm))
     val mocksValSym = cls.declaredField("mocks")
     val mocksVal = ValDef(mocksValSym, Some('{Map.from(${tuplesAsExpression})}.asTerm))
 
@@ -150,15 +170,14 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
         throw new UnsupportedOperationException("this is a bug. report your use case to the library author")
     })
 
-    // and all overridden methods
-    val overriddenMethodsDef = members.map { origSym =>
-      val (mockFunctionClsSym, mockFnTypeArgs) = buildMockFunctionType(origSym)
 
-      DefDef(cls.declaredMethod(origSym.name).head, {
+    // and all overridden methods
+    val overriddenMethodsDef = overrides.map { case (mockName, sym) =>
+      val (mockFunctionClsSym, mockFnTypeArgs) = buildMockFunctionType(sym)
+
+      DefDef(sym, {
         case argss =>
-          //println(s"argss: $argss; sym = ${sym.tree.asInstanceOf[DefDef].returnTpt.tpe}")
-          val args = argss.flatten
-          val termArgs = args.flatMap {
+          val termArgs = argss.flatten.flatMap {
             case t: Term => Some(t)
             case a =>
               report.warning(s"Found a non-term in argument list: $a")
@@ -168,7 +187,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
           val mockFnType = AppliedType(mockFunctionClsSym.typeRef, mockFnTypeArgs)
 
           val stat1 = Select.unique(Ref(mocksValSym), "apply")
-          val stat2 = Apply(stat1, List(Literal(StringConstant(origSym.name))))
+          val stat2 = Apply(stat1, List(Literal(StringConstant(mockName))))
           val stat3 = Select.unique(stat2, "asInstanceOf")
           val stat4 = TypeApply(stat3, List(Inferred(mockFnType)))
           val stat5 = Select.unique(stat4, "apply")
@@ -189,19 +208,18 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
 
     block.asExprOf[T & Mock]
 
-  private def buildMocksSeq(functionsToMock: List[Symbol], ctxTerm: Term): List[Expr[(String, MockFunction)]] =
+  private def buildMocksSeq(functionsToMock: List[(String, Symbol)], ctxTerm: Term): List[Expr[(String, MockFunction)]] =
 
-    functionsToMock.map { sym =>
-      val name = sym.name
+    functionsToMock.map { case (mockName, sym) =>
       val (mockFunctionSym, mockFunctionTypeParams) = buildMockFunctionType(sym)
-      val mockFunctionTerm = Ident(mockFunctionSym.termRef) // TODO missing type parameters
+      val mockFunctionTerm = Ident(mockFunctionSym.termRef)
 
       val newMockFunction = TypeApply(
         Select(New(TypeIdent(mockFunctionSym)), mockFunctionSym.primaryConstructor),
         mockFunctionTypeParams.map(ref => Inferred(ref))
       )
 
-      val createMF = Apply(newMockFunction, List(ctxTerm, Literal(StringConstant(name))))
+      val createMF = Apply(newMockFunction, List(ctxTerm, Literal(StringConstant(sym.name))))
 
       val tuple2Sym = defn.TupleClass(2)
 
@@ -211,7 +229,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
         List(Inferred(TypeRepr.of[String]), Inferred(TypeRepr.of[MockFunction]))
       )
 
-      Apply(TypedNewTuple, List(Literal(StringConstant(name)), createMF)).asExprOf[Tuple2[String, MockFunction]]
+      Apply(TypedNewTuple, List(Literal(StringConstant(mockName)), createMF)).asExprOf[Tuple2[String, MockFunction]]
     }
 
 private[macros] object MockImpl:
