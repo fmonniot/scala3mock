@@ -168,7 +168,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
           val mockFnType = AppliedType(mockFunctionClsSym.typeRef, mockFnTypeArgs)
 
           val stat1 = Select.unique(Ref(mocksValSym), "apply")
-          val stat2 = Apply(stat1, List(Literal(StringConstant(name))))
+          val stat2 = Apply(stat1, List(Literal(StringConstant(origSym.name))))
           val stat3 = Select.unique(stat2, "asInstanceOf")
           val stat4 = TypeApply(stat3, List(Inferred(mockFnType)))
           val stat5 = Select.unique(stat4, "apply")
