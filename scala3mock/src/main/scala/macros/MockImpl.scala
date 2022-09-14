@@ -36,19 +36,77 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
 
         val iter = tail.iterator
 
-        def transform: ParamClause => TypeRepr = {
+        def transform(parent: List[PolyType]): ParamClause => TypeRepr = {
           case term: TermParamClause => 
             val names = term.params.map(_.name)
-            val types = term.params.map(_.tpt.tpe)
+            val types = term.params.map { param =>
+
+              val typeRepr = param.tpt.tpe  
+              val typeName = typeRepr.show // Is there a better way to get the name ?
+
+              // In the case of polymorphic function type, we should not refer to
+              // the original type but to the one defined in our own PolyType. We do
+              // so by keeping references to previously defined PolyType via parent.
+              // Then on each term type, we look at that parent list and see if there
+              // is a name that match, and if yes use the local type ref instead.
+              // TODO Would it make sense to keep a list of (name -> TypeRepr) instead ?
+              val fromParent = parent
+                .zipWithIndex
+                .flatMap { case (pt, outer) =>
+                  pt.paramNames.zipWithIndex.map { (name, inner) => (outer, inner, name)}
+                }
+                .collectFirst {
+                  case (outer, inner, name) if name == typeName => (outer, inner)
+                }
+              
+              fromParent match
+                case Some(outer -> inner) =>
+                  parent(outer).param(inner)
+
+                case None =>
+                  typeRepr
+            }
             
-            MethodType(names)(_ => types, { mt =>
-              if iter.hasNext then transform(iter.next()) else returnTpt.tpe
+            MethodType(names)(_ => types,
+            { mt =>
+              if iter.hasNext then transform(parent)(iter.next()) else returnTpt.tpe
             })
 
-          case tpe: TypeParamClause => ???
+          case TypeParamClause(typeDefs) => 
+            // def apply(paramNames: List[String])(paramBoundsExp: PolyType => List[TypeBounds], resultTypeExp: PolyType => TypeRepr): PolyType
+            println(s"type defs = $typeDefs")
+
+            val paramNames = typeDefs.map(_.name)
+            val trees = typeDefs.map(_.rhs)
+
+
+            PolyType(paramNames)(
+              pt => {
+                // bounds is probably fine, except we need to not ignore the None case.
+                // THat would move the bounds arround
+                val bounds = trees
+                  .flatMap {
+                    case tt: TypeTree => Some(tt.tpe)
+                    case tree => 
+                      report.warning(s"Found a non-TypeTree when looking at type param rhs: $tree")
+                      None
+                  }
+                  .flatMap {
+                    case tb: TypeBounds => Some(tb)
+                    case tpe =>
+                      report.warning(s"Found a non-TypeBounds when looking at type param rhs: $tpe")
+                      None
+                  }
+                  
+                  println(s"type bounds = $bounds")
+                  
+                  trees.map(_ => TypeBounds(TypeRepr.of[Nothing], TypeRepr.of[Any]))
+              }, 
+              pt => if iter.hasNext then transform(pt :: parent)(iter.next()) else returnTpt.tpe
+            )
         }
 
-        transform(head)
+        transform(List.empty)(head)
 
       case tree =>
         report.error(s"unexpected tree: $tree")
@@ -177,11 +235,9 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
 
       DefDef(sym, {
         case argss =>
-          val termArgs = argss.flatten.flatMap {
+          val arguments = argss.flatten.flatMap {
             case t: Term => Some(t)
-            case a =>
-              report.warning(s"Found a non-term in argument list: $a")
-              None
+            case a => None // We can ignore the rest as we are only looking at arguments here
           }
 
           val mockFnType = AppliedType(mockFunctionClsSym.typeRef, mockFnTypeArgs)
@@ -191,7 +247,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
           val stat3 = Select.unique(stat2, "asInstanceOf")
           val stat4 = TypeApply(stat3, List(Inferred(mockFnType)))
           val stat5 = Select.unique(stat4, "apply")
-          val stat6 = Apply(stat5, termArgs)
+          val stat6 = Apply(stat5, arguments)
 
           Some(stat6)
       })

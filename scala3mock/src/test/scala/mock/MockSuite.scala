@@ -9,6 +9,7 @@ import macros.{mock, when}
 
 import scala.language.implicitConversions
 import fixtures.TestTrait
+import macros.PrintAst
 
 class MockSuite extends munit.FunSuite with MockFunctions {
 
@@ -17,10 +18,20 @@ class MockSuite extends munit.FunSuite with MockFunctions {
     case class TestException() extends RuntimeException
     case class AnotherTestException() extends RuntimeException
 
+    
+
 
     test("TODO") {
         withExpectations() {
             val m = mock[TestTrait]
+
+            /*
+            when(m.overloaded _)
+                .expects("wild")
+                .returns("a0")
+
+            assertEquals(m.overloaded("wild"), "a0")
+            */
 
             /*
             when(m.repeatedParam _)
