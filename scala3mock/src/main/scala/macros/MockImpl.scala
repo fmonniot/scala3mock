@@ -104,7 +104,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
             PolyType(paramNames)(
               pt => {
                 // bounds is probably fine, except we need to not ignore the None case.
-                // THat would move the bounds arround
+                // That would move the bounds arround
                 val bounds = trees
                   .map {
                     case tt: TypeTree => Some(tt.tpe)
@@ -302,7 +302,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
 
       val newMockFunction = TypeApply(
         Select(New(TypeIdent(mockFunctionSym)), mockFunctionSym.primaryConstructor),
-        mockFunctionTypeParams.map(ref => Inferred(ref))
+        mockFunctionTypeParams.map(ref => Inferred(TypeRepr.of[Any]))
       )
 
       val createMF = Apply(newMockFunction, List(ctxTerm, Literal(StringConstant(sym.name))))
