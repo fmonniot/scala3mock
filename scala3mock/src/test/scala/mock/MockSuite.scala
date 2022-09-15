@@ -25,12 +25,13 @@ class MockSuite extends munit.FunSuite with MockFunctions {
         withExpectations() {
             val m = mock[TestTrait]
 
-            when(m.polymorphic[Int] _)
-                .expects(List(1))
-                .returns("a0")
-            
-            assertEquals(m.polymorphic(List(1)), "a0")
+            when(m.polycurried(_: String)(_: Int))
+                .expects("a", 2)
+                .returns("c" -> 6)
 
+            assertEquals(m.polycurried("a")(2), "c" -> 6)
+
+            /*
             when(m.polymorphic _)
                 .expects(List(2))
                 .returns("a1")
@@ -42,6 +43,7 @@ class MockSuite extends munit.FunSuite with MockFunctions {
                 .returns(1)
 
             assertEquals(m.upperBound(TestException()), 1)
+            */
 
             /*
             when(m.overloaded _)

@@ -92,7 +92,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
             
             MethodType(names)(
               _ => types,
-              mt =>if iter.hasNext then transform(parents)(iter.next()) else returnTpt.tpe
+              mt => if iter.hasNext then transform(parents)(iter.next()) else substituteTypes(parents)(returnTpt.tpe)
             )
 
           case TypeParamClause(typeDefs) => 
@@ -118,8 +118,6 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
                       report.warning(s"Found a non-TypeBounds when looking at type param rhs: $tpe")
                       Some(TypeBounds(TypeRepr.of[Nothing], TypeRepr.of[Any]))
                   }
-                  
-                  println(s"type bounds = $bounds")
                   
                   bounds
               }, 
