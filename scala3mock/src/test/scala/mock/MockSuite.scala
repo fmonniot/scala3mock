@@ -25,6 +25,24 @@ class MockSuite extends munit.FunSuite with MockFunctions {
         withExpectations() {
             val m = mock[TestTrait]
 
+            when(m.polymorphic[Int] _)
+                .expects(List(1))
+                .returns("a0")
+            
+            assertEquals(m.polymorphic(List(1)), "a0")
+
+            when(m.polymorphic _)
+                .expects(List(2))
+                .returns("a1")
+
+            assertEquals(m.polymorphic(List(2)), "a1")
+
+            when(m.upperBound _)
+                .expects(TestException())
+                .returns(1)
+
+            assertEquals(m.upperBound(TestException()), 1)
+
             /*
             when(m.overloaded _)
                 .expects("wild")

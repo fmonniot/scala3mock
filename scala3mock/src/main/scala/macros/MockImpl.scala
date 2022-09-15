@@ -21,6 +21,48 @@ Some resources for macros:
 class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
   import quotes.reflect.*
 
+  /*
+     *  +- TypeRepr -+- NamedType -+- TermRef
+   *                 |             +- TypeRef
+   *                 +- ConstantType
+   *                 +- SuperType
+   *                 +- Refinement
+   *                 +- AppliedType
+   *                 +- AnnotatedType
+   *                 +- AndOrType -+- AndType
+   *                 |             +- OrType
+   *                 +- MatchType
+   *                 +- ByNameType
+   *                 +- ParamRef
+   *                 +- ThisType
+   *                 +- RecursiveThis
+   *                 +- RecursiveType
+   *                 +- LambdaType -+- MethodOrPoly -+- MethodType
+   *                 |              |                +- PolyType
+   *                 |              +- TypeLambda
+   *                 +- MatchCase
+   *                 +- TypeBounds
+   *                 +- NoPrefix
+  */
+  // Given a list of (type name -> type repr), replace all the type in `source` which share
+  // the same name as the one in `replacements`. We use `String` because PolyType doesn't expose
+  // the same representation as source has (I think).
+  private def substituteTypes(replacements: List[(String, TypeRepr)])(source: TypeRepr): TypeRepr =
+    source match
+      case TermRef(qual, name) => TermRef(substituteTypes(replacements)(qual), name)
+      case tr: TypeRef =>
+        replacements.find(_._1 == tr.show).fold(tr)(_._2)
+      case AppliedType(tycon, args) =>
+        val a = substituteTypes(replacements)(tycon)
+        val b = args.map(substituteTypes(replacements))
+
+        AppliedType(a, b)
+
+      case ThisType(repr) =>
+        substituteTypes(replacements)(repr) // Are the ThisType import ?
+
+      case other => other
+
   // Takes a symbol as parameter, and inspect it to find all the interesting characteristic
   // necesarry to rebuild a mocked version of itself.
   private def buildOverrideType(symbol: Symbol): TypeRepr = 
@@ -36,45 +78,24 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
 
         val iter = tail.iterator
 
-        def transform(parent: List[PolyType]): ParamClause => TypeRepr = {
+        // In the case of polymorphic function type, we should not refer to
+        // the original type but to the one defined in our own PolyType. We do
+        // so by keeping references to previously defined PolyType via parent.
+        // Then on each term type, we look at that parent list and see if there
+        // is a name that match, and if yes use the local type ref instead.
+        def transform(parents: List[(String, TypeRepr)]): ParamClause => TypeRepr = {
           case term: TermParamClause => 
             val names = term.params.map(_.name)
             val types = term.params.map { param =>
-
-              val typeRepr = param.tpt.tpe  
-              val typeName = typeRepr.show // Is there a better way to get the name ?
-
-              // In the case of polymorphic function type, we should not refer to
-              // the original type but to the one defined in our own PolyType. We do
-              // so by keeping references to previously defined PolyType via parent.
-              // Then on each term type, we look at that parent list and see if there
-              // is a name that match, and if yes use the local type ref instead.
-              // TODO Would it make sense to keep a list of (name -> TypeRepr) instead ?
-              val fromParent = parent
-                .zipWithIndex
-                .flatMap { case (pt, outer) =>
-                  pt.paramNames.zipWithIndex.map { (name, inner) => (outer, inner, name)}
-                }
-                .collectFirst {
-                  case (outer, inner, name) if name == typeName => (outer, inner)
-                }
-              
-              fromParent match
-                case Some(outer -> inner) =>
-                  parent(outer).param(inner)
-
-                case None =>
-                  typeRepr
+              substituteTypes(parents)(param.tpt.tpe)
             }
             
-            MethodType(names)(_ => types,
-            { mt =>
-              if iter.hasNext then transform(parent)(iter.next()) else returnTpt.tpe
-            })
+            MethodType(names)(
+              _ => types,
+              mt =>if iter.hasNext then transform(parents)(iter.next()) else returnTpt.tpe
+            )
 
           case TypeParamClause(typeDefs) => 
-            // def apply(paramNames: List[String])(paramBoundsExp: PolyType => List[TypeBounds], resultTypeExp: PolyType => TypeRepr): PolyType
-            println(s"type defs = $typeDefs")
 
             val paramNames = typeDefs.map(_.name)
             val trees = typeDefs.map(_.rhs)
@@ -85,24 +106,32 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
                 // bounds is probably fine, except we need to not ignore the None case.
                 // THat would move the bounds arround
                 val bounds = trees
-                  .flatMap {
+                  .map {
                     case tt: TypeTree => Some(tt.tpe)
                     case tree => 
                       report.warning(s"Found a non-TypeTree when looking at type param rhs: $tree")
                       None
                   }
                   .flatMap {
-                    case tb: TypeBounds => Some(tb)
+                    case Some(tb: TypeBounds) => Some(tb)
                     case tpe =>
                       report.warning(s"Found a non-TypeBounds when looking at type param rhs: $tpe")
-                      None
+                      Some(TypeBounds(TypeRepr.of[Nothing], TypeRepr.of[Any]))
                   }
                   
                   println(s"type bounds = $bounds")
                   
                   bounds
               }, 
-              pt => if iter.hasNext then transform(pt :: parent)(iter.next()) else returnTpt.tpe
+              pt => {
+                if !iter.hasNext then returnTpt.tpe else {
+                  val params = pt.paramNames.zipWithIndex.map { (name, idx) =>
+                    name -> pt.param(idx)  
+                  }
+
+                  transform(params ++ parents)(iter.next())
+                }
+              }
             )
         }
 
@@ -176,6 +205,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
         
         // I don't know of a way to remove flags, so instead we have an allowlist of all
         // the known flags we want to keep. Let's see if that scale with the number of use case.
+        // Looks the compiler internal has &~ to remove a flag, but it is not exposed in the reflect API.
         val keepThoseFlags = Flags.Erased | Flags.Given | Flags.Implicit | Flags.Lazy | Flags.PrivateLocal
         
         val flags = (m.flags & keepThoseFlags) | Flags.Override
