@@ -26,7 +26,7 @@ trait TestTrait {
   //def implicitParam(x: Int)(implicit y: Double): String
   //def usingParam(x: Int)(using y: Double): String
   
-  //def upperBound[T <: Product](x: T): Int
+  def upperBound[T <: Product](x: T): Int
   //def lowerBound[T >: U, U](x: T, y: List[U]): String
   //def contextBound[T: ContextBound](x: T): String
   

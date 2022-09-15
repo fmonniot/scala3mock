@@ -100,7 +100,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
                   
                   println(s"type bounds = $bounds")
                   
-                  trees.map(_ => TypeBounds(TypeRepr.of[Nothing], TypeRepr.of[Any]))
+                  bounds
               }, 
               pt => if iter.hasNext then transform(pt :: parent)(iter.next()) else returnTpt.tpe
             )
