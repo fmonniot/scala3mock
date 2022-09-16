@@ -30,7 +30,7 @@ trait TestTrait {
   //def contextBound[T: ContextBound](x: T): String
 
   def upperBound[T <: Product](x: T): Int
-  //def lowerBound[T >: U, U](x: T, y: List[U]): String
+  def lowerBound[T >: U, U](x: T, y: List[U]): String
 
   def withImplementation(x: Int) = x * x
 

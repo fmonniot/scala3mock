@@ -25,11 +25,13 @@ class MockSuite extends munit.FunSuite with MockFunctions {
         withExpectations() {
             val m = mock[TestTrait]
 
+            /*
             when(m.polycurried(_: String)(_: Int))
                 .expects("a", 2)
                 .returns("c" -> 6)
 
             assertEquals(m.polycurried("a")(2), "c" -> 6)
+            */
 
             /*
             when(m.polymorphic _)

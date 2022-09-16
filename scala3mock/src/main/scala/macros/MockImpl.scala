@@ -61,6 +61,9 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
       case ThisType(repr) =>
         substituteTypes(replacements)(repr) // Are the ThisType import ?
 
+      case TypeBounds(low, high) =>
+        TypeBounds(substituteTypes(replacements)(low), substituteTypes(replacements)(high))
+
       case other => other
 
   // Takes a symbol as parameter, and inspect it to find all the interesting characteristic
@@ -89,9 +92,9 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
             val types = term.params.map { param =>
               substituteTypes(parents)(param.tpt.tpe)
             }
-            
+
             MethodType(names)(
-              _ => types,
+              _ => types.map(substituteTypes(parents)),
               mt => if iter.hasNext then transform(parents)(iter.next()) else substituteTypes(parents)(returnTpt.tpe)
             )
 
@@ -103,6 +106,10 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
 
             PolyType(paramNames)(
               pt => {
+                val params = pt.paramNames.zipWithIndex.map { (name, idx) =>
+                    name -> pt.param(idx)  
+                  }
+
                 // bounds is probably fine, except we need to not ignore the None case.
                 // That would move the bounds arround
                 val bounds = trees
@@ -113,7 +120,9 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
                       None
                   }
                   .flatMap {
-                    case Some(tb: TypeBounds) => Some(tb)
+                    case Some(tb: TypeBounds) => 
+                      // The cast is safe because substituteTypes does not modify the type hierarchy
+                      Some(substituteTypes(params ++ parents)(tb).asInstanceOf[TypeBounds])
                     case tpe =>
                       report.warning(s"Found a non-TypeBounds when looking at type param rhs: $tpe")
                       Some(TypeBounds(TypeRepr.of[Nothing], TypeRepr.of[Any]))
