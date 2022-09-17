@@ -42,8 +42,10 @@ trait TestTrait {
   //var aVar: String
   //var concreteVar = "foo"
 
-  //val aVal: String
-  //val concreteVal = "foo"
+  // Here all we can do is making those non-abstract so the mock can compile.
+  // By definition, there is no way to dynamically change the value of a val.
+  val aVal: String
+  val concreteVal = "foo"
   //val fnVal: String => Int
 
   /*

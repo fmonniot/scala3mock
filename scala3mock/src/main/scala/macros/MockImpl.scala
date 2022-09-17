@@ -194,9 +194,11 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
     val anyMembers = Symbol.requiredClass("scala.Any").methodMembers
 
 
-    val members: List[Symbol] = classSymbol.methodMembers.filter { m =>
+    val methodsToOverride: List[Symbol] = classSymbol.methodMembers.filter { m =>
       !(objectMembers.contains(m) || anyMembers.contains(m))
     }
+
+    val fieldsToOverride = classSymbol.fieldMembers.filter(_.flags.is(Flags.Deferred))
 
     // Start by declaring the "signature" of the class. That includes all its interfaces, but not the implementation
     val name: String = "mock" // TODO Add the mocked type as a suffix
@@ -207,14 +209,13 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
     def declarations(cls: Symbol): List[Symbol] =
       val mocks = Symbol.newVal(cls, "mocks", TypeRepr.of[Map[String, MockFunction]], Flags.Private, Symbol.noSymbol)
       val accessMockFunction = Symbol.newMethod(cls, "accessMockFunction", MethodType(List("name"))(_ => List(TypeRepr.of[String]), _ => TypeRepr.of[MockFunction]))
+        
+      // I don't know of a way to remove flags, so instead we have an allowlist of all
+      // the known flags we want to keep. Let's see if that scale with the number of use case.
+      // Looks the compiler internal has &~ to remove a flag, but it is not exposed in the reflect API.
+      val keepThoseFlags = Flags.Erased | Flags.Given | Flags.Implicit | Flags.Lazy | Flags.PrivateLocal
 
-      val overrides = members.map { m =>
-        
-        // I don't know of a way to remove flags, so instead we have an allowlist of all
-        // the known flags we want to keep. Let's see if that scale with the number of use case.
-        // Looks the compiler internal has &~ to remove a flag, but it is not exposed in the reflect API.
-        val keepThoseFlags = Flags.Erased | Flags.Given | Flags.Implicit | Flags.Lazy | Flags.PrivateLocal
-        
+      val methodOverrides = methodsToOverride.map { m =>
         val flags = (m.flags & keepThoseFlags) | Flags.Override
         val privateWithin = m.privateWithin.map(_.typeSymbol).getOrElse(Symbol.noSymbol)
         val tpe = buildOverrideType(m)
@@ -222,7 +223,17 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
         Symbol.newMethod(cls, m.name, tpe, flags, privateWithin)
       }
 
-      accessMockFunction :: mocks +: overrides
+      val fieldOverrides = fieldsToOverride.map { f =>
+        val privateWithin = f.privateWithin.map(_.typeSymbol).getOrElse(Symbol.noSymbol)
+
+        val tpe = f.tree match 
+          case ValDef(_, tpt, _) => tpt.tpe
+          case other => throw new UnsupportedOperationException(s"Expected a ValDef when implementing fields but got $other")
+
+        Symbol.newVal(cls, f.name, tpe, f.flags & keepThoseFlags, privateWithin)
+      }
+
+      (accessMockFunction :: mocks +: methodOverrides) ++ fieldOverrides
 
     val cls = Symbol.newClass(Symbol.spliceOwner, name, parents.map(_.tpe), declarations, selfType = None)
 
@@ -230,8 +241,8 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
     // We can't use the symbol name directly because overload would result with
     // multiple symbols having the same key.
     val clsMethodMembers = cls.methodMembers
-    val overrides = clsMethodMembers
-      .filter(sym => members.exists(_.name == sym.name))
+    val methodsOverridesSymbols = clsMethodMembers
+      .filter(sym => methodsToOverride.exists(_.name == sym.name))
       .zipWithIndex
       .map { case (sym, idx) =>
         // Let's find out if there are more than one method with the same name. If yes, we need
@@ -252,7 +263,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
 
 
     // mocks map
-    val tuplesAsExpression = Expr.ofSeq(buildMocksSeq(overrides, ctxTerm))
+    val tuplesAsExpression = Expr.ofSeq(buildMocksSeq(methodsOverridesSymbols, ctxTerm))
     val mocksValSym = cls.declaredField("mocks")
     val mocksVal = ValDef(mocksValSym, Some('{Map.from(${tuplesAsExpression})}.asTerm))
 
@@ -266,8 +277,8 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
     })
 
 
-    // and all overridden methods
-    val overriddenMethodsDef = overrides.map { case (mockName, sym) =>
+    // all overridden methods
+    val overriddenMethodsDef = methodsOverridesSymbols.map { case (mockName, sym) =>
       val (mockFunctionClsSym, mockFnTypeArgs) = buildMockFunctionType(sym)
 
       DefDef(sym, {
@@ -290,8 +301,29 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
       })
     }
 
+    // all fields implementation
+    val valDefs = fieldsToOverride.map { sym =>
+      val s = cls.fieldMember(sym.name)
+
+      val value = if s.typeRef.<:<(TypeRepr.of[AnyRef]) then Literal(NullConstant()) else {
+        Literal(s.typeRef.show match
+          case "Byte" => ByteConstant(0)
+          case "Short" => ShortConstant(0)
+          case "Char" => CharConstant(0)
+          case "Int" => IntConstant(0)
+          case "Long" => LongConstant(0)
+          case "Float" => FloatConstant(0.0f)
+          case "Double" => DoubleConstant(0.0)
+          case "Boolean" => BooleanConstant(false)
+          case "Unit" => UnitConstant()
+          case tpe => throw new UnsupportedOperationException(s"Unsupported type $tpe as val type")
+        )
+      }
+      ValDef(s, Some( value ))
+    }
+
     // And we can now wire the class definition together
-    val clsDef = ClassDef(cls, parents, body = List(mocksVal, accessMockFunctionDef) ++ overriddenMethodsDef)
+    val clsDef = ClassDef(cls, parents, body = List(mocksVal, accessMockFunctionDef) ++ overriddenMethodsDef ++ valDefs)
     val newCls = Typed(Apply(Select(New(TypeIdent(cls)), cls.primaryConstructor), Nil), TypeTree.of[T & Mock])
     val block = Block(List(clsDef), newCls)
 
