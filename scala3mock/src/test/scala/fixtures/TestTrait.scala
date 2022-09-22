@@ -39,6 +39,8 @@ trait TestTrait {
   def explicitPackageReference(x: yet.another.pkg.YetAnotherClass): yet.another.pkg.YetAnotherClass
   def explicitPackageUpperBound[T <: yet.another.pkg.YetAnotherClass](x: T): T
 
+  // doesn't seems to be possible under Scala 3.
+  // We get an error saying "error overriding variable [...] cannot override a mutable variable"
   //var aVar: String
   //var concreteVar = "foo"
 
