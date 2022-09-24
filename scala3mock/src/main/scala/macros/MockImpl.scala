@@ -47,6 +47,8 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
   // Given a list of (type name -> type repr), replace all the type in `source` which share
   // the same name as the one in `replacements`. We use `String` because PolyType doesn't expose
   // the same representation as source has (I think).
+  // Note that it will most likely break if a there are nested type parameter as the current String
+  // based encoding does not remember on which scope a type parameter is defined.
   private def substituteTypes(replacements: List[(String, TypeRepr)])(source: TypeRepr): TypeRepr =
     source match
       case TermRef(qual, name) => TermRef(substituteTypes(replacements)(qual), name)
@@ -68,7 +70,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
 
   // Takes a symbol as parameter, and inspect it to find all the interesting characteristic
   // necesarry to rebuild a mocked version of itself.
-  private def buildOverrideType(symbol: Symbol): TypeRepr = 
+  private def buildOverrideType(replacements: List[(Symbol, TypeRepr)], symbol: Symbol): TypeRepr = 
     symbol.tree match
       case DefDef(_, Nil, returnTpt, _) =>
         // If the parameter list is empty, we are looking at a nullary function
@@ -87,21 +89,40 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
         // Then on each term type, we look at that parent list and see if there
         // is a name that match, and if yes use the local type ref instead.
         def transform(parents: List[(String, TypeRepr)]): ParamClause => TypeRepr = {
-          case term: TermParamClause => 
+          case term: TermParamClause =>
+            println(s"term.params = ${term.params}")
             val names = term.params.map(_.name)
             val types = term.params.map { param =>
-              substituteTypes(parents)(param.tpt.tpe)
+              val tpe = param.tpt.tpe
+
+              val (from, to) = replacements.collect { 
+                case (sym, r) if sym.typeRef =:= tpe => (sym, r)
+              }.unzip
+
+              // TODO substituteTypes can be removed once we have changed parents to use Symbols
+              substituteTypes(parents)(tpe.substituteTypes(from, to))
             }
 
             MethodType(names)(
               _ => types.map(substituteTypes(parents)),
-              mt => if iter.hasNext then transform(parents)(iter.next()) else substituteTypes(parents)(returnTpt.tpe)
+              mt => if iter.hasNext then transform(parents)(iter.next()) else {
+                val tpe = returnTpt.tpe
+
+                val (from, to) = replacements.collect { 
+                  case (sym, r) if sym.typeRef =:= tpe => (sym, r)
+                }.unzip
+
+                substituteTypes(parents)(tpe.substituteTypes(from, to))
+              }
             )
 
           case TypeParamClause(typeDefs) => 
 
             val paramNames = typeDefs.map(_.name)
             val trees = typeDefs.map(_.rhs)
+
+            val test = paramNames.map(n => symbol.typeMember(n).typeRef)
+            println(s"? test = $test")
 
 
             PolyType(paramNames)(
@@ -188,6 +209,34 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
       case Some(sym) if sym.isClassDef => sym
       case maybeSymbol => throw new MatchError(s"Can only mock trait or class at the time ($maybeSymbol received)")
 
+    // If the class/trait has type parameters, build a replacements list. It maps from the
+    // type parameter to the concrete type. We need to reference the concrete one when implementing
+    // methods or when declaring mocks.
+    val replacements = if(tType.typeArgs.isEmpty) then List.empty else classSymbol.tree match
+      case ClassDef(name, DefDef(_, params, _, _), _, _, _) =>
+        println(s"Got ClassDef. name=$name")
+
+        // List(TypeRef(ThisType(TypeRef(ThisType(TypeRef(NoPrefix,module class fixtures)),trait PolymorphicTrait)),type T))
+        val typeParams = params.flatMap {
+          case TypeParamClause(typeDefs) => typeDefs
+          case _ => None
+        }.map { case TypeDef(name, _) =>
+          classSymbol.typeMember(name)
+        }
+
+        tType match
+          case AppliedType(tycon, args) =>
+            if (args.size != typeParams.size)
+              report.errorAndAbort("Number of type params and concrete types isn't equal")
+
+            typeParams.zip(args)
+
+          case _ =>
+            report.errorAndAbort("Found type with type parameters but given type isn't applied.")
+
+      case tree =>
+        report.errorAndAbort(s"Unsupported symbol tree. Expected TypeDef but got ${tree.toString().split("\\(")(0)}")
+
     val isTrait = classSymbol.flags.is(Flags.Trait)
 
     val objectMembers = Symbol.requiredClass("java.lang.Object").methodMembers
@@ -218,7 +267,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
       val methodOverrides = methodsToOverride.map { m =>
         val flags = (m.flags & keepThoseFlags) | Flags.Override
         val privateWithin = m.privateWithin.map(_.typeSymbol).getOrElse(Symbol.noSymbol)
-        val tpe = buildOverrideType(m)
+        val tpe = buildOverrideType(replacements, m)
         
         Symbol.newMethod(cls, m.name, tpe, flags, privateWithin)
       }
