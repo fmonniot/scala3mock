@@ -21,98 +21,93 @@ Some resources for macros:
 class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
   import quotes.reflect.*
 
-  /*
-     *  +- TypeRepr -+- NamedType -+- TermRef
-   *                 |             +- TypeRef
-   *                 +- ConstantType
-   *                 +- SuperType
-   *                 +- Refinement
-   *                 +- AppliedType
-   *                 +- AnnotatedType
-   *                 +- AndOrType -+- AndType
-   *                 |             +- OrType
-   *                 +- MatchType
-   *                 +- ByNameType
-   *                 +- ParamRef
-   *                 +- ThisType
-   *                 +- RecursiveThis
-   *                 +- RecursiveType
-   *                 +- LambdaType -+- MethodOrPoly -+- MethodType
-   *                 |              |                +- PolyType
-   *                 |              +- TypeLambda
-   *                 +- MatchCase
-   *                 +- TypeBounds
-   *                 +- NoPrefix
-  */
-  // Given a list of (type name -> type repr), replace all the type in `source` which share
-  // the same name as the one in `replacements`. We use `String` because PolyType doesn't expose
-  // the same representation as source has (I think).
-  // Note that it will most likely break if a there are nested type parameter as the current String
-  // based encoding does not remember on which scope a type parameter is defined.
-  private def substituteTypes(replacements: List[(String, TypeRepr)])(source: TypeRepr): TypeRepr =
-    source match
-      case TermRef(qual, name) => TermRef(substituteTypes(replacements)(qual), name)
-      case tr: TypeRef =>
-        replacements.find(_._1 == tr.show).fold(tr)(_._2)
-      case AppliedType(tycon, args) =>
-        val a = substituteTypes(replacements)(tycon)
-        val b = args.map(substituteTypes(replacements))
-
-        AppliedType(a, b)
-
-      case ThisType(repr) =>
-        substituteTypes(replacements)(repr) // Are the ThisType import ?
-
-      case TypeBounds(low, high) =>
-        TypeBounds(substituteTypes(replacements)(low), substituteTypes(replacements)(high))
-
-      case other => other
-
   // Takes a symbol as parameter, and inspect it to find all the interesting characteristic
   // necesarry to rebuild a mocked version of itself.
-  private def buildOverrideType(replacements: List[(Symbol, TypeRepr)], symbol: Symbol): TypeRepr = 
-    symbol.tree match
+  // methodSymbol is a symbol on the method in the class we are mocking, not the symbol we are creating
+  private def buildOverrideType(replacements: List[(Symbol, TypeRepr)], methodSymbol: Symbol): TypeRepr = 
+    methodSymbol.tree match
       case DefDef(_, Nil, returnTpt, _) =>
         // If the parameter list is empty, we are looking at a nullary function
         ByNameType(returnTpt.tpe)
 
-      case DefDef(name, params, returnTpt, _) =>
-        // safe because we have excluded the case where params is empty in an
-        // earlier pattern match case.
-        val head :: tail = params: @unchecked
-
+      case DefDef(name, head :: tail, returnTpt, _) =>
         val iter = tail.iterator
+
+        // Helper to have a heterogeneous collection type. Unfortunately while we can now do
+        // List[(Symbol | String, TypeRepr)], we still can't filter at runtime on the underlying
+        // class. So instead we have List[(Par, TypeRepr)].
+        enum Par {
+          case Sym(sym: Symbol)
+          case Str(str: String)
+
+          def typeRef = this match
+            case Sym(sym) => Some(sym.typeRef)
+            case _ => None
+        }
+        object Par {
+          def apply(name: String) = {
+            val s = methodSymbol.typeMember(name)
+
+            if s.isNoSymbol then Str(name) else Sym(s)
+          }
+        }
+
+        /** Helper to substitute types */
+        def substituteTypes(p: List[(Par, TypeRepr)])(tpe: TypeRepr) =    
+            // Pass 1: replace all type symbols with their concrete implementation
+            val (from, to) = p.collect { 
+              case (Par.Sym(sym), r) if sym.typeRef =:= tpe => (sym, r)
+            }.unzip
+
+            // Replace references to type parameter of the class/trait with their concrete typea
+            val tmp = tpe.substituteTypes(from, to)
+
+            // Pass 2
+            // Because there is no symbol for the type parameter we are creating
+            // in the overriden method, we have to do an additional check. We are rendering
+            // the type to a String, and if it matches one of the known local type parameter
+            // (stored as Par.Str) then we replace it with the local type reference.
+            def poorSubstitute(replacements: List[(String, TypeRepr)])(source: TypeRepr): TypeRepr =
+              source match
+                case TermRef(qual, name) => TermRef(poorSubstitute(replacements)(qual), name)
+                case tr: TypeRef =>
+                  replacements.find(_._1 == tr.show).fold(tr)(_._2)
+                case AppliedType(tycon, args) =>
+                  val a = poorSubstitute(replacements)(tycon)
+                  val b = args.map(poorSubstitute(replacements))
+
+                  AppliedType(a, b)
+
+                case ThisType(repr) =>
+                  poorSubstitute(replacements)(repr) // Are the ThisType import ?
+
+                case TypeBounds(low, high) =>
+                  TypeBounds(poorSubstitute(replacements)(low), poorSubstitute(replacements)(high))
+
+                case other => other
+            end poorSubstitute
+
+            val fin = poorSubstitute(p.collect { case (Par.Str(s), tpe) => s -> tpe })(tmp)
+
+            fin
+        end substituteTypes
 
         // In the case of polymorphic function type, we should not refer to
         // the original type but to the one defined in our own PolyType. We do
         // so by keeping references to previously defined PolyType via parent.
         // Then on each term type, we look at that parent list and see if there
         // is a name that match, and if yes use the local type ref instead.
-        def transform(parents: List[(String, TypeRepr)]): ParamClause => TypeRepr = {
+        def transform(parents: List[(Par, TypeRepr)]): ParamClause => TypeRepr =
           case term: TermParamClause =>
-            println(s"term.params = ${term.params}")
             val names = term.params.map(_.name)
             val types = term.params.map { param =>
-              val tpe = param.tpt.tpe
-
-              val (from, to) = replacements.collect { 
-                case (sym, r) if sym.typeRef =:= tpe => (sym, r)
-              }.unzip
-
-              // TODO substituteTypes can be removed once we have changed parents to use Symbols
-              substituteTypes(parents)(tpe.substituteTypes(from, to))
+              substituteTypes(parents)(param.tpt.tpe)
             }
 
             MethodType(names)(
-              _ => types.map(substituteTypes(parents)),
+              _ => types,
               mt => if iter.hasNext then transform(parents)(iter.next()) else {
-                val tpe = returnTpt.tpe
-
-                val (from, to) = replacements.collect { 
-                  case (sym, r) if sym.typeRef =:= tpe => (sym, r)
-                }.unzip
-
-                substituteTypes(parents)(tpe.substituteTypes(from, to))
+                substituteTypes(parents)(returnTpt.tpe)
               }
             )
 
@@ -121,18 +116,18 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
             val paramNames = typeDefs.map(_.name)
             val trees = typeDefs.map(_.rhs)
 
-            val test = paramNames.map(n => symbol.typeMember(n).typeRef)
-            println(s"? test = $test")
-
+            def parentsWithPolyType(pt: PolyType) =
+              pt.paramNames.zipWithIndex.map { (name, idx) =>
+                Par(name) -> pt.param(idx)  
+              } ++ parents
 
             PolyType(paramNames)(
               pt => {
-                val params = pt.paramNames.zipWithIndex.map { (name, idx) =>
-                    name -> pt.param(idx)  
-                  }
+                val all = parentsWithPolyType(pt)
 
-                // bounds is probably fine, except we need to not ignore the None case.
-                // That would move the bounds arround
+                // We have to substitute types within the bounds. We do a few type matching
+                // keeping elements if they do not match. At the end, we substitute or
+                // default to Nothing <: t <: Any if an error was found.
                 val bounds = trees
                   .map {
                     case tt: TypeTree => Some(tt.tpe)
@@ -143,7 +138,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
                   .flatMap {
                     case Some(tb: TypeBounds) => 
                       // The cast is safe because substituteTypes does not modify the type hierarchy
-                      Some(substituteTypes(params ++ parents)(tb).asInstanceOf[TypeBounds])
+                      Some(substituteTypes(all)(tb).asInstanceOf[TypeBounds])
                     case tpe =>
                       report.warning(s"Found a non-TypeBounds when looking at type param rhs: $tpe")
                       Some(TypeBounds(TypeRepr.of[Nothing], TypeRepr.of[Any]))
@@ -152,23 +147,21 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
                   bounds
               }, 
               pt => {
-                if !iter.hasNext then returnTpt.tpe else {
-                  val params = pt.paramNames.zipWithIndex.map { (name, idx) =>
-                    name -> pt.param(idx)  
-                  }
+                val all = parentsWithPolyType(pt)
 
-                  transform(params ++ parents)(iter.next())
+                if !iter.hasNext then substituteTypes(all)(returnTpt.tpe) else {
+                  transform(all)(iter.next())
                 }
               }
             )
-        }
+        end transform
 
-        transform(List.empty)(head)
+        transform(replacements.map{ case (a, b) => Par.Sym(a) -> b})(head)
 
       case tree =>
         report.error(s"unexpected tree: $tree")
-        throw new UnsupportedOperationException(
-          s"Unexpected tree found at symbol ${symbol.name}. "+
+        report.errorAndAbort(
+          s"Unexpected tree found at symbol ${methodSymbol.name}. "+
           "Report your use case to the library author."
         )
 

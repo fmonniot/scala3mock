@@ -18,19 +18,17 @@ class MockSuite extends munit.FunSuite with MockFunctions {
     case class TestException() extends RuntimeException
     case class AnotherTestException() extends RuntimeException
 
-    
-
 
     test("TODO") {
         withExpectations() {
             val m = mock[TestTrait]            
+            
             // TODO Missing MockFunction impl for 3+ parameters
             //val a = mock[ManyParamsClass]
             //val b = mock[ManyParamsTrait]
 
-            // TODO Missing replacing the class type parameters in the impl
-            //val c = mock[PolymorphicClass[String]]
-            //val d = mock[PolymorphicTrait[Int]]
+            val c = mock[PolymorphicClass[String]]
+            val d = mock[PolymorphicTrait[Int]]
 
             // Seems to be special case for scala.js ? Not entirely sure though
             // I suppose that mean we can skip those for now.
@@ -40,6 +38,7 @@ class MockSuite extends munit.FunSuite with MockFunctions {
             // TODO Needs to ignore private methods
             //val g = mock[TestClass]
 
+            // Test auxiliary constructors
 
             /*
             when(m.polycurried(_: String)(_: Int))
