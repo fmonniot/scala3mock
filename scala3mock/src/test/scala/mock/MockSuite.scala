@@ -5,11 +5,10 @@ import main.withExpectations
 import functions.MockFunctions
 import main.TestExpectationEx
 import matchers.MatchAny
-import macros.{mock, when}
 
 import scala.language.implicitConversions
 import fixtures.*
-import macros.PrintAst
+import macros.*
 
 class MockSuite extends munit.FunSuite with MockFunctions {
 

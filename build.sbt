@@ -11,14 +11,7 @@ lazy val scala3mock = project.in(file("./scala3mock"))
 
     scalaVersion := scala3Version,
 
-    // The following system property enable a (very) verbose output when
-    // this project's macros are executing. I do not know of a better way
-    // to set the system property and have it made available to the compiler.
-    // Hack found at https://github.com/scalameta/scalameta/issues/840#issuecomment-299962849
-    initialize := {
-      val () = sys.props("scala3mock.debug.macros") = "true"
-      initialize.value
-    },
+    scalacOptions ++= Seq("-feature", "-explain"),
 
     // Useful when using the PrintAst[type] macro. That will provides the implementation
     // details of classes. Without it, only the signatures are available.

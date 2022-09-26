@@ -18,8 +18,11 @@ Some resources for macros:
 - https://softwaremill.com/scala-3-macros-tips-and-tricks
 - https://github.com/lampepfl/dotty/blob/release-3.2.0/library/src/scala/quoted/Quotes.scala
 */
-class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
+private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: Quotes)(using Type[T]):
   import quotes.reflect.*
+
+  def debug(x: String): Unit =
+    if debug then println(x) else ()
 
   // Takes a symbol as parameter, and inspect it to find all the interesting characteristic
   // necesarry to rebuild a mocked version of itself.
@@ -196,7 +199,7 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
         throw new MatchError(s"The MockContext expression was not inlined. Report to the author.\n ctx = $ctx")
 
     val tType: TypeRepr = TypeRepr.of[T].dealias
-    utils.debug(s"Mocking type $tType")
+    debug(s"Mocking type $tType")
 
     val classSymbol = tType.classSymbol match
       case Some(sym) if sym.isClassDef => sym
@@ -369,9 +372,8 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
     val newCls = Typed(Apply(Select(New(TypeIdent(cls)), cls.primaryConstructor), Nil), TypeTree.of[T & Mock])
     val block = Block(List(clsDef), newCls)
 
-    utils.debug(s"Generated code:")
-    //utils.debug(s"Tree Structure: ${block.show(using Printer.TreeStructure)}")
-    utils.debug(s"Tree Code: ${block.show(using Printer.TreeAnsiCode)}")
+    debug(s"Generated code:")
+    debug(s"Tree Code: ${block.show(using Printer.TreeAnsiCode)}")
 
     block.asExprOf[T & Mock]
 
@@ -399,10 +401,16 @@ class MockImpl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]):
       Apply(TypedNewTuple, List(Literal(StringConstant(mockName)), createMF)).asExprOf[Tuple2[String, MockFunction]]
     }
 
-private[macros] object MockImpl:
+// TODO private[scala3mock] when we have a top-level package
+object MockImpl:
 
-  inline def apply[T](using ctx: MockContext): T & Mock = // TODO T & Mock (or do I need the second part?)
-    ${impl[T]('ctx)}
+  inline def apply[T](using ctx: MockContext): T & Mock =
+    ${impl[T]('ctx, debug = false)}
 
-  @experimental def impl[T](ctx: Expr[MockContext])(using quotes: Quotes)(using Type[T]): Expr[T & Mock] =
-    new MockImpl[T](ctx).generate
+  // For debugging purposes, switch from apply to this one to get verbose (we mean it)
+  // logs when generating the mocked class.
+  inline def debug[T](using ctx: MockContext): T & Mock =
+    ${impl[T]('ctx, debug = true)}
+
+  @experimental def impl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: Quotes)(using Type[T]): Expr[T & Mock] =
+    new MockImpl[T](ctx, debug).generate
