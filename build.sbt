@@ -1,10 +1,10 @@
-lazy val root = project
+lazy val scala3mock = project
   .in(file("."))
-  .aggregate(scala3mock)
+  .aggregate(core)
 
-lazy val scala3mock = project.in(file("./scala3mock"))
+lazy val core = project.in(file("./core"))
   .settings(
-    name := "scala3mock",
+    name := "scala3mock-core",
     version := "0.1.0-SNAPSHOT",
 
     scalaVersion := "3.2.2",
