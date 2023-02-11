@@ -19,11 +19,11 @@ class MockSuite extends munit.FunSuite with MockFunctions {
 
     test("PolymorphicClassWithParameters") {
         withExpectations() {
-            val m = MockImpl.debug[PolymorphicClassWithParameters[List, TestException]]
+            val m = mock[PolymorphicClassWithParameters[List, TestException]]
 
-            //when(m.logic).expects("hello").returns(List(true))
+            when(m.logic).expects("hello").returns(List(true))
 
-            //assertEquals(m.logic("hello"), List(true))
+            assertEquals(m.logic("hello"), List(true))
         }
     }
 
