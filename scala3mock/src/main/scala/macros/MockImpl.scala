@@ -258,6 +258,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
     }
     .filterNot(_.flags.is(Flags.Private)) // Do not override private members
 
+    // fields are values. TIL that scala has val without implementation :)
     val fieldsToOverride = classSymbol.fieldMembers.filter(_.flags.is(Flags.Deferred))
 
     // Start by declaring the "signature" of the class. That includes all its interfaces, but not the implementation
@@ -285,21 +286,23 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
           if tt != TypeTree.of[T]
           then tt
           else
-            // TODO Support multiple parameter list
-            val classTerms = classDef.constructor.paramss
-              .collect { case TermParamClause(defs) => 
-                defs.map(valDef => defaultLiteral(valDef.tpt.tpe))
-              }.flatten // That won't work with multiple parameter list
-            Apply(
-              TypeApply(
+            // eg. T[x, y]
+            val typeApply = TypeApply(
                 Select(
                   New(TypeTree.of[T]),
                   classDef.constructor.symbol
                 ),
                 tType.typeArgs.map(Inferred(_))
-              ),
-              classTerms
-            )
+              )
+
+            // Apply the parameter list to build out the fully constructed parent
+            classDef.constructor
+              .paramss
+              .collect { case TermParamClause(defs) => 
+                defs.map(valDef => defaultLiteral(valDef.tpt.tpe))
+              }.foldLeft[Term](typeApply) { case (a, b) =>
+                Apply(a, b)
+              }
         }
 
     def declarations(cls: Symbol): List[Symbol] =
