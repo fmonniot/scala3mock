@@ -17,6 +17,15 @@ class MockSuite extends munit.FunSuite with MockFunctions {
     case class TestException() extends RuntimeException
     case class AnotherTestException() extends RuntimeException
 
+    test("PolymorphicClassWithParameters") {
+        withExpectations() {
+            val m = MockImpl.debug[PolymorphicClassWithParameters[List, TestException]]
+
+            //when(m.logic).expects("hello").returns(List(true))
+
+            //assertEquals(m.logic("hello"), List(true))
+        }
+    }
 
     test("TODO") {
         withExpectations() {

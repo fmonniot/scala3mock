@@ -55,11 +55,14 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
           }
         }
 
+
+
         /** Helper to substitute types */
-        def substituteTypes(p: List[(Par, TypeRepr)])(tpe: TypeRepr) =    
+        def substituteTypes(parents: List[(Par, TypeRepr)])(tpe: TypeRepr) =
+            debug(s"substituteTypes(tpe=$tpe, parents=$parents)") // inverting to simplify reading logs
             // Pass 1: replace all type symbols with their concrete implementation
-            val (from, to) = p.collect { 
-              case (Par.Sym(sym), r) if sym.typeRef =:= tpe => (sym, r)
+            val (from, to) = parents.collect { 
+              case (Par.Sym(sym), r) => (sym, r)
             }.unzip
 
             // Replace references to type parameter of the class/trait with their concrete typea
@@ -71,6 +74,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
             // the type to a String, and if it matches one of the known local type parameter
             // (stored as Par.Str) then we replace it with the local type reference.
             def poorSubstitute(replacements: List[(String, TypeRepr)])(source: TypeRepr): TypeRepr =
+              debug(s"poorSubstitute(replacements = $replacements)")
               source match
                 case TermRef(qual, name) => TermRef(poorSubstitute(replacements)(qual), name)
                 case tr: TypeRef =>
@@ -90,9 +94,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
                 case other => other
             end poorSubstitute
 
-            val fin = poorSubstitute(p.collect { case (Par.Str(s), tpe) => s -> tpe })(tmp)
-
-            fin
+            poorSubstitute(parents.collect { case (Par.Str(s), tpe) => s -> tpe })(tmp)
         end substituteTypes
 
         // In the case of polymorphic function type, we should not refer to
@@ -210,21 +212,24 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
     // methods or when declaring mocks.
     val replacements = if(tType.typeArgs.isEmpty) then List.empty else classSymbol.tree match
       case ClassDef(name, DefDef(_, params, _, _), _, _, _) =>
-        println(s"Got ClassDef. name=$name")
+        debug(s"Got ClassDef. name=$name")
 
         // List(TypeRef(ThisType(TypeRef(ThisType(TypeRef(NoPrefix,module class fixtures)),trait PolymorphicTrait)),type T))
         val typeParams = params.flatMap {
           case TypeParamClause(typeDefs) => typeDefs
           case _ => None
         }.map { case TypeDef(name, _) =>
+          debug(s"type parameter $name found")
           classSymbol.typeMember(name)
         }
 
+        debug(s"tType=$tType")
         tType match
           case AppliedType(tycon, args) =>
             if (args.size != typeParams.size)
               report.errorAndAbort("Number of type params and concrete types isn't equal")
 
+            debug(s"typeParams=$typeParams; args=$args")
             typeParams.zip(args)
 
           case _ =>
