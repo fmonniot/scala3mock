@@ -96,7 +96,6 @@ private[macros] object WhenImpl:
     import quotes.reflect.*
 
     val (obj, name) = transcribeTree(expr.asTerm)
-    println(s"access mock with the name $name")
 
     '{
       if ${ obj.asExprOf[Any] }.isInstanceOf[Mock]

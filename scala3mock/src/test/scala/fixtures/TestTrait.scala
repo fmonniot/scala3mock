@@ -15,15 +15,17 @@ trait TestTrait {
   def overloaded[T](x: T): String
 
   def +(x: TestTrait): TestTrait
-  def polymorphicUnary[T1]: T1
-
+  
   def curried(x: Int)(y: Double): String
   def curriedFuncReturn(x: Int): Double => String
+  
   def polymorphic[T](x: List[T]): String
+  def polymorphicUnary[T1]: T1
   def polycurried[T1, T2](x: T1)(y: T2): (T1, T2)
   def polymorphicParam(x: (Int, Double)): String
   def repeatedParam(x: Int, ys: String*): String
   def byNameParam(x: => Int): String
+
   // Can't do those two because Scala 3 doesn't seems to offer a way
   // to specify if a parameter list has a modifier or not.
   //def implicitParam(x: Int)(implicit y: Double): String
@@ -65,11 +67,6 @@ trait TestTrait {
   
   //trait ATrait
   
+  // TODO Keep reference to the trait def here instead of the mock
   //def referencesEmbedded(): Embedded
 }
-
-/*
-class TestClass {
-    private def function = 0 // should not be part of the override
-}
-*/
