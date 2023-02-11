@@ -252,7 +252,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
     val fieldsToOverride = classSymbol.fieldMembers.filter(_.flags.is(Flags.Deferred))
 
     // Start by declaring the "signature" of the class. That includes all its interfaces, but not the implementation
-    val name: String = "mock" // TODO Add the mocked type as a suffix
+    val name: String = s"${classDef.name}Mock"
 
     val parents = if isTrait then List(TypeTree.of[Object], TypeTree.of[T], TypeTree.of[Mock])
     else List(TypeTree.of[T], TypeTree.of[Mock])
