@@ -25,7 +25,8 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
     if debug then println(x) else ()
 
   private def defaultLiteral(tpe: TypeRepr): Literal =
-    if tpe =:= TypeRepr.of[Boolean] then Literal(BooleanConstant(false))
+    if tpe <:< TypeRepr.of[AnyRef] then Literal(NullConstant())
+    else if tpe =:= TypeRepr.of[Boolean] then Literal(BooleanConstant(false))
     else if tpe =:= TypeRepr.of[Byte] then Literal(ByteConstant(0))
     else if tpe =:= TypeRepr.of[Short] then Literal(ShortConstant(0))
     else if tpe =:= TypeRepr.of[Int] then Literal(IntConstant(0))
@@ -35,7 +36,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
     else if tpe =:= TypeRepr.of[Char] then Literal(CharConstant(0))
     else if tpe =:= TypeRepr.of[String] then Literal(StringConstant(""))
     else if tpe =:= TypeRepr.of[Unit] then Literal(UnitConstant())
-    else Literal(NullConstant())
+    else throw new UnsupportedOperationException(s"Don't know the default literal value of type $tpe.")
 
   // Takes a symbol as parameter, and inspect it to find all the interesting characteristic
   // necesarry to rebuild a mocked version of itself.
@@ -403,21 +404,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
     val valDefs = fieldsToOverride.map { sym =>
       val s = cls.fieldMember(sym.name)
 
-      val value = if s.typeRef.<:<(TypeRepr.of[AnyRef]) then Literal(NullConstant()) else {
-        Literal(s.typeRef.show match
-          case "Byte" => ByteConstant(0)
-          case "Short" => ShortConstant(0)
-          case "Char" => CharConstant(0)
-          case "Int" => IntConstant(0)
-          case "Long" => LongConstant(0)
-          case "Float" => FloatConstant(0.0f)
-          case "Double" => DoubleConstant(0.0)
-          case "Boolean" => BooleanConstant(false)
-          case "Unit" => UnitConstant()
-          case tpe => throw new UnsupportedOperationException(s"Unsupported type $tpe as val type")
-        )
-      }
-      ValDef(s, Some( value ))
+      ValDef(s, Some( defaultLiteral(s.typeRef) ))
     }
 
     // And we can now wire the class definition together
