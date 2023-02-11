@@ -207,36 +207,37 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
       case Some(sym) if sym.isClassDef => sym
       case maybeSymbol => throw new MatchError(s"Can only mock trait or class at the time ($maybeSymbol received)")
 
+    val classDef = classSymbol.tree match
+      case cd: ClassDef => cd
+      case tree =>
+        report.errorAndAbort(s"Unsupported symbol tree. Expected ClassDef but got ${tree.toString().split("\\(")(0)}")
+
     // If the class/trait has type parameters, build a replacements list. It maps from the
     // type parameter to the concrete type. We need to reference the concrete one when implementing
     // methods or when declaring mocks.
-    val replacements = if(tType.typeArgs.isEmpty) then List.empty else classSymbol.tree match
-      case ClassDef(name, DefDef(_, params, _, _), _, _, _) =>
-        debug(s"Got ClassDef. name=$name")
+    val replacements = if(tType.typeArgs.isEmpty) then List.empty else 
+      debug(s"Got ClassDef. name=${classDef.name}")
 
-        // List(TypeRef(ThisType(TypeRef(ThisType(TypeRef(NoPrefix,module class fixtures)),trait PolymorphicTrait)),type T))
-        val typeParams = params.flatMap {
-          case TypeParamClause(typeDefs) => typeDefs
-          case _ => None
-        }.map { case TypeDef(name, _) =>
-          debug(s"type parameter $name found")
-          classSymbol.typeMember(name)
-        }
+      // List(TypeRef(ThisType(TypeRef(ThisType(TypeRef(NoPrefix,module class fixtures)),trait PolymorphicTrait)),type T))
+      val typeParams = classDef.constructor.paramss.flatMap {
+        case TypeParamClause(typeDefs) => typeDefs
+        case _ => None
+      }.map { case TypeDef(name, _) =>
+        debug(s"type parameter $name found")
+        classSymbol.typeMember(name)
+      }
 
-        debug(s"tType=$tType")
-        tType match
-          case AppliedType(tycon, args) =>
-            if (args.size != typeParams.size)
-              report.errorAndAbort("Number of type params and concrete types isn't equal")
+      debug(s"tType=$tType")
+      tType match
+        case AppliedType(tycon, args) =>
+          if (args.size != typeParams.size)
+            report.errorAndAbort("Number of type params and concrete types isn't equal")
 
-            debug(s"typeParams=$typeParams; args=$args")
-            typeParams.zip(args)
+          debug(s"typeParams=$typeParams; args=$args")
+          typeParams.zip(args)
 
-          case _ =>
-            report.errorAndAbort("Found type with type parameters but given type isn't applied.")
-
-      case tree =>
-        report.errorAndAbort(s"Unsupported symbol tree. Expected TypeDef but got ${tree.toString().split("\\(")(0)}")
+        case _ =>
+          report.errorAndAbort("Found type with type parameters but given type isn't applied.")
 
     val isTrait = classSymbol.flags.is(Flags.Trait)
 
