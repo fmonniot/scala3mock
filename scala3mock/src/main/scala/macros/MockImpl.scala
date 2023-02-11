@@ -256,6 +256,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
     val methodsToOverride: List[Symbol] = classSymbol.methodMembers.filter { m =>
       !(objectMembers.contains(m) || anyMembers.contains(m))
     }
+    .filterNot(_.flags.is(Flags.Private)) // Do not override private members
 
     val fieldsToOverride = classSymbol.fieldMembers.filter(_.flags.is(Flags.Deferred))
 

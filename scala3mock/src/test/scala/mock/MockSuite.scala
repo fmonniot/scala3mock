@@ -44,7 +44,7 @@ class MockSuite extends munit.FunSuite with MockFunctions {
             //val f = mock[SpecializedClass2[Int, Float]]
 
             // TODO Needs to ignore private methods
-            //val g = mock[TestClass]
+            val g = mock[TestClass]
 
             // Test auxiliary constructors
 
