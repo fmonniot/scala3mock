@@ -24,6 +24,19 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
   def debug(x: String): Unit =
     if debug then println(x) else ()
 
+  private def defaultLiteral(tpe: TypeRepr): Literal =
+    if tpe =:= TypeRepr.of[Boolean] then Literal(BooleanConstant(false))
+    else if tpe =:= TypeRepr.of[Byte] then Literal(ByteConstant(0))
+    else if tpe =:= TypeRepr.of[Short] then Literal(ShortConstant(0))
+    else if tpe =:= TypeRepr.of[Int] then Literal(IntConstant(0))
+    else if tpe =:= TypeRepr.of[Long] then Literal(LongConstant(0))
+    else if tpe =:= TypeRepr.of[Float] then Literal(FloatConstant(0))
+    else if tpe =:= TypeRepr.of[Double] then Literal(DoubleConstant(0))
+    else if tpe =:= TypeRepr.of[Char] then Literal(CharConstant(0))
+    else if tpe =:= TypeRepr.of[String] then Literal(StringConstant(""))
+    else if tpe =:= TypeRepr.of[Unit] then Literal(UnitConstant())
+    else Literal(NullConstant())
+
   // Takes a symbol as parameter, and inspect it to find all the interesting characteristic
   // necesarry to rebuild a mocked version of itself.
   // methodSymbol is a symbol on the method in the class we are mocking, not the symbol we are creating
@@ -59,7 +72,6 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
 
         /** Helper to substitute types */
         def substituteTypes(parents: List[(Par, TypeRepr)])(tpe: TypeRepr) =
-            debug(s"substituteTypes(tpe=$tpe, parents=$parents)") // inverting to simplify reading logs
             // Pass 1: replace all type symbols with their concrete implementation
             val (from, to) = parents.collect { 
               case (Par.Sym(sym), r) => (sym, r)
@@ -74,7 +86,6 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
             // the type to a String, and if it matches one of the known local type parameter
             // (stored as Par.Str) then we replace it with the local type reference.
             def poorSubstitute(replacements: List[(String, TypeRepr)])(source: TypeRepr): TypeRepr =
-              debug(s"poorSubstitute(replacements = $replacements)")
               source match
                 case TermRef(qual, name) => TermRef(poorSubstitute(replacements)(qual), name)
                 case tr: TypeRef =>
@@ -223,17 +234,14 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
         case TypeParamClause(typeDefs) => typeDefs
         case _ => None
       }.map { case TypeDef(name, _) =>
-        debug(s"type parameter $name found")
         classSymbol.typeMember(name)
       }
 
-      debug(s"tType=$tType")
       tType match
         case AppliedType(tycon, args) =>
           if (args.size != typeParams.size)
             report.errorAndAbort("Number of type params and concrete types isn't equal")
 
-          debug(s"typeParams=$typeParams; args=$args")
           typeParams.zip(args)
 
         case _ =>
@@ -253,9 +261,45 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
 
     // Start by declaring the "signature" of the class. That includes all its interfaces, but not the implementation
     val name: String = s"${classDef.name}Mock"
+    
 
-    val parents = if isTrait then List(TypeTree.of[Object], TypeTree.of[T], TypeTree.of[Mock])
-    else List(TypeTree.of[T], TypeTree.of[Mock])
+    // TODO Find out how to apply values to extended class
+
+    debug("tt of T: " + TypeTree.of[T].tpe.show(using Printer.TypeReprStructure))
+
+    // When declaring a class symbol, we need the TypeTree of every parents
+    val parentsTypes = 
+      if isTrait then List(TypeTree.of[Object], TypeTree.of[T], TypeTree.of[Mock])
+      else List(TypeTree.of[T], TypeTree.of[Mock])
+
+    // But when building the class definition, we need to use term if the mocked type T
+    // needs to call the constructor of T with default values.
+    val parentsTree: List[Tree] =
+      val termParams = classDef.constructor.termParamss.map(_.params).flatten
+      debug(s"termParamss.isEmpty = ${termParams}")
+
+      if termParams.isEmpty then parentsTypes
+      else
+        parentsTypes.map { tt =>
+          if tt != TypeTree.of[T]
+          then tt
+          else
+            // TODO Support multiple parameter list
+            val classTerms = classDef.constructor.paramss
+              .collect { case TermParamClause(defs) => 
+                defs.map(valDef => defaultLiteral(valDef.tpt.tpe))
+              }.flatten // That won't work with multiple parameter list
+            Apply(
+              TypeApply(
+                Select(
+                  New(TypeTree.of[T]),
+                  classDef.constructor.symbol
+                ),
+                tType.typeArgs.map(Inferred(_))
+              ),
+              classTerms
+            )
+        }
 
     def declarations(cls: Symbol): List[Symbol] =
       val mocks = Symbol.newVal(cls, "mocks", TypeRepr.of[Map[String, MockFunction]], Flags.Private, Symbol.noSymbol)
@@ -286,7 +330,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
 
       (accessMockFunction :: mocks +: methodOverrides) ++ fieldOverrides
 
-    val cls = Symbol.newClass(Symbol.spliceOwner, name, parents.map(_.tpe), declarations, selfType = None)
+    val cls = Symbol.newClass(Symbol.spliceOwner, name, parentsTypes.map(_.tpe), declarations, selfType = None)
 
     // List all the symbols to override and associate them with the mock name.
     // We can't use the symbol name directly because overload would result with
@@ -326,7 +370,6 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
         report.error(s"unexpected arguments received: ${args}")
         throw new UnsupportedOperationException("this is a bug. report your use case to the library author")
     })
-
 
     // all overridden methods
     val overriddenMethodsDef = methodsOverridesSymbols.map { case (mockName, sym) =>
@@ -374,7 +417,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
     }
 
     // And we can now wire the class definition together
-    val clsDef = ClassDef(cls, parents, body = List(mocksVal, accessMockFunctionDef) ++ overriddenMethodsDef ++ valDefs)
+    val clsDef = ClassDef(cls, parentsTree, body = List(mocksVal, accessMockFunctionDef) ++ overriddenMethodsDef ++ valDefs)
     val newCls = Typed(Apply(Select(New(TypeIdent(cls)), cls.primaryConstructor), Nil), TypeTree.of[T & Mock])
     val block = Block(List(clsDef), newCls)
 
