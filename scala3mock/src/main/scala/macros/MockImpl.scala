@@ -228,9 +228,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
     // type parameter to the concrete type. We need to reference the concrete one when implementing
     // methods or when declaring mocks.
     val replacements = if(tType.typeArgs.isEmpty) then List.empty else 
-      debug(s"Got ClassDef. name=${classDef.name}")
 
-      // List(TypeRef(ThisType(TypeRef(ThisType(TypeRef(NoPrefix,module class fixtures)),trait PolymorphicTrait)),type T))
       val typeParams = classDef.constructor.paramss.flatMap {
         case TypeParamClause(typeDefs) => typeDefs
         case _ => None
@@ -264,11 +262,6 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
 
     // Start by declaring the "signature" of the class. That includes all its interfaces, but not the implementation
     val name: String = s"${classDef.name}Mock"
-    
-
-    // TODO Find out how to apply values to extended class
-
-    debug("tt of T: " + TypeTree.of[T].tpe.show(using Printer.TypeReprStructure))
 
     // When declaring a class symbol, we need the TypeTree of every parents
     val parentsTypes = 
@@ -279,7 +272,6 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using quotes: 
     // needs to call the constructor of T with default values.
     val parentsTree: List[Tree] =
       val termParams = classDef.constructor.termParamss.map(_.params).flatten
-      debug(s"termParamss.isEmpty = ${termParams}")
 
       if termParams.isEmpty then parentsTypes
       else
