@@ -61,6 +61,8 @@ const siteConfig = {
     docsSideNavCollapsible: true,
   
     //separateCss: ['static/api'],
+
+    customDocsPath: "site-docs/target/mdoc",
   };
   
   module.exports = siteConfig;
