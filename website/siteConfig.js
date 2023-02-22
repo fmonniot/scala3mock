@@ -4,7 +4,7 @@
 
 const siteConfig = {
     title: 'scala3mock',
-    tagline: 'Native Scala3 mocking system',
+    tagline: 'Native Scala 3 mocking system',
     url: 'https://francois.monniot.eu',
     baseUrl: '/scala3mock/',
     repoUrl: 'https://github.com/fmonniot/scala3mock',

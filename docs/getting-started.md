@@ -16,9 +16,6 @@ To create a new mock, place the following contents into a Scala file within your
 
 ```scala mdoc
 import main.withExpectations
-import functions.MockFunctions
-import main.TestExpectationEx
-import matchers.MatchAny
 import macros.{mock, when}
 
 trait TestTrait {
@@ -41,4 +38,26 @@ TBD
 
 ### munit
 
-TBD
+To get started, add the following to your **build.sbt**:
+
+```scala
+libraryDependencies += "eu.monniot" %% "scala3mock-munit" % "@VERSION@" % Test
+```
+
+TODO Write paragraph explaining what's happening
+
+```scala mdoc
+import main.withExpectations
+import macros.{mock, when}
+
+// TODO Implement the example correctly once I have the integration defined.
+
+class ExampleSuite {
+  withExpectations() {
+    val m = mock[TestTrait]
+
+    when(m.method).expects(42).returns("ok")
+    assert(m.method(42) == "ok")
+  }
+}
+```
