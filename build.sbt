@@ -1,4 +1,5 @@
 ThisBuild / scalaVersion := "3.2.2"
+ThisBuild / version := "0.1.0-SNAPSHOT"
 
 lazy val scala3mock = project
   .in(file("."))
@@ -8,7 +9,6 @@ lazy val core = project
   .in(file("./core"))
   .settings(
     name := "scala3mock-core",
-    version := "0.1.0-SNAPSHOT",
     scalacOptions ++= Seq("-feature", "-explain"),
 
     // Useful when using the PrintAst[type] macro. That will provides the implementation
