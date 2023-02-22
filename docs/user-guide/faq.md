@@ -1,6 +1,5 @@
 ---
-id: faq
 title: FAQ
 ---
 
-TODO
+TBD faq

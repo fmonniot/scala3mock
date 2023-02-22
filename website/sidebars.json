@@ -1,8 +1,17 @@
 {
     "docs": {
         "Overview": [
-            "getting-started",
-            "faq"
+            "getting-started"
+        ],
+        "User Guide": [
+            "user-guide/installation",
+            "user-guide/integration",
+            "user-guide/features",
+            "user-guide/matching",
+            "user-guide/ordering",
+            "user-guide/scalatest",
+            "user-guide/advanced-topics",
+            "user-guide/faq"
         ]
     }
 }
