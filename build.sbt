@@ -18,6 +18,13 @@ lazy val core = project
     libraryDependencies += "org.scalameta" %% "munit" % "1.0.0-M7" % Test
   )
 
+lazy val scalatest = project
+  .in(file("./scalatest"))
+  .settings(
+    name := "scala3mock-scalatest",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15"
+  )
+
 lazy val docs = project
   .in(file("site-docs")) // important: it must not be docs/
   .dependsOn(core)
