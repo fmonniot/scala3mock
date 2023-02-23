@@ -185,3 +185,5 @@ withExpectations(verifyAfterRun=false) {
   when(counterMock.decrement).expects(MatchAny()).onCall { () => throw RuntimeException("here") }
 }
 ```
+
+Please read the [User Guide](user-guide/features.md) for more details.
