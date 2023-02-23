@@ -20,6 +20,7 @@ lazy val core = project
 
 lazy val scalatest = project
   .in(file("./scalatest"))
+  .dependsOn(core)
   .settings(
     name := "scala3mock-scalatest",
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15"
@@ -27,7 +28,7 @@ lazy val scalatest = project
 
 lazy val docs = project
   .in(file("site-docs")) // important: it must not be docs/
-  .dependsOn(core)
+  .dependsOn(core, scalatest)
   .enablePlugins(MdocPlugin, DocusaurusPlugin)
   .settings(
     mdocVariables := Map(

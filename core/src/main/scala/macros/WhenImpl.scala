@@ -3,7 +3,8 @@ package macros
 import functions.*
 import context.Mock
 
-private[macros] object WhenImpl:
+// TODO Make private to eu.monniot.scala3mock when we migrate package.
+object WhenImpl:
 
   import scala.quoted.*
 
