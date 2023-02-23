@@ -2,4 +2,20 @@
 title: Installation
 ---
 
-TBD install
+## Packages
+
+- releases
+- maven coordinates
+- no snapshots
+- where to find the sources
+
+## SBT
+## Mill
+## Gradle
+## Maven
+
+## Moving from ScalaMock to Scala3Mock
+
+- Syntax changes
+- Stub feature dropped
+- No cross compilation with Scala2
