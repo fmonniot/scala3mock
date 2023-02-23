@@ -1,5 +1,0 @@
----
-title: Ordering
----
-
-TBD ordering
