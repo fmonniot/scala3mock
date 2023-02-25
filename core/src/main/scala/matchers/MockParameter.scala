@@ -7,10 +7,10 @@ package matchers
 // [error] constructor MockParameter:(value: AnyRef)org.scalamock.matchers.MockParameter[T]
 // [error] have same type after erasure: (v: java.lang.Object)org.scalamock.matchers.MockParameter
 
-class MockParameter[T] protected (val value: AnyRef, dummy: Boolean = false):
+class MockParameter[T] protected (val value: T | MatcherBase, dummy: Boolean = false):
 
-  def this(v: T) = this(v.asInstanceOf[AnyRef], dummy = false)
-  def this(v: MatcherBase) = this(v.asInstanceOf[AnyRef], dummy = false)
+  def this(v: T) = this(v, dummy = false)
+  def this(v: MatcherBase) = this(v, dummy = false)
 
   override def hashCode() = value.##
 
@@ -18,6 +18,10 @@ class MockParameter[T] protected (val value: AnyRef, dummy: Boolean = false):
 
   override def toString = value.toString
 
-object MockParameter:
-  given [T]: Conversion[MatcherBase, MockParameter[T]] = t => new MockParameter(t)
-  given [T]: Conversion[T, MockParameter[T]] = t => new MockParameter(t)
+object MockParameter extends MockParameterImplicitL1:
+  given matchAny[T]: Conversion[MatcherBase, MockParameter[T]] = t => new MockParameter(t)
+
+// We need this given instance to be less specific than the MatcherBase one. We
+// do so by putting it at a greater inheritance level.
+private class MockParameterImplicitL1:
+  given specificValue[T]: Conversion[T, MockParameter[T]] = t => new MockParameter(t)
