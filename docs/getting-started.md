@@ -118,10 +118,8 @@ withExpectations() {
 
 ## Verifying arguments dynamically
 
-> :warning: The `where` matchers is not yet implemented.
-
-```scala mdoc:fail
-import matchers.where
+```scala mdoc
+import matchers.MatchPredicate.where
 
 withExpectations() {
   val teamNatsu = Set("Natsu", "Lucy", "Happy", "Erza", "Gray", "Wendy", "Carla")
