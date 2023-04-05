@@ -40,6 +40,8 @@ import macros.{mock, when}
 val mockedFunction = mockFunction[String, Any, Unit]
 ```
 
+> :warning: The original ScalaMock provided some nice operators like `*` and `~`. We should do it too.
+
 ## Any matching
 
 Any matching are defined using the `AnyMatcher` class. For example:
@@ -103,4 +105,31 @@ This second example is simpler but shows the power of using arbitrary predicate.
 ```scala mdoc
 val mockedFunction2 = mockFunction[Double, Double, Unit] // (Double, Double) => Unit
 mockedFunction2.expects(where { _ < _ }) // expects that arg1 < arg2 
+```
+
+
+## Epsilon matching
+
+Epsilon matching is useful when dealing with floating point values. An epsilon match is specified with the `MatchEpsilon` class:
+
+```scala mdoc
+import matchers.MatchEpsilon
+val mockedFunction3 = mockFunction[Double, Unit] // (Double, Double) => Unit
+
+mockedFunction3.expects(MatchEpsilon(42.0)).anyNumberOfTimes
+```
+
+will match:
+
+```scala mdoc
+mockedFunction3(42.0)
+mockedFunction3(42.0001)
+mockedFunction3(41.9999)
+```
+
+but will not match:
+
+```scala mdoc:crash
+mockedFunction3(43.0)
+mockedFunction3(42.1)
 ```

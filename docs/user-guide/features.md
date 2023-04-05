@@ -89,27 +89,24 @@ val dbMock      = mock[Database]
 
 ## Argument matching
 
-> TODO Add support for epsilon
-> TODO Add support for `where`
-
-```scala mdoc:fail:silent
-import matchers.MatchAny
+```scala mdoc
+import matchers.{MatchAny, MatchEpsilon, MatchPredicate}
 // expect someMethod("foo", 42) to be called
 when(dbMock.someMethod).expects("foo", 42)  
 
 // expect someMethod("foo", x) to be called for some integer x
-when(dbMock.someMethod).expects("foo", MatchAny())      
+when(dbMock.someMethod).expects("foo", MatchAny())
 
 // expect someMethod("foo", x) to be called for some float x that is close to 42.0
-when(dbMock.otherMethod).expects("foo", ~42.0)
+when(dbMock.otherMethod).expects("foo", MatchEpsilon(42.0))
 
 // expect sendMessage(receiver, message) for some receiver with name starting with "A"
-when(dbMock.sendMessage).expects(where { (receiver: Player, message: Message) => 
+when(dbMock.sendMessage).expects(MatchPredicate.where { (receiver: Player, message: Message) => 
     receiver.name.startsWith("A")
 }) 
 ```
 
-## Ordering
+## Call Ordering
 
 Mock ordering is not currently supported in Scala3Mock. If you wish it to be, please add a thumb up to [issue#000].
 

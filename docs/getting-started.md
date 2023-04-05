@@ -140,12 +140,6 @@ withExpectations() {
 }
 ```
 
-## Call ordering
-
-This functionality of ScalaMock has not been implemented. If you are interested in that feature, please leave a thumb up on the [associated issue].
-
-TODO: Create issue to implement the call ordering feature.
-
 ## Further reading
 
 Scala3Mock has some powerful features. The example below show some of them.
