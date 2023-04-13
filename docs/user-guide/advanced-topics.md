@@ -159,3 +159,112 @@ val mockIncrement = mockFunction[Int, Int]
 mockIncrement.expects(MatchAny()).onCall { (arg: Int) => arg + 1 }
 assert(mockIncrement(10) == 11)
 ```
+
+## Call count
+
+By default, mocks expect exactly one call. Alternative constraints can be set with `repeat`:
+
+```scala mdoc:nest
+val mockedFunction = mockFunction[Int, Int]
+
+mockedFunction.expects(42).returns(42).repeat(3 to 7)
+mockedFunction.expects(3).repeat(10)
+```
+
+There are various aliases for common expectations:
+
+```scala mdoc:nest
+val mockedFunction1 = mockFunction[Int, String]
+val mockedFunction2 = mockFunction[Int, String]
+val mockedFunction3 = mockFunction[Int, String]
+val mockedFunction4 = mockFunction[Int, String]
+val mockedFunction5 = mockFunction[Int, String]
+
+mockedFunction1.expects(1).returning("foo").once
+mockedFunction2.expects(2).returning("foo").noMoreThanTwice
+mockedFunction3.expects(3).returning("foo").repeated(3)
+mockedFunction4.expects(4).returning("foo").repeat(1 to 2)
+mockedFunction5.expects(5).returning("foo").repeat(2)
+mockedFunction5.expects(6).returning("foo").never
+
+mockedFunction1(1)
+
+mockedFunction3(3)
+mockedFunction3(3)
+mockedFunction3(3)
+
+mockedFunction4(4)
+mockedFunction4(4)
+
+mockedFunction5(5)
+mockedFunction5(5)
+```
+
+For a complete list, see `handlers.CallHandler`.
+
+## Exceptions
+
+Instead of returning a value, mock can be instructed to throw an exception. This can be achieved either by throwing an exception in `onCall` or by using the `throws` method.
+
+```scala mdoc:nest
+trait Foo {
+  def increment(a: Int): Int
+}
+
+val fooMock = mock[Foo]
+
+
+// Using the throws or throwing function
+when(fooMock.increment).expects(5).throws(new RuntimeException("message"))
+when(fooMock.increment).expects(6).throwing(new RuntimeException("message"))
+
+try {
+    fooMock.increment(5)
+    false
+} catch {
+    case _: RuntimeException => true
+    case _ => false
+}
+
+
+// Throwing in an onCall definition
+
+when(fooMock.increment).expects(MatchAny()).onCall { (i) =>
+  if(i==0) throw new RuntimeException("i == 0") 
+  else i + 1
+}
+
+try {
+    fooMock.increment(0)
+    false
+} catch {
+    case _: RuntimeException => true
+    case _ => false
+}
+```
+
+## Argument Capture
+
+ScalaMock support capturing argument when using mocks. This allow the usage of `MatchAny` while asserting the argument after the fact.
+
+Scala3Mock doesn't current support this feature, although nothing in the library actively prevent its inclusion. Contribution welcome.
+
+> :warn: TODO Insert issue number once created.
+
+## Mocking 0-parameter functions
+
+Mocking methods which have zero parameters or are parameter-less are a bit different. The `when` macro take a reference to the function without applying it. In the case of parameterless functions, such reference is indiguishable from applying it. Zero-parameters function could theoritically be seen as different, but that could lead to confusion (and indeed, it was legal in Scala 2 and turned out to be confusing).
+
+To go around this, you can simply wrap the method into a `() => mock.method` function:
+
+```scala mdoc
+trait Test {
+  def parameterless: Int
+  def zeroParameter(): Int
+}
+
+val m = mock[Test]
+
+when(() => m.zeroParameter()).expects().returns(1)
+when(() => m.parameterless).expects().returns(1)
+```
