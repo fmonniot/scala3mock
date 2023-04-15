@@ -24,7 +24,7 @@ class SuiteScopePresetMockParallelTest
     .returning("predefined")
   */
 
-  "ScalaTest suite" should "allow to use mock defined suite scope with predefined expectations" in {
+  it should "allow to use mock defined suite scope with predefined expectations" in {
     when(mockWithExpectationsPredefined.oneParamMethod)
       .expects(1)
       .returning("one")

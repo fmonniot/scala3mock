@@ -28,7 +28,6 @@ def withExpectations[A](verifyAfterRun: Boolean = true)(f: MockContext ?=> A): A
 
     ctx.callLog = new ListBuffer[Call]
     ctx.expectationContext = initialHandlers
-    ctx.currentExpectationContext = initialHandlers
 
   def verifyExpectations(): Unit =
     ctx.callLog foreach ctx.expectationContext.verify _

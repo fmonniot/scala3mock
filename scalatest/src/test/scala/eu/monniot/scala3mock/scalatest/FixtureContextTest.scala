@@ -27,7 +27,7 @@ class FixtureContextTest extends AnyFlatSpec with Matchers with MockFactory {
     mockedTrait.oneParamMethod(input) shouldBe output
   }
 
-  "ScalaTest suite" should "allow to use mock defined in fixture-context" in new TestSetup {
+  it should "allow to use mock defined in fixture-context" in new TestSetup {
     when(mockedTrait.oneParamMethod).expects(input).returning(output)
     when(mockedTrait.oneParamMethod).expects(2).returning("two")
 

@@ -15,7 +15,7 @@ class SuiteScopeMockTest
 
   val mockWithoutExpectationsPredefined = mock[TestTrait]
 
-  "ScalaTest suite" should "allow to use mock defined suite scope" in {
+  it should "allow to use mock defined suite scope" in {
     when(mockWithoutExpectationsPredefined.oneParamMethod)
       .expects(1)
       .returning("one")

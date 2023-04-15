@@ -9,13 +9,12 @@ trait MockContext:
   def newExpectationException(message: String, methodName: Option[String] = None): ExpectationException
 
   var callLog: ListBuffer[Call] = _
-  var currentExpectationContext: Handlers = _
   var expectationContext: Handlers = _
   //val mockNameGenerator: MockNameGenerator = new MockNameGenerator()
 
   def add[E <: CallHandler[_]](e: E): E =
-    assert(currentExpectationContext != null, "Null expectation context - missing withExpectations?")
-    currentExpectationContext.add(e)
+    assert(expectationContext != null, "Null expectation context - missing withExpectations?")
+    expectationContext.add(e)
     e
 
   def reportUnexpectedCall(call: Call) =

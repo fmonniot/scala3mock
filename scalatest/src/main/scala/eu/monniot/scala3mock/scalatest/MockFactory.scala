@@ -54,7 +54,6 @@ trait MockFactory extends TestSuiteMixin with Mocks:
 
     currentContext.callLog = new ListBuffer[Call]
     currentContext.expectationContext = initialHandlers
-    currentContext.currentExpectationContext = initialHandlers
 
   private def verifyExpectations(): Unit =
     currentContext.callLog foreach currentContext.expectationContext.verify _
