@@ -13,7 +13,6 @@ class TestExpectationEx(message: String, methodName: Option[String]) extends Thr
   override def getMessage(): String = message
 
 // A standalone function to run a test with a mock context, asserting all expectations at the end.
-// In theory, that's the only bit that needs to be reimplemented when integrating a new test framework.
 def withExpectations[A](verifyAfterRun: Boolean = true)(f: MockContext ?=> A): A =
 
   val ctx = new MockContext:
