@@ -30,4 +30,6 @@ class UnorderedHandlers(logging: Boolean = false) extends Handlers:
     }
   }
 
+  def reset(): Unit = handlers.foreach(_.reset())
+
   protected val prefix = "inAnyOrder"

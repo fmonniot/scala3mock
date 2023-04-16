@@ -8,6 +8,7 @@ trait MockContext:
   type ExpectationException <: Throwable
   def newExpectationException(message: String, methodName: Option[String] = None): ExpectationException
 
+  // TODO Restrict access to package once we have a real package name
   var callLog: ListBuffer[Call] = _
   var expectationContext: Handlers = _
   //val mockNameGenerator: MockNameGenerator = new MockNameGenerator()

@@ -9,3 +9,5 @@ trait Handler:
   def verify(call: Call): Boolean
 
   def isSatisfied: Boolean
+
+  def reset(): Unit

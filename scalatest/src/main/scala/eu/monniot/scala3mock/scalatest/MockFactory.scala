@@ -15,13 +15,22 @@ import org.scalatest.Outcome
 import org.scalatest.Failed
 import org.scalatest.exceptions.TestFailedException
 import org.scalatest.exceptions.StackDepthException
+import handlers.Handlers
 
 trait MockFactory extends TestSuiteMixin with Mocks:
   this: TestSuite => // To prevent users from using Async with non-Async suites
 
   protected var autoVerify = true
 
-  private var currentContext: MockContext = new MockContext:
+
+  private val suiteCallLog: ListBuffer[Call] = new ListBuffer[Call]
+  private val suiteExpectationContext: Handlers = new UnorderedHandlers
+
+  // We should have two expectationContext & callLog:
+  // - One at the suite level
+  // - A second at the test level
+  // The second one should inherit from the first as well
+  given currentContext: MockContext = new MockContext:
     override type ExpectationException = TestFailedException
 
     override def newExpectationException(
@@ -36,7 +45,9 @@ trait MockFactory extends TestSuiteMixin with Mocks:
 
     override def toString() = s"MockContext(callLog = $callLog)"
 
-  given MockContext = currentContext
+    // Initialize the current context with the suite-level calls and expectations
+    callLog = suiteCallLog
+    expectationContext = suiteExpectationContext
 
   private[scalatest] def failedCodeStackDepthFn(
       methodName: Option[String]
@@ -50,24 +61,42 @@ trait MockFactory extends TestSuiteMixin with Mocks:
     }
 
   private def initializeExpectations(): Unit =
-    val initialHandlers = new UnorderedHandlers
-
     currentContext.callLog = new ListBuffer[Call]
-    currentContext.expectationContext = initialHandlers
+    currentContext.expectationContext = new UnorderedHandlers
+
+    // Import the suite calls & expectations into the test one
+    currentContext.callLog.addAll(suiteCallLog)
+    suiteExpectationContext.list.foreach(currentContext.expectationContext.add)
 
   private def verifyExpectations(): Unit =
-    currentContext.callLog foreach currentContext.expectationContext.verify _
+    currentContext.callLog.foreach(currentContext.expectationContext.verify)
+
+    // We need to call this before clearing test expectations. Otherwise the call
+    // and expectations made during suite initialization will be cleared before
+    // checking if they have been used. Note that it's an issue because Handler
+    // are mutable and suite/current expectation context share the same references.
+    val isSatisfied = currentContext.expectationContext.isSatisfied
 
     val oldCallLog = currentContext.callLog
     val oldExpectationContext = currentContext.expectationContext
 
-    if !oldExpectationContext.isSatisfied then
+    clearTestExpectations()
+
+    if !isSatisfied then
       currentContext.reportUnsatisfiedExpectation(
         oldCallLog,
         oldExpectationContext
       )
 
-  private def withExpectations[T](what: => T): T =
+  
+  private def clearTestExpectations(): Unit =
+    // to forbid setting expectations after verification is done 
+    currentContext.callLog = suiteCallLog
+    currentContext.expectationContext = suiteExpectationContext
+    suiteExpectationContext.list.foreach(_.reset())
+
+
+  private def withExpectations[T](name: String)(what: => T): T =
     try
       initializeExpectations()
       val result = what
@@ -75,12 +104,12 @@ trait MockFactory extends TestSuiteMixin with Mocks:
       result
     catch
       case NonFatal(ex) =>
-        // TODO clear expectations
+        clearTestExpectations()
         throw ex
 
   abstract override def withFixture(test: NoArgTest): Outcome =
     if (autoVerify)
-      withExpectations {
+      withExpectations(test.name) {
         super.withFixture(test) match
           case Failed(throwable) =>
             // Throw error that caused test failure to prevent hiding it by

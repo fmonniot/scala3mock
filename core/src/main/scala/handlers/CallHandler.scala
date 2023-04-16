@@ -74,6 +74,8 @@ class CallHandler[R: Default]( val target: FakeFunction,  val argumentMatcher: P
 
   def isExhausted = expectedCalls.last <= actualCalls
 
+  def reset(): Unit = actualCalls = 0
+
   var expectedCalls: Range = 1 to 1
   var actualCalls: Int = 0
   var onCallHandler: Product => R = {_ => Default[R].default }
