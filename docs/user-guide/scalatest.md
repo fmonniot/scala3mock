@@ -139,9 +139,6 @@ Note that if you need to create costly fixtures (eg. establish a database connec
 
 ### Fixture contexts
 
-> TODO Add a test case similar when working on the ScalaTest integration. Not sure how it's gonna
-> work yet, given we are relying on implicit for the context propagation. Let's see.
-
 Another way of sharing complex context between tests is to have separate fixture context. In practice that means creating a new trait/class that is instantiated per test. Because each test has its own instance, the context isn't shared between tests and because there is only one class suite you can use it to store common and expensive fixtures.
 
 It's really easy to apply to regular test suites:

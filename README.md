@@ -1,10 +1,6 @@
 ## sbt project compiled with Scala 3
 
 ### TODO
-
-- create a scalatest project (for integration)
-- create a munit project (for integration) <- See if/how scalamock does it
-- write documentation (use mdoc for public, and readme for contributors)
 - Use better package names
 - Implement remaining tests
 - Fix bugs in some test cases
