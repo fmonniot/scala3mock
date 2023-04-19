@@ -52,29 +52,21 @@ abstract class Database {
 }
 
 // And import the scala3mock content.
-import macros.{mock, when}
-import matchers.MatchAny
+import eu.monniot.scala3mock.macros.{mock, when}
+import eu.monniot.scala3mock.matchers.MatchAny
 ```
 
 ```scala mdoc:invisible
 // Make shift mock context so that we can call `mock` without constraint.
 // Don't do that in your test cases folks :)
-given context.MockContext = 
-  new context.MockContext:
-    override type ExpectationException = main.TestExpectationEx
+given eu.monniot.scala3mock.context.MockContext = 
+  new eu.monniot.scala3mock.context.MockContext:
+    override type ExpectationException = eu.monniot.scala3mock.main.TestExpectationEx
 
     override def newExpectationException(message: String, methodName: Option[String]): ExpectationException =
-      main.TestExpectationEx(message, methodName)
+      eu.monniot.scala3mock.main.TestExpectationEx(message, methodName)
 
-    override def toString() = s"MockContext(callLog = $callLog)"
-
-    // Initialize the context with one handler. That's fine here because we won't
-    // be checking the assertion, only demonstrating how to set them up (which require
-    // a handler to be present)
-    val initialHandlers = handlers.UnorderedHandlers()
-    callLog = scala.collection.mutable.ListBuffer[context.Call]()
-    expectationContext = initialHandlers
-    currentExpectationContext = initialHandlers
+    override def toString() = s"MockContext()"
 ```
 
 ## Mocking
@@ -90,7 +82,7 @@ val dbMock      = mock[Database]
 ## Argument matching
 
 ```scala mdoc
-import matchers.{MatchAny, MatchEpsilon, MatchPredicate}
+import eu.monniot.scala3mock.matchers.{MatchAny, MatchEpsilon, MatchPredicate}
 // expect someMethod("foo", 42) to be called
 when(dbMock.someMethod).expects("foo", 42)  
 

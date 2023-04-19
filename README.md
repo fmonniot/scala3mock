@@ -1,7 +1,6 @@
 ## sbt project compiled with Scala 3
 
 ### TODO
-- Use better package names
 - Implement remaining tests
 - Fix bugs in some test cases
 - https://github.com/scalameta/metals/pull/2927/files might help for docusaurus 2.0
@@ -21,4 +20,4 @@ https://github.com/OlegIlyenko/scala-icon/blob/master/scala-icon.svg for the bas
 Under Creative Commons Attribution 4.0 International License.
 
 Adapted from https://github.com/paulbutcher/ScalaMock/blob/master/LICENCE for part of the code base
-(core lib, documentation). Under MIT. Scala3Mock would not exists without their work !
+(core lib, documentation, tests). Under MIT. Scala3Mock would not exists without their work !

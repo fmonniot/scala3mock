@@ -1,13 +1,13 @@
 package eu.monniot.scala3mock.scalatest
 
-import context.{Mock, MockContext}
-import macros.{MockImpl, WhenImpl}
-import functions._
-import main.TestExpectationEx
-import handlers.UnorderedHandlers
+import eu.monniot.scala3mock.context.{Mock, MockContext}
+import eu.monniot.scala3mock.macros.{MockImpl, WhenImpl}
+import eu.monniot.scala3mock.functions.*
+import eu.monniot.scala3mock.main.TestExpectationEx
+import eu.monniot.scala3mock.handlers.UnorderedHandlers
 import scala.collection.mutable.ListBuffer
-import context.Call
-import macros.Mocks
+import eu.monniot.scala3mock.context.Call
+import eu.monniot.scala3mock.macros.Mocks
 import scala.util.control.NonFatal
 import org.scalatest.TestSuite
 import org.scalatest.TestSuiteMixin
@@ -15,7 +15,7 @@ import org.scalatest.Outcome
 import org.scalatest.Failed
 import org.scalatest.exceptions.TestFailedException
 import org.scalatest.exceptions.StackDepthException
-import handlers.Handlers
+import eu.monniot.scala3mock.handlers.Handlers
 
 trait MockFactory extends TestSuiteMixin with BaseFactory:
   this: TestSuite => // To prevent users from using Async with non-Async suites

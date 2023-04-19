@@ -46,8 +46,8 @@ For example, we can check that the name is actually being used and that our form
 To create a new mock, place the following contents into a Scala file within your project:
 
 ```scala mdoc
-import main.withExpectations
-import macros.{mock, when}
+import eu.monniot.scala3mock.main.withExpectations
+import eu.monniot.scala3mock.macros.{mock, when}
 
 withExpectations() {
     val formatter = mock[Formatter]
@@ -64,7 +64,7 @@ withExpectations() {
 Note that you do not have to specify the argument specifically but can instead accept any arguments to a mock with `AnyMatcher`. ScalaMock had a `*` alias for this. We are currently debating including that method in Scala3Mock, but you can do so yourself pretty easily as demonstrated below.
 
 ```scala mdoc
-import matchers.MatchAny
+import eu.monniot.scala3mock.matchers.MatchAny
 
 def * = MatchAny()
 
@@ -119,7 +119,7 @@ withExpectations() {
 ## Verifying arguments dynamically
 
 ```scala mdoc
-import matchers.MatchPredicate.where
+import eu.monniot.scala3mock.matchers.MatchPredicate.where
 
 withExpectations() {
   val teamNatsu = Set("Natsu", "Lucy", "Happy", "Erza", "Gray", "Wendy", "Carla")

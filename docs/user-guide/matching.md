@@ -14,28 +14,20 @@ In this page we will make use of a few common declarations, so let's get them ou
 ```scala mdoc:invisible
 // Make shift mock context so that we can call `mock` without constraint.
 // Don't do that in your test cases folks :)
-given ctx: context.MockContext = 
-  new context.MockContext:
-    override type ExpectationException = main.TestExpectationEx
+given eu.monniot.scala3mock.context.MockContext = 
+  new eu.monniot.scala3mock.context.MockContext:
+    override type ExpectationException = eu.monniot.scala3mock.main.TestExpectationEx
 
     override def newExpectationException(message: String, methodName: Option[String]): ExpectationException =
-      main.TestExpectationEx(message, methodName)
+      eu.monniot.scala3mock.main.TestExpectationEx(message, methodName)
 
-    override def toString() = s"MockContext(callLog = $callLog)"
-
-    // Initialize the context with one handler. That's fine here because we won't
-    // be checking the assertion, only demonstrating how to set them up (which require
-    // a handler to be present)
-    val initialHandlers = handlers.UnorderedHandlers()
-    callLog = scala.collection.mutable.ListBuffer[context.Call]()
-    expectationContext = initialHandlers
-    currentExpectationContext = initialHandlers
+    override def toString() = s"MockContext()"
 ```
 
 ```scala mdoc
-import matchers.{MatchAny, MatchPredicate}
-import functions.MockFunctions.mockFunction
-import macros.{mock, when}
+import eu.monniot.scala3mock.matchers.{MatchAny, MatchPredicate}
+import eu.monniot.scala3mock.functions.MockFunctions.mockFunction
+import eu.monniot.scala3mock.macros.{mock, when}
 
 val mockedFunction = mockFunction[String, Any, Unit]
 ```
@@ -113,7 +105,7 @@ mockedFunction2.expects(where { _ < _ }) // expects that arg1 < arg2
 Epsilon matching is useful when dealing with floating point values. An epsilon match is specified with the `MatchEpsilon` class:
 
 ```scala mdoc
-import matchers.MatchEpsilon
+import eu.monniot.scala3mock.matchers.MatchEpsilon
 val mockedFunction3 = mockFunction[Double, Unit] // (Double, Double) => Unit
 
 mockedFunction3.expects(MatchEpsilon(42.0)).anyNumberOfTimes

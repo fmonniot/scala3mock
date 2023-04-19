@@ -1,12 +1,12 @@
 package eu.monniot.scala3mock.scalatest
 
-import context.{Mock, MockContext}
-import macros.{MockImpl, WhenImpl}
-import functions._
-import main.TestExpectationEx
-import handlers.UnorderedHandlers
+import eu.monniot.scala3mock.context.{Mock, MockContext}
+import eu.monniot.scala3mock.macros.{MockImpl, WhenImpl}
+import eu.monniot.scala3mock.functions.*
+import eu.monniot.scala3mock.main.TestExpectationEx
+import eu.monniot.scala3mock.handlers.UnorderedHandlers
 import scala.collection.mutable.ListBuffer
-import context.Call
+import eu.monniot.scala3mock.context.Call
 
 import org.scalatest.{AsyncTestSuite, AsyncTestSuiteMixin, FutureOutcome}
 import scala.concurrent.Future
