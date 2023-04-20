@@ -8,10 +8,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 /** Tests for mocks defined in suite scope (i.e. outside test case scope). */
-class SuiteScopeMockTest
-    extends AnyFlatSpec
-    with Matchers
-    with MockFactory {
+class SuiteScopeMockTest extends AnyFlatSpec with Matchers with MockFactory {
 
   val mockWithoutExpectationsPredefined = mock[TestTrait]
 

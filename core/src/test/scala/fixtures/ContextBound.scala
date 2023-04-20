@@ -1,5 +1,3 @@
 package fixtures
 
-trait ContextBound[T] {
-  
-}
+trait ContextBound[T] {}

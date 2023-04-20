@@ -3,7 +3,7 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 
 lazy val scala3mock = project
   .in(file("."))
-  .aggregate(core)
+  .aggregate(core, scalatest)
 
 lazy val core = project
   .in(file("./core"))

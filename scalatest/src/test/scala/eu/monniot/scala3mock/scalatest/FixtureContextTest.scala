@@ -6,11 +6,10 @@ import eu.monniot.scala3mock.mockable.TestTrait
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-/**
- *  Tests for mocks defined in fixture-contexts
- *
- *  Tests for issue #25
- */
+/** Tests for mocks defined in fixture-contexts
+  *
+  * Tests for issue #25
+  */
 class FixtureContextTest extends AnyFlatSpec with Matchers with MockFactory {
 
   trait TestSetup {
@@ -23,7 +22,8 @@ class FixtureContextTest extends AnyFlatSpec with Matchers with MockFactory {
     when(mockedTrait.oneParamMethod).expects(input).returning(output)
   }
 
-  trait TestSetupWithHandlerCalledDuringInitialization extends TestSetupWithExpectationsPredefined {
+  trait TestSetupWithHandlerCalledDuringInitialization
+      extends TestSetupWithExpectationsPredefined {
     mockedTrait.oneParamMethod(input) shouldBe output
   }
 

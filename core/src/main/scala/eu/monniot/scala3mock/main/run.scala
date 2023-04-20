@@ -8,17 +8,22 @@ import scala.annotation.unused
 import scala.collection.mutable.ListBuffer
 import scala.util.control.NonFatal
 
-
-class TestExpectationEx(message: String, methodName: Option[String]) extends Throwable:
+class TestExpectationEx(message: String, methodName: Option[String])
+    extends Throwable:
   override def getMessage(): String = message
 
 // A standalone function to run a test with a mock context, asserting all expectations at the end.
-def withExpectations[A](verifyAfterRun: Boolean = true)(f: MockContext ?=> A): A =
+def withExpectations[A](verifyAfterRun: Boolean = true)(
+    f: MockContext ?=> A
+): A =
 
   val ctx = new MockContext:
     override type ExpectationException = TestExpectationEx
 
-    override def newExpectationException(message: String, methodName: Option[String]): ExpectationException =
+    override def newExpectationException(
+        message: String,
+        methodName: Option[String]
+    ): ExpectationException =
       new TestExpectationEx(message, methodName)
 
     override def toString() = s"MockContext(callLog = $callLog)"
@@ -48,13 +53,3 @@ def withExpectations[A](verifyAfterRun: Boolean = true)(f: MockContext ?=> A): A
       // do not verify expectations - just clear them. Throw original exception
       // see issue #72
       throw ex
-
-
-
-
-
-
-
-
-
-

@@ -91,4 +91,3 @@ trait BaseFactory extends Mocks:
     currentContext.callLog = suiteCallLog
     currentContext.expectationContext = suiteExpectationContext
     suiteExpectationContext.list.foreach(_.reset())
-

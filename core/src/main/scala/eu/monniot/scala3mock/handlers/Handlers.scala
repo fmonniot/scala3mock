@@ -9,9 +9,13 @@ abstract class Handlers extends Handler:
 
   def isSatisfied: Boolean = handlers forall (_.isSatisfied)
 
-  override def toString: String = handlers.flatMap { h =>
-    scala.Predef.augmentString(h.toString).linesIterator.toArray.map { l => "  " + l }
-  }.mkString(s"$prefix {\n", "\n", "\n}")
+  override def toString: String = handlers
+    .flatMap { h =>
+      scala.Predef.augmentString(h.toString).linesIterator.toArray.map { l =>
+        "  " + l
+      }
+    }
+    .mkString(s"$prefix {\n", "\n", "\n}")
 
   protected val handlers = new ListBuffer[Handler]
 

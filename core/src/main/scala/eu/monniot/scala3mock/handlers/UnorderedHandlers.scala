@@ -12,20 +12,17 @@ class UnorderedHandlers(logging: Boolean = false) extends Handlers:
     returning {
       for handler <- handlers do
         val r = handler.handle(call)
-        if r.isDefined then
-          throwReturn(r)
+        if r.isDefined then throwReturn(r)
       None
     }
   }
 
   def verify(call: Call): Boolean = this.synchronized {
     if logging then println(s"verifying unordered call $call")
-    
+
     // TODO rewrite
     returning {
-      for handler <- handlers do
-        if handler.verify(call) then
-          throwReturn(true)
+      for handler <- handlers do if handler.verify(call) then throwReturn(true)
       false
     }
   }

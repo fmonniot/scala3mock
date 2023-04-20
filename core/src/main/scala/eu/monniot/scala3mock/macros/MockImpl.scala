@@ -1,7 +1,11 @@
 package eu.monniot.scala3mock.macros
 
 import eu.monniot.scala3mock.context.{Mock, MockContext}
-import eu.monniot.scala3mock.functions.{MockFunction, MockFunction1, MockFunction3}
+import eu.monniot.scala3mock.functions.{
+  MockFunction,
+  MockFunction1,
+  MockFunction3
+}
 import eu.monniot.scala3mock.macros.WhenImpl.impl
 
 import scala.annotation.experimental
@@ -162,7 +166,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
                 // default to Nothing <: t <: Any if an error was found.
                 val bounds = trees
                   .map {
-                    case tt: TypeTree => Some(tt.tpe)
+                    case tt: TypeTree        => Some(tt.tpe)
                     case tbt: TypeBoundsTree => Some(tbt.tpe)
                     case tree =>
                       report.warning(
@@ -209,7 +213,10 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
     symbol.tree match
       case DefDef(_, Nil, returnTpt, _) =>
         // If the parameter list is empty, we are looking at a nullary function
-        (Symbol.requiredClass("eu.monniot.scala3mock.functions.MockFunction0"), List(returnTpt.tpe))
+        (
+          Symbol.requiredClass("eu.monniot.scala3mock.functions.MockFunction0"),
+          List(returnTpt.tpe)
+        )
 
       case DefDef(name, params, returnTpt, _) =>
         val args = params.flatMap {
@@ -219,7 +226,12 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
 
         val types = args.map(_.tpt.tpe) :+ returnTpt.tpe
 
-        (Symbol.requiredClass(s"eu.monniot.scala3mock.functions.MockFunction${args.length}"), types)
+        (
+          Symbol.requiredClass(
+            s"eu.monniot.scala3mock.functions.MockFunction${args.length}"
+          ),
+          types
+        )
 
       case tree =>
         report.error(s"unexpected tree: $tree")

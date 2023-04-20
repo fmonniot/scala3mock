@@ -9,7 +9,9 @@ import scala.reflect.ClassTag
 
 trait TestSuiteRunner { this: Matchers =>
 
-  /** Executes single ScalaTest test case and returns its outcome (i.e. either TestSucccess or TestFailure) */
+  /** Executes single ScalaTest test case and returns its outcome (i.e. either
+    * TestSucccess or TestFailure)
+    */
   def runTestCase[T <: Suite](suite: T): Event = {
     class TestReporter extends Reporter {
       var lastEvent: Option[Event] = None
@@ -21,7 +23,7 @@ trait TestSuiteRunner { this: Matchers =>
     reporter.lastEvent.get
   }
 
-  def getThrowable[ExnT <: Throwable : ClassTag](event: Event): ExnT = {
+  def getThrowable[ExnT <: Throwable: ClassTag](event: Event): ExnT = {
     event shouldBe a[TestFailed]
 
     val testCaseError = event.asInstanceOf[TestFailed].throwable.get
@@ -29,7 +31,7 @@ trait TestSuiteRunner { this: Matchers =>
     testCaseError.asInstanceOf[ExnT]
   }
 
-  def getErrorMessage[ExnT <: Throwable : ClassTag](event: Event): String = {
+  def getErrorMessage[ExnT <: Throwable: ClassTag](event: Event): String = {
     getThrowable[ExnT](event).getMessage()
   }
 }

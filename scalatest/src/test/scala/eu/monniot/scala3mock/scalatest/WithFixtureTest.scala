@@ -1,7 +1,5 @@
 package eu.monniot.scala3mock.scalatest
 
-
-
 import eu.monniot.scala3mock.scalatest.MockFactory
 import eu.monniot.scala3mock.mockable.TestTrait
 
@@ -27,7 +25,11 @@ class WithFixtureTest extends AnyFlatSpec with Matchers with TestSuiteRunner {
     }
   }
 
-  class TestedSuite extends AnyFunSuite with SuiteWrapper with MockFactory with Matchers {
+  class TestedSuite
+      extends AnyFunSuite
+      with SuiteWrapper
+      with MockFactory
+      with Matchers {
     test("execute block of code") {
       val mockedTrait = mock[TestTrait]
       when(mockedTrait.oneParamMethod).expects(1).onCall { (arg: Int) =>
@@ -45,7 +47,8 @@ class WithFixtureTest extends AnyFlatSpec with Matchers with TestSuiteRunner {
     EventLogger.events shouldBe List(
       "SuiteWrapper setup",
       "mock method called",
-      "SuiteWrapper cleanup")
+      "SuiteWrapper cleanup"
+    )
   }
 
 }

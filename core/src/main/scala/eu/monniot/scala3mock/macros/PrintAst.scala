@@ -5,10 +5,10 @@ object PrintAst:
   import scala.quoted.*
 
   inline def apply[T](inline stuff: T) =
-    ${inspectExpr('stuff)}
+    ${ inspectExpr('stuff) }
 
   inline def apply[T] =
-    ${inspectType[T]}
+    ${ inspectType[T] }
 
   private def inspectExpr[T](x: Expr[T])(using Quotes, Type[T]): Expr[Any] =
     import quotes.reflect.*
@@ -39,4 +39,3 @@ object PrintAst:
     println("===========================")
 
     '{ () }
-
