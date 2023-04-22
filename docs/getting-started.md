@@ -163,9 +163,7 @@ class Counter {
 }
 ```
 
-TODO: Need to support `onCall` on unary functions.
-
-```scala mdoc:silent:fail
+```scala mdoc
 withExpectations(verifyAfterRun=false) {
   val httpClient = mock[HttpClient]
   val counterMock = mock[Counter]
@@ -174,7 +172,7 @@ withExpectations(verifyAfterRun=false) {
   when(httpClient.sendRequest).expects(Method.POST, "http://scalamock.org", MatchAny()).noMoreThanOnce
   when(httpClient.sendRequest).expects(Method.POST, "http://example.com", MatchAny()).returning(Http.NotFound)
   when(counterMock.increment).expects(MatchAny()).onCall { (arg: Int) => arg + 1}
-  when(counterMock.decrement).expects(MatchAny()).onCall { () => throw RuntimeException("here") }
+  when(() => counterMock.decrement).expects().onCall { () => throw RuntimeException("here") }
 }
 ```
 

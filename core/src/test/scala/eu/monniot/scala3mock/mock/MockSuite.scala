@@ -122,6 +122,21 @@ class MockSuite extends munit.FunSuite with MockFunctions {
     }
   }
 
+
+  test("TestTrait - onCall unary") {
+    withExpectations() {
+      val m = mock[TestTrait]
+
+      // Nullary methods
+
+      when(() => m.nullary).expects().onCall(() => "a")
+      assertEquals(m.nullary, "a")
+
+      when(() => m.noParams()).expects().onCall(() => "a2")
+      assertEquals(m.noParams(), "a2")
+    }
+  }
+
   test("ManyParams") {
     withExpectations() {
       // TODO Missing MockFunction impl for 3+ parameters

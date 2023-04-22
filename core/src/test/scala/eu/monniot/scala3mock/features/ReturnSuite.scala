@@ -51,6 +51,15 @@ class ReturnSuite extends munit.FunSuite with MockFunctions {
     }
   }
 
+  test("should return a calculated return value (unary function)") {
+    withExpectations() {
+      val intToIntMock = mockFunction[Int]
+
+      intToIntMock.expects().onCall({ () => 44 })
+      assertEquals(intToIntMock(), 44)
+    }
+  }
+
   test("should return a calculated return value (chaining mocks)") {
     withExpectations() {
       val m1 = mockFunction[Int, String]
@@ -115,7 +124,7 @@ class ReturnSuite extends munit.FunSuite with MockFunctions {
     }
   }
 
-  test("should match return value to provided arguments (returning)") {
+  test("should match return value to provided arguments (onCall)") {
     withExpectations() {
       val intToStringMock = mockFunction[Int, String]
 
