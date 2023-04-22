@@ -5,8 +5,6 @@ import eu.monniot.scala3mock.functions.MockFunctions
 import eu.monniot.scala3mock.main.TestExpectationEx
 import eu.monniot.scala3mock.matchers.MatchAny
 
-import scala.language.implicitConversions
-
 class ReturnSuite extends munit.FunSuite with MockFunctions {
 
   def * = new MatchAny

@@ -7,7 +7,7 @@ import eu.monniot.scala3mock.functions.{
   FunctionAdapter3
 }
 import eu.monniot.scala3mock.context.Call
-import eu.monniot.scala3mock.matchers.{ArgumentMatcher, MockParameter}
+import eu.monniot.scala3mock.matchers.ArgumentMatcher
 import eu.monniot.scala3mock.main.Default
 
 class CallHandler[R: Default](

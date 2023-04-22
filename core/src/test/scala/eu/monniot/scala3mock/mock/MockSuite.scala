@@ -7,8 +7,6 @@ import eu.monniot.scala3mock.matchers.MatchAny
 import eu.monniot.scala3mock.macros.*
 import fixtures.*
 
-import scala.language.implicitConversions
-
 class MockSuite extends munit.FunSuite with MockFunctions {
 
   def * = new MatchAny

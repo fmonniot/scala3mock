@@ -4,8 +4,6 @@ import eu.monniot.scala3mock.main.withExpectations
 import eu.monniot.scala3mock.functions.MockFunctions
 import eu.monniot.scala3mock.main.TestExpectationEx
 
-import scala.language.implicitConversions
-
 class CallCountSuite extends munit.FunSuite with MockFunctions {
 
   test("should fail if an unexpected call is made") {
