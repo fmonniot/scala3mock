@@ -36,7 +36,7 @@ class ThrowSuite extends munit.FunSuite with MockFunctions {
 
       intFunMock
         .expects(*)
-        .repeat(3 to 3)
+        .exactly(3)
         .onCall({ (arg) =>
           if (arg == 1) throw new TestException()
           else if (arg == 2) throw new AnotherTestException()

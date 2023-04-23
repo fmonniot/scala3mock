@@ -133,12 +133,12 @@ class CallCountSuite extends munit.FunSuite with MockFunctions {
     }
   }
 
-  test("should handle repeated(3) call count (3)") {
+  test("should handle exactly(3) call count (3)") {
     withExpectations() {
       val noArgFunMock = mockFunction[String]
       val intFunMock = mockFunction[Int, String]
 
-      intFunMock.expects(2).repeated(3)
+      intFunMock.expects(2).exactly(3)
 
       intFunMock(2)
       intFunMock(2)
@@ -146,22 +146,22 @@ class CallCountSuite extends munit.FunSuite with MockFunctions {
     }
   }
 
-  test("should handle repeat(1 to 2) call count (0)") {
+  test("should handle repeated(1 to 2) call count (0)") {
     intercept[TestExpectationEx] {
       withExpectations() {
         val intFunMock = mockFunction[Int, String]
 
-        intFunMock.expects(2).repeat(1 to 2)
+        intFunMock.expects(2).repeated(1 to 2)
       }
     }
   }
 
-  test("should handle repeat(1 to 2) call count (1)") {
+  test("should handle repeated(1 to 2) call count (1)") {
     withExpectations() {
       val noArgFunMock = mockFunction[String]
       val intFunMock = mockFunction[Int, String]
 
-      intFunMock.expects(2).repeat(1 to 2)
+      intFunMock.expects(2).repeated(1 to 2)
       intFunMock(2)
     }
   }
@@ -171,30 +171,30 @@ class CallCountSuite extends munit.FunSuite with MockFunctions {
       val noArgFunMock = mockFunction[String]
       val intFunMock = mockFunction[Int, String]
 
-      intFunMock.expects(2).repeat(1 to 2)
+      intFunMock.expects(2).repeated(1 to 2)
       intFunMock(2)
       intFunMock(2)
     }
   }
 
-  test("should handle repeat(1 to 2) call count (3)") {
+  test("should handle repeated(1 to 2) call count (3)") {
     withExpectations() {
       val noArgFunMock = mockFunction[String]
       val intFunMock = mockFunction[Int, String]
 
-      intFunMock.expects(2).repeat(1 to 2)
+      intFunMock.expects(2).repeated(1 to 2)
       intFunMock(2)
       intFunMock(2)
       intercept[TestExpectationEx] { intFunMock(2) }
     }
   }
 
-  test("should handle repeat(2) call count (2)") {
+  test("should handle exactly(2) call count (2)") {
     withExpectations() {
       val noArgFunMock = mockFunction[String]
       val intFunMock = mockFunction[Int, String]
 
-      intFunMock.expects(2).repeat(2)
+      intFunMock.expects(2).exactly(2)
       intFunMock(2)
       intFunMock(2)
     }

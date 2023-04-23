@@ -18,26 +18,24 @@ class CallHandler[R: Default](
 
   type Derived <: CallHandler[R]
 
-  def repeat(range: Range): Derived =
+  def repeated(range: Range): Derived =
     expectedCalls = range
     this.asInstanceOf[Derived]
 
-  def repeat(count: Int): Derived = repeat(count to count)
+  def repeated(atLeast: Int = 1, atMost: Int = Int.MaxValue - 1): Derived = repeated(atLeast to atMost)
 
-  def never = repeat(NEVER)
-  def once = repeat(ONCE)
-  def twice = repeat(TWICE)
+  def exactly(count: Int): Derived = repeated(count to count)
 
-  def anyNumberOfTimes = repeat(ANY_NUMBER_OF_TIMES)
-  def atLeastOnce = repeat(AT_LEAST_ONCE)
-  def atLeastTwice = repeat(AT_LEAST_TWICE)
+  def never = repeated(NEVER)
+  def once = repeated(ONCE)
+  def twice = repeated(TWICE)
 
-  def noMoreThanOnce = repeat(NO_MORE_THAN_ONCE)
-  def noMoreThanTwice = repeat(NO_MORE_THAN_TWICE)
+  def anyNumberOfTimes = repeated(ANY_NUMBER_OF_TIMES)
+  def atLeastOnce = repeated(AT_LEAST_ONCE)
+  def atLeastTwice = repeated(AT_LEAST_TWICE)
 
-  // TODO repeated is just a name alias. Do we want to keep it stiff?
-  def repeated(range: Range) = repeat(range)
-  def repeated(count: Int) = repeat(count)
+  def noMoreThanOnce = repeated(NO_MORE_THAN_ONCE)
+  def noMoreThanTwice = repeated(NO_MORE_THAN_TWICE)
 
   def returns(value: R) = onCall({ _ => value })
   def returning(value: R) = returns(value)
