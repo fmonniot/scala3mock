@@ -79,7 +79,7 @@ val fooMock = mock[Foo]
 when(fooMock.curried)
 ```
 
-At the moment the `when` macro isn't smart enough to recognize a curried function whereas the `mock` macro is. That result in the underlying mock correctly creating a `MockFunction2` (two args) but the `when` macro exposes a `MockFunction1` (one arg).
+At the moment the `when` macro isn't smart enough to recognize a curried function whereas the `mock` macro is. That result in the underlying mock correctly creating a `MockFunction2[Int, Double, String]` (two args) but the `when` macro exposes a `MockFunction1[Int, Double => String]` (one arg).
 
 
 ## Methods with implicit parameters

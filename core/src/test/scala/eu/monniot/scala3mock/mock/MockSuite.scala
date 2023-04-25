@@ -67,12 +67,9 @@ class MockSuite extends munit.FunSuite with MockFunctions {
 
       // Curried methods
 
-      // TODO Find out why this one is failing
-      // error: ClassCastException: class functions.MockFunction2 cannot be cast to class functions.MockFunction1
-      // val doubleToString: Double => String = _ => "ok"
-      // when(m.curried).expects(1).returns(doubleToString)
-      // assertEquals(m.curried(1), doubleToString)
-
+      when(m.curried(_: Int)(_: Double)).expects(1, 2.1).returns("ok")
+      assertEquals(m.curried(1)(2.1), "ok")
+      
       val doubleToString: Double => String = _ => "ok"
       when(m.curriedFuncReturn).expects(2).returns(doubleToString)
       assertEquals(m.curriedFuncReturn(2), doubleToString)
