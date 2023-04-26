@@ -6,10 +6,26 @@ import eu.monniot.scala3mock.functions.{
   MockFunction1,
   MockFunction3
 }
-import eu.monniot.scala3mock.macros.WhenImpl.impl
 
 import scala.annotation.experimental
 import scala.quoted.*
+
+
+private[scala3mock] object MockImpl:
+
+  inline def apply[T](using ctx: MockContext): T & Mock =
+    ${ impl[T]('ctx, debug = false) }
+
+  // For debugging purposes, switch from apply to this one to get verbose (we mean it)
+  // logs when generating the mocked class.
+  inline def debug[T](using ctx: MockContext): T & Mock =
+    ${ impl[T]('ctx, debug = true) }
+
+  @experimental def impl[T](ctx: Expr[MockContext], debug: Boolean)(using
+      quotes: Quotes
+  )(using Type[T]): Expr[T & Mock] =
+    new MockImpl[T](ctx, debug).generate
+
 
 // TODO Add a guard to fail compilation if T is higher kinded
 //   This isn't supported, we need fully qualified type (the given type should be able to use
@@ -539,18 +555,3 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
 
     block.asExprOf[T & Mock]
   end generate
-
-private[scala3mock] object MockImpl:
-
-  inline def apply[T](using ctx: MockContext): T & Mock =
-    ${ impl[T]('ctx, debug = false) }
-
-  // For debugging purposes, switch from apply to this one to get verbose (we mean it)
-  // logs when generating the mocked class.
-  inline def debug[T](using ctx: MockContext): T & Mock =
-    ${ impl[T]('ctx, debug = true) }
-
-  @experimental def impl[T](ctx: Expr[MockContext], debug: Boolean)(using
-      quotes: Quotes
-  )(using Type[T]): Expr[T & Mock] =
-    new MockImpl[T](ctx, debug).generate

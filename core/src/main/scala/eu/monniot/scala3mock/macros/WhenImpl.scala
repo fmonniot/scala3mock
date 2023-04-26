@@ -2,6 +2,7 @@ package eu.monniot.scala3mock.macros
 
 import eu.monniot.scala3mock.functions.*
 import eu.monniot.scala3mock.context.Mock
+import eu.monniot.scala3mock.main.Default
 
 private[scala3mock] object WhenImpl:
 
@@ -11,81 +12,55 @@ private[scala3mock] object WhenImpl:
   // Without disable, appy12 would take around 36 lines vs the current one. impl is even worse.
   // format: off
 
-  inline def apply[R](inline f: () => R): MockFunction0[R] =
-    ${impl('f)}
-
-  inline def apply[T1, R](inline f: T1 => R): MockFunction1[T1, R] =
-    ${impl('f)}
-
-  inline def apply[T1, T2, R](inline f: (T1, T2) => R): MockFunction2[T1, T2, R] =
-    ${impl('f)}
-
-  inline def apply[T1, T2, T3, R](inline f: (T1, T2, T3) => R): MockFunction3[T1, T2, T3, R] =
-    ${impl('f)}
-
-  inline def apply[T1, T2, T3, T4, R](inline f: (T1, T2, T3, T4) => R): MockFunction4[T1, T2, T3, T4, R] =
-    ${impl('f)}
-  
-  inline def apply[T1, T2, T3, T4, T5, R](inline f: (T1, T2, T3, T4, T5) => R): MockFunction5[T1, T2, T3, T4, T5, R] =
-    ${impl('f)}
-  
-  inline def apply[T1, T2, T3, T4, T5, T6, R](inline f: (T1, T2, T3, T4, T5, T6) => R): MockFunction6[T1, T2, T3, T4, T5, T6, R] =
-    ${impl('f)}
-  
-  inline def apply[T1, T2, T3, T4, T5, T6, T7, R](inline f: (T1, T2, T3, T4, T5, T6, T7) => R): MockFunction7[T1, T2, T3, T4, T5, T6, T7, R] =
-    ${impl('f)}
-  
-  inline def apply[T1, T2, T3, T4, T5, T6, T7, T8, R](inline f: (T1, T2, T3, T4, T5, T6, T7, T8) => R): MockFunction8[T1, T2, T3, T4, T5, T6, T7, T8, R] =
-    ${impl('f)}
-  
-  inline def apply[T1, T2, T3, T4, T5, T6, T7, T8, T9, R](inline f: (T1, T2, T3, T4, T5, T6, T7, T8, T9) => R): MockFunction9[T1, T2, T3, T4, T5, T6, T7, T8, T9, R] =
-    ${impl('f)}
-  
-  inline def apply[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R](inline f: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) => R): MockFunction10[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R] =
-    ${impl('f)}
-
-
-  def impl[R](f: Expr[() => R])(using Type[R], Quotes): Expr[MockFunction0[R]] =
+  def apply[R](f: Expr[() => R])(using Type[R], Quotes): Expr[MockFunction0[R]] =
     '{${createMockFunction(f)}.asInstanceOf[MockFunction0[R]]}
 
-  def impl[T1, R](f: Expr[T1 => R])(using Type[T1], Type[R], Quotes): Expr[MockFunction1[T1, R]] =
-    '{${createMockFunction(f)}.asInstanceOf[MockFunction1[T1, R]]}
+  def apply[T1, R](f: Expr[T1 => R])(using Type[T1], Type[R], Quotes): Expr[MockFunction1[T1, R]] =
+    '{
+      val mf = ${createMockFunction(f)}.asInstanceOf[MockFunction1[T1, R]]
 
-  def impl[T1, T2, R](f: Expr[(T1, T2) => R])(using Type[T1], Type[T2], Type[R], Quotes): Expr[MockFunction2[T1, T2, R]] =
+      println(s"selected MockFunction1 = $mf")
+      println(s"T1 = " + ${Expr(Type.show[T1])})
+      println(s"R =  " + ${Expr(Type.show[R])})
+
+      mf
+    }
+
+  def apply[T1, T2, R](f: Expr[(T1, T2) => R])(using Type[T1], Type[T2], Type[R], Quotes): Expr[MockFunction2[T1, T2, R]] =
     '{${createMockFunction(f)}.asInstanceOf[MockFunction2[T1, T2, R]]}
 
-  def impl[T1, T2, T3, R](f: Expr[(T1, T2, T3) => R])(using Type[T1], Type[T2], Type[T3], Type[R], Quotes): Expr[MockFunction3[T1, T2, T3, R]] =
+  def apply[T1, T2, T3, R](f: Expr[(T1, T2, T3) => R])(using Type[T1], Type[T2], Type[T3], Type[R], Quotes): Expr[MockFunction3[T1, T2, T3, R]] =
     '{${createMockFunction(f)}.asInstanceOf[MockFunction3[T1, T2, T3, R]]}
 
-  def impl[T1, T2, T3, T4, R](f: Expr[(T1, T2, T3, T4) => R])(using Type[T1], Type[T2], Type[T3], Type[T4], Type[R], Quotes): Expr[MockFunction4[T1, T2, T3, T4, R]] =
+  def apply[T1, T2, T3, T4, R](f: Expr[(T1, T2, T3, T4) => R])(using Type[T1], Type[T2], Type[T3], Type[T4], Type[R], Quotes): Expr[MockFunction4[T1, T2, T3, T4, R]] =
     '{${createMockFunction(f)}.asInstanceOf[MockFunction4[T1, T2, T3, T4, R]]}
 
-  def impl[T1, T2, T3, T4, T5, R](f: Expr[(T1, T2, T3, T4, T5) => R])(using 
+  def apply[T1, T2, T3, T4, T5, R](f: Expr[(T1, T2, T3, T4, T5) => R])(using 
       Type[T1], Type[T2], Type[T3], Type[T4], Type[T5],
       Type[R], Quotes): Expr[MockFunction5[T1, T2, T3, T4, T5, R]] =
     '{${createMockFunction(f)}.asInstanceOf[MockFunction5[T1, T2, T3, T4, T5, R]]}
 
-  def impl[T1, T2, T3, T4, T5, T6, R](f: Expr[(T1, T2, T3, T4, T5, T6) => R])(using 
+  def apply[T1, T2, T3, T4, T5, T6, R](f: Expr[(T1, T2, T3, T4, T5, T6) => R])(using 
       Type[T1], Type[T2], Type[T3], Type[T4], Type[T5], Type[T6],
       Type[R], Quotes): Expr[MockFunction6[T1, T2, T3, T4, T5, T6, R]] =
     '{${createMockFunction(f)}.asInstanceOf[MockFunction6[T1, T2, T3, T4, T5, T6, R]]}
 
-  def impl[T1, T2, T3, T4, T5, T6, T7, R](f: Expr[(T1, T2, T3, T4, T5, T6, T7) => R])(using 
+  def apply[T1, T2, T3, T4, T5, T6, T7, R](f: Expr[(T1, T2, T3, T4, T5, T6, T7) => R])(using 
       Type[T1], Type[T2], Type[T3], Type[T4], Type[T5], Type[T6], Type[T7],
       Type[R], Quotes): Expr[MockFunction7[T1, T2, T3, T4, T5, T6, T7, R]] =
     '{${createMockFunction(f)}.asInstanceOf[MockFunction7[T1, T2, T3, T4, T5, T6, T7, R]]}
 
-  def impl[T1, T2, T3, T4, T5, T6, T7, T8, R](f: Expr[(T1, T2, T3, T4, T5, T6, T7, T8) => R])(using 
+  def apply[T1, T2, T3, T4, T5, T6, T7, T8, R](f: Expr[(T1, T2, T3, T4, T5, T6, T7, T8) => R])(using 
       Type[T1], Type[T2], Type[T3], Type[T4], Type[T5], Type[T6], Type[T7], Type[T8],
       Type[R], Quotes): Expr[MockFunction8[T1, T2, T3, T4, T5, T6, T7, T8, R]] =
     '{${createMockFunction(f)}.asInstanceOf[MockFunction8[T1, T2, T3, T4, T5, T6, T7, T8, R]]}
 
-  def impl[T1, T2, T3, T4, T5, T6, T7, T8, T9, R](f: Expr[(T1, T2, T3, T4, T5, T6, T7, T8, T9) => R])(using 
+  def apply[T1, T2, T3, T4, T5, T6, T7, T8, T9, R](f: Expr[(T1, T2, T3, T4, T5, T6, T7, T8, T9) => R])(using 
       Type[T1], Type[T2], Type[T3], Type[T4], Type[T5], Type[T6], Type[T7], Type[T8],Type[T9],
       Type[R], Quotes): Expr[MockFunction9[T1, T2, T3, T4, T5, T6, T7, T8, T9, R]] =
     '{${createMockFunction(f)}.asInstanceOf[MockFunction9[T1, T2, T3, T4, T5, T6, T7, T8, T9, R]]}
   
-  def impl[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R](f: Expr[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) => R])(using 
+  def apply[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R](f: Expr[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) => R])(using 
       Type[T1], Type[T2], Type[T3], Type[T4], Type[T5], Type[T6], Type[T7], Type[T8],Type[T9],Type[T10],
       Type[R], Quotes): Expr[MockFunction10[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R]] =
     '{${createMockFunction(f)}.asInstanceOf[MockFunction10[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R]]}

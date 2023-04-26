@@ -154,13 +154,13 @@ assert(mockIncrement(10) == 11)
 
 ## Call count
 
-By default, mocks expect exactly one call. Alternative constraints can be set with `repeat`:
+By default, mocks expect exactly one call. Alternative constraints can be set with `repeated`:
 
 ```scala mdoc:nest
 val mockedFunction = mockFunction[Int, Int]
 
-mockedFunction.expects(42).returns(42).repeat(3 to 7)
-mockedFunction.expects(3).repeat(10)
+mockedFunction.expects(42).returns(42).repeated(3 to 7)
+mockedFunction.expects(3).repeated(10)
 ```
 
 There are various aliases for common expectations:
@@ -175,8 +175,8 @@ val mockedFunction5 = mockFunction[Int, String]
 mockedFunction1.expects(1).returning("foo").once
 mockedFunction2.expects(2).returning("foo").noMoreThanTwice
 mockedFunction3.expects(3).returning("foo").repeated(3)
-mockedFunction4.expects(4).returning("foo").repeat(1 to 2)
-mockedFunction5.expects(5).returning("foo").repeat(2)
+mockedFunction4.expects(4).returning("foo").repeated(atLeast = 1, atMost = 2)
+mockedFunction5.expects(5).returning("foo").exactly(2)
 mockedFunction5.expects(6).returning("foo").never
 
 mockedFunction1(1)

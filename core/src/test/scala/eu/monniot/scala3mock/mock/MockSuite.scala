@@ -6,6 +6,10 @@ import eu.monniot.scala3mock.main.TestExpectationEx
 import eu.monniot.scala3mock.matchers.MatchAny
 import eu.monniot.scala3mock.macros.*
 import fixtures.*
+import eu.monniot.scala3mock.handlers.CallHandler1
+import eu.monniot.scala3mock.functions.MockFunction1
+import eu.monniot.scala3mock.context.MockContext
+import eu.monniot.scala3mock.main.Default
 
 class MockSuite extends munit.FunSuite with MockFunctions {
 
@@ -171,9 +175,13 @@ class MockSuite extends munit.FunSuite with MockFunctions {
 
   test("TestClass") {
     withExpectations() {
-      val g = mock[TestClass]
+      val g = mock[TestClass[List]]
 
-      // TODO assertions
+      when(g.a).expects(1, "str").returns(4 -> "ok")
+      assertEquals(g.a(1, "str"), 4 -> "ok")
+
+      when(g.b).expects(1).returns(List(4))
+      assertEquals(g.b(1), List(4))
     }
   }
 }
