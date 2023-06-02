@@ -19,3 +19,4 @@ title: Installation
 - Syntax changes
 - Stub feature dropped
 - No cross compilation with Scala2
+- Support for ScalaTest's `path.FunSpec` removed
