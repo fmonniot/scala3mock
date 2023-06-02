@@ -4,6 +4,7 @@
 - Implement remaining tests
 - Fix bugs in some test cases
 - https://github.com/scalameta/metals/pull/2927/files might help for docusaurus 2.0
+- Better README
 
 ### Usage
 
