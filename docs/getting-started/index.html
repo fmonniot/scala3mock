@@ -1,0 +1,207 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Getting Started · scala3mock</title><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="generator" content="Docusaurus"/><meta name="description" content="This article describes how to get started with Scala3Mock. Because it is only an introduction, only the basics usage are described. For a comprehensive guide, see the [User Guide](/scala3mock/docs/user-guide/features)."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Getting Started · scala3mock"/><meta property="og:type" content="website"/><meta property="og:url" content="https://francois.monniot.eu/scala3mock/"/><meta property="og:description" content="This article describes how to get started with Scala3Mock. Because it is only an introduction, only the basics usage are described. For a comprehensive guide, see the [User Guide](/scala3mock/docs/user-guide/features)."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/scala3mock/img/favicon.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github-gist.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/scala3mock/js/scrollSpy.js"></script><link rel="stylesheet" href="/scala3mock/css/main.css"/><script src="/scala3mock/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/scala3mock/"><img class="logo" src="/scala3mock/img/logo.svg" alt="scala3mock"/><h2 class="headerTitleWithLogo">scala3mock</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive siteNavItemActive"><a href="/scala3mock/docs/getting-started" target="_self">Docs</a></li><li class=""><a href="https://github.com/fmonniot/scala3mock" target="_blank">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Overview</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Overview</h3><ul class=""><li class="navListItem navListItemActive"><a class="navItem" href="/scala3mock/docs/getting-started">Getting Started</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">User Guide</h3><ul class=""><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/installation">Installation</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/features">Features</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/matching">Argument matching</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/scalatest">ScalaTest Integration</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/advanced-topics">Advanced Topics</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/faq">FAQ</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">Getting Started</h1></header><article><div><span><p>This article describes how to get started with Scala3Mock. Because it is only an introduction, only the basics usage are described. For a comprehensive guide, see the <a href="/scala3mock/docs/user-guide/features">User Guide</a>.</p>
+<h2><a class="anchor" aria-hidden="true" id="install"></a><a href="#install" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Install</h2>
+<p>To get started with SBT and ScalaTest, add the following dependencies to your <strong>build.sbt</strong>:</p>
+<pre><code class="hljs css language-scala">libraryDependencies += <span class="hljs-string">"eu.monniot"</span> %% <span class="hljs-string">"scala3mock"</span> % <span class="hljs-string">"0.1.0-SNAPSHOT"</span> % <span class="hljs-type">Test</span>
+libraryDependencies += <span class="hljs-string">"eu.monniot"</span> %% <span class="hljs-string">"scala3mock-scalatest"</span> % <span class="hljs-string">"0.1.0-SNAPSHOT"</span> % <span class="hljs-type">Test</span>
+</code></pre>
+<p>While some testing framework integration exits, Scala3Mock at its core do not require one.
+You can learn more about the various testing framework integration by going to to the dedicated page in the user guide. If there is no page, it means no special integration has been written yet (or it is not required).</p>
+<p>If you need more information on other build system, or the different versions of Scala3Mock, head on to the <a href="/scala3mock/docs/user-guide/installation">Installation</a> part of the user guide.</p>
+<h2><a class="anchor" aria-hidden="true" id="basic-usage"></a><a href="#basic-usage" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Basic Usage</h2>
+<blockquote>
+<p>:info: The scala code you'll see in this example is being compiled and should work as is. Note that a snippet may depend on previous snippets.</p>
+</blockquote>
+<p>First let's assume we have some functionality to test. We are going to be very imaginative and use a <code>Greeting</code> example. To simplify the implementation, it will have a <code>sayHello</code> function which take a name and a formatter, and print the formatted greeting.</p>
+<pre><code class="hljs css language-scala"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">Greetings</span> </span>{
+  <span class="hljs-keyword">sealed</span> <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Formatter</span> </span>{ <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">format</span></span>(s: <span class="hljs-type">String</span>): <span class="hljs-type">String</span> }
+  <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">English</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Formatter</span> </span>{ <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">format</span></span>(s: <span class="hljs-type">String</span>) = <span class="hljs-string">s"Hello <span class="hljs-subst">$s</span>"</span> }
+  <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">French</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Formatter</span> </span>{ <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">format</span></span>(s: <span class="hljs-type">String</span>) = <span class="hljs-string">s"Bonjour <span class="hljs-subst">$s</span>"</span> }
+  <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">Japanese</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Formatter</span> </span>{ <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">format</span></span>(s: <span class="hljs-type">String</span>) = <span class="hljs-string">s"こんにちは <span class="hljs-subst">$s</span>"</span> }
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sayHello</span></span>(name: <span class="hljs-type">String</span>, formatter: <span class="hljs-type">Formatter</span>): <span class="hljs-type">Unit</span> =
+    println(formatter.format(name))
+}
+
+<span class="hljs-comment">// Let's import the content of our object for future snippets</span>
+<span class="hljs-keyword">import</span> <span class="hljs-type">Greetings</span>.*
+</code></pre>
+<p>With Scala3Mock, we can test the interaction between the <code>sayHello</code> function and a given <code>Formatter</code>. To be able to mock things, we need an implicit <code>MockContext</code>. The core library provides a <code>withExpectations</code> function that provide you with one.</p>
+<p>For example, we can check that the name is actually being used and that our formatter is called only once.</p>
+<p>To create a new mock, place the following contents into a Scala file within your project:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> eu.monniot.scala3mock.main.withExpectations
+<span class="hljs-keyword">import</span> eu.monniot.scala3mock.macros.{mock, when}
+
+withExpectations() {
+    <span class="hljs-keyword">val</span> formatter = mock[<span class="hljs-type">Formatter</span>]
+
+    when(formatter.format)
+      .expects(<span class="hljs-string">"Mr Bond"</span>)
+      .returns(<span class="hljs-string">"Ah, Mr Bond. I've been expecting you"</span>)
+      .once
+
+    sayHello(<span class="hljs-string">"Mr Bond"</span>, formatter)
+}
+<span class="hljs-comment">// selected MockFunction1 = format</span>
+<span class="hljs-comment">// T1 = java.lang.String</span>
+<span class="hljs-comment">// R =  java.lang.String</span>
+<span class="hljs-comment">// Ah, Mr Bond. I've been expecting you</span>
+</code></pre>
+<p>Note that you do not have to specify the argument specifically but can instead accept any arguments to a mock with <code>AnyMatcher</code>. ScalaMock had a <code>*</code> alias for this. We are currently debating including that method in Scala3Mock, but you can do so yourself pretty easily as demonstrated below.</p>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> eu.monniot.scala3mock.matchers.<span class="hljs-type">MatchAny</span>
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">*</span> </span>= <span class="hljs-type">MatchAny</span>()
+
+withExpectations() {
+    <span class="hljs-keyword">val</span> formatter = mock[<span class="hljs-type">Formatter</span>]
+
+    when(formatter.format)
+      .expects(*)
+      .returns(<span class="hljs-string">"Ah, Mr Bond. I've been expecting you"</span>)
+      .once
+
+    sayHello(<span class="hljs-string">"Mr Bond"</span>, formatter)
+}
+<span class="hljs-comment">// selected MockFunction1 = format</span>
+<span class="hljs-comment">// T1 = java.lang.String</span>
+<span class="hljs-comment">// R =  java.lang.String</span>
+<span class="hljs-comment">// Ah, Mr Bond. I've been expecting you</span>
+</code></pre>
+<p>Other basic available features that you may find useful are included below.</p>
+<h2><a class="anchor" aria-hidden="true" id="throwing-an-exception-in-a-mock"></a><a href="#throwing-an-exception-in-a-mock" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Throwing an exception in a mock</h2>
+<pre><code class="hljs css language-scala">withExpectations() {
+  <span class="hljs-keyword">val</span> brokenFormatter = mock[<span class="hljs-type">Formatter</span>]
+
+  when(brokenFormatter.format)
+    .expects(*)
+    .throwing(<span class="hljs-keyword">new</span> <span class="hljs-type">NullPointerException</span>)
+    .anyNumberOfTimes
+
+  <span class="hljs-keyword">try</span> <span class="hljs-type">Greetings</span>.sayHello(<span class="hljs-string">"Erza"</span>, brokenFormatter)
+  <span class="hljs-keyword">catch</span> {
+    <span class="hljs-keyword">case</span> e: <span class="hljs-type">NullPointerException</span> =&gt; println(<span class="hljs-string">"expected"</span>)
+  }
+}
+<span class="hljs-comment">// selected MockFunction1 = format</span>
+<span class="hljs-comment">// T1 = java.lang.String</span>
+<span class="hljs-comment">// R =  java.lang.String</span>
+<span class="hljs-comment">// expected</span>
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="dynamic-return-value"></a><a href="#dynamic-return-value" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Dynamic return value</h2>
+<pre><code class="hljs css language-scala">withExpectations() {
+  <span class="hljs-keyword">val</span> australianFormat = mock[<span class="hljs-type">Formatter</span>]
+
+  when(australianFormat.format)
+    .expects(*)
+    .onCall { (s: <span class="hljs-type">String</span>) =&gt; <span class="hljs-string">s"G'day <span class="hljs-subst">$s</span>"</span> }
+    .twice
+
+  <span class="hljs-type">Greetings</span>.sayHello(<span class="hljs-string">"Wendy"</span>, australianFormat)
+  <span class="hljs-type">Greetings</span>.sayHello(<span class="hljs-string">"Gray"</span>, australianFormat)
+}
+<span class="hljs-comment">// selected MockFunction1 = format</span>
+<span class="hljs-comment">// T1 = java.lang.String</span>
+<span class="hljs-comment">// R =  java.lang.String</span>
+<span class="hljs-comment">// G'day Wendy</span>
+<span class="hljs-comment">// G'day Gray</span>
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="verifying-arguments-dynamically"></a><a href="#verifying-arguments-dynamically" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Verifying arguments dynamically</h2>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> eu.monniot.scala3mock.matchers.<span class="hljs-type">MatchPredicate</span>.where
+
+withExpectations() {
+  <span class="hljs-keyword">val</span> teamNatsu = <span class="hljs-type">Set</span>(<span class="hljs-string">"Natsu"</span>, <span class="hljs-string">"Lucy"</span>, <span class="hljs-string">"Happy"</span>, <span class="hljs-string">"Erza"</span>, <span class="hljs-string">"Gray"</span>, <span class="hljs-string">"Wendy"</span>, <span class="hljs-string">"Carla"</span>)
+  <span class="hljs-keyword">val</span> formatter = mock[<span class="hljs-type">Formatter</span>]
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">assertTeamNatsu</span></span>(s: <span class="hljs-type">String</span>): <span class="hljs-type">Unit</span> = {
+    assert(teamNatsu.contains(s))
+  }
+
+  <span class="hljs-comment">// 'where' verifies at the end of the test</span>
+  when(formatter.format)
+    .expects(where { (s: <span class="hljs-type">String</span>) =&gt; teamNatsu contains(s) })
+    .onCall { (s: <span class="hljs-type">String</span>) =&gt; <span class="hljs-string">s"Yo <span class="hljs-subst">$s</span>"</span> }
+    .twice
+
+  <span class="hljs-type">Greetings</span>.sayHello(<span class="hljs-string">"Carla"</span>, formatter)
+  <span class="hljs-type">Greetings</span>.sayHello(<span class="hljs-string">"Lucy"</span>, formatter)
+}
+<span class="hljs-comment">// selected MockFunction1 = format</span>
+<span class="hljs-comment">// T1 = java.lang.String</span>
+<span class="hljs-comment">// R =  java.lang.String</span>
+<span class="hljs-comment">// Yo Carla</span>
+<span class="hljs-comment">// Yo Lucy</span>
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="further-reading"></a><a href="#further-reading" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Further reading</h2>
+<p>Scala3Mock has some powerful features. The example below show some of them.</p>
+<pre><code class="hljs css language-scala">withExpectations(verifyAfterRun=<span class="hljs-literal">false</span>) {
+  <span class="hljs-keyword">val</span> httpClient = mock[<span class="hljs-type">HttpClient</span>]
+  <span class="hljs-keyword">val</span> counterMock = mock[<span class="hljs-type">Counter</span>]
+
+  when(httpClient.sendRequest).expects(<span class="hljs-type">Method</span>.<span class="hljs-type">GET</span>, <span class="hljs-type">MatchAny</span>(), <span class="hljs-type">MatchAny</span>()).twice
+  when(httpClient.sendRequest).expects(<span class="hljs-type">Method</span>.<span class="hljs-type">POST</span>, <span class="hljs-string">"http://scalamock.org"</span>, <span class="hljs-type">MatchAny</span>()).noMoreThanOnce
+  when(httpClient.sendRequest).expects(<span class="hljs-type">Method</span>.<span class="hljs-type">POST</span>, <span class="hljs-string">"http://example.com"</span>, <span class="hljs-type">MatchAny</span>()).returning(<span class="hljs-type">Http</span>.<span class="hljs-type">NotFound</span>)
+  when(counterMock.increment).expects(<span class="hljs-type">MatchAny</span>()).onCall { (arg: <span class="hljs-type">Int</span>) =&gt; arg + <span class="hljs-number">1</span>}
+  when(() =&gt; counterMock.decrement).expects().onCall { () =&gt; <span class="hljs-keyword">throw</span> <span class="hljs-type">RuntimeException</span>(<span class="hljs-string">"here"</span>) }
+}
+<span class="hljs-comment">// selected MockFunction1 = increment</span>
+<span class="hljs-comment">// T1 = scala.Int</span>
+<span class="hljs-comment">// R =  scala.Int</span>
+<span class="hljs-comment">// res5: CallHandler0[Int] = decrement() once (never called - UNSATISFIED)</span>
+</code></pre>
+<p>Please read the <a href="/scala3mock/docs/user-guide/features">User Guide</a> for more details.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-next button" href="/scala3mock/docs/user-guide/installation"><span>Installation</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#install">Install</a></li><li><a href="#basic-usage">Basic Usage</a></li><li><a href="#throwing-an-exception-in-a-mock">Throwing an exception in a mock</a></li><li><a href="#dynamic-return-value">Dynamic return value</a></li><li><a href="#verifying-arguments-dynamically">Verifying arguments dynamically</a></li><li><a href="#further-reading">Further reading</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/scala3mock/" class="nav-home"><img src="/scala3mock/img/logo.svg" alt="scala3mock" width="66" height="58"/></a><div><h5>Docs</h5><a href="/scala3mock/docs/getting-started">Getting Started</a><a href="/scala3mock/docs/faq">FAQ</a></div></section><section class="copyright">Copyright (c) 2022-2023 François Monniot</section></footer></div></body></html>

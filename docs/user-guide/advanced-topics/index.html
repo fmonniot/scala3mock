@@ -1,0 +1,333 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Advanced Topics · scala3mock</title><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="generator" content="Docusaurus"/><meta name="description" content="First let&#x27;s have some global imports"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Advanced Topics · scala3mock"/><meta property="og:type" content="website"/><meta property="og:url" content="https://francois.monniot.eu/scala3mock/"/><meta property="og:description" content="First let&#x27;s have some global imports"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/scala3mock/img/favicon.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github-gist.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/scala3mock/js/scrollSpy.js"></script><link rel="stylesheet" href="/scala3mock/css/main.css"/><script src="/scala3mock/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/scala3mock/"><img class="logo" src="/scala3mock/img/logo.svg" alt="scala3mock"/><h2 class="headerTitleWithLogo">scala3mock</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/scala3mock/docs/getting-started" target="_self">Docs</a></li><li class=""><a href="https://github.com/fmonniot/scala3mock" target="_blank">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>User Guide</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Overview</h3><ul class=""><li class="navListItem"><a class="navItem" href="/scala3mock/docs/getting-started">Getting Started</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">User Guide</h3><ul class=""><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/installation">Installation</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/features">Features</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/matching">Argument matching</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/scalatest">ScalaTest Integration</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/scala3mock/docs/user-guide/advanced-topics">Advanced Topics</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/faq">FAQ</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">Advanced Topics</h1></header><article><div><span><p>First let's have some global imports</p>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> eu.monniot.scala3mock.macros.{mock, when}
+<span class="hljs-keyword">import</span> eu.monniot.scala3mock.matchers.<span class="hljs-type">MatchAny</span>
+<span class="hljs-keyword">import</span> eu.monniot.scala3mock.functions.<span class="hljs-type">MockFunctions</span>.mockFunction
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="mocking-overloaded-curried-and-polymorphic-methods"></a><a href="#mocking-overloaded-curried-and-polymorphic-methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Mocking overloaded, curried and polymorphic methods</h2>
+<p>Overloaded, curried and polymorphic methods can be mocked by specifying either argument types or type parameters.</p>
+<h3><a class="anchor" aria-hidden="true" id="overloaded-methods"></a><a href="#overloaded-methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Overloaded methods</h3>
+<pre><code class="hljs css language-scala"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Foo</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">overloaded</span></span>(x: <span class="hljs-type">Int</span>): <span class="hljs-type">String</span>
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">overloaded</span></span>(x: <span class="hljs-type">String</span>): <span class="hljs-type">String</span>
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">overloaded</span></span>[<span class="hljs-type">T</span>](x: <span class="hljs-type">T</span>): <span class="hljs-type">String</span>
+}
+
+<span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$1@519785a6</span>
+
+when(fooMock.overloaded(_: <span class="hljs-type">Int</span>)).expects(<span class="hljs-number">10</span>)
+<span class="hljs-comment">// selected MockFunction1 = overloaded</span>
+<span class="hljs-comment">// T1 = scala.Int</span>
+<span class="hljs-comment">// R =  java.lang.String</span>
+<span class="hljs-comment">// res0: CallHandler1[Int, String] = overloaded(10) once (never called - UNSATISFIED)</span>
+when(fooMock.overloaded(_: <span class="hljs-type">String</span>)).expects(<span class="hljs-string">"foo"</span>)
+<span class="hljs-comment">// selected MockFunction1 = overloaded</span>
+<span class="hljs-comment">// T1 = java.lang.String</span>
+<span class="hljs-comment">// R =  java.lang.String</span>
+<span class="hljs-comment">// res1: CallHandler1[String, String] = overloaded(foo) once (never called - UNSATISFIED)</span>
+when(fooMock.overloaded[<span class="hljs-type">Double</span>]).expects(<span class="hljs-number">1.23</span>)
+<span class="hljs-comment">// selected MockFunction1 = overloaded</span>
+<span class="hljs-comment">// T1 = scala.Double</span>
+<span class="hljs-comment">// R =  java.lang.String</span>
+<span class="hljs-comment">// res2: CallHandler1[Double, String] = overloaded(1.23) once (never called - UNSATISFIED)</span>
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="polymorphic-methods"></a><a href="#polymorphic-methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Polymorphic methods</h3>
+<pre><code class="hljs css language-scala"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Foo</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">polymorphic</span></span>[<span class="hljs-type">T</span>](x: <span class="hljs-type">List</span>[<span class="hljs-type">T</span>]): <span class="hljs-type">String</span>
+}
+
+<span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$2@39b79a43</span>
+
+when(fooMock.polymorphic(_: <span class="hljs-type">List</span>[<span class="hljs-type">Int</span>])).expects(<span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>))
+<span class="hljs-comment">// selected MockFunction1 = polymorphic</span>
+<span class="hljs-comment">// T1 = scala.collection.immutable.List[scala.Int]</span>
+<span class="hljs-comment">// R =  java.lang.String</span>
+<span class="hljs-comment">// res3: CallHandler1[List[Int], String] = polymorphic(List(1, 2, 3)) once (never called - UNSATISFIED)</span>
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="curried-methods"></a><a href="#curried-methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Curried methods</h3>
+<pre><code class="hljs css language-scala"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Foo</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">curried</span></span>(x: <span class="hljs-type">Int</span>)(y: <span class="hljs-type">Double</span>): <span class="hljs-type">String</span>
+}
+
+<span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$3@6903360d</span>
+
+when(fooMock.curried(_: <span class="hljs-type">Int</span>)(_: <span class="hljs-type">Double</span>)).expects(<span class="hljs-number">10</span>, <span class="hljs-number">1.23</span>)
+<span class="hljs-comment">// res4: CallHandler2[Int, Double, String] = curried(10, 1.23) once (never called - UNSATISFIED)</span>
+</code></pre>
+<p>The project have an action item to make the following statement compile:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Foo</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">curried</span></span>(x: <span class="hljs-type">Int</span>)(y: <span class="hljs-type">Double</span>): <span class="hljs-type">String</span>
+}
+
+<span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
+
+when(fooMock.curried)
+<span class="hljs-comment">// java.lang.ClassCastException: class eu.monniot.scala3mock.functions.MockFunction2 cannot be cast to class eu.monniot.scala3mock.functions.MockFunction1 (eu.monniot.scala3mock.functions.MockFunction2 and eu.monniot.scala3mock.functions.MockFunction1 are in unnamed module of loader sbt.internal.LayeredClassLoader @1e8cb1ac)</span>
+<span class="hljs-comment">//  at repl.MdocSession$MdocApp.$init$$$anonfun$1(advanced-topics.md:99)</span>
+</code></pre>
+<p>At the moment the <code>when</code> macro isn't smart enough to recognize a curried function whereas the <code>mock</code> macro is. That result in the underlying mock correctly creating a <code>MockFunction2[Int, Double, String]</code> (two args) but the <code>when</code> macro exposes a <code>MockFunction1[Int, Double =&gt; String]</code> (one arg).</p>
+<h2><a class="anchor" aria-hidden="true" id="methods-with-implicit-parameters"></a><a href="#methods-with-implicit-parameters" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods with implicit parameters</h2>
+<blockquote>
+<p>:warn: This is currently not possible in Scala 3, as the macro system doesn't let us create given parameter list in the mock class.</p>
+</blockquote>
+<p>This case is very similar to curried methods. All you need to do is to help the Scala compiler know that <code>memcachedMock.get</code> should be converted to <code>MockFunction2</code>. For example:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Codec</span>(<span class="hljs-params"></span>)</span>
+
+<span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Memcached</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get</span></span>(key: <span class="hljs-type">String</span>)(<span class="hljs-keyword">implicit</span> codec: <span class="hljs-type">Codec</span>): <span class="hljs-type">Option</span>[<span class="hljs-type">Int</span>]
+}
+
+<span class="hljs-keyword">val</span> memcachedMock = mock[<span class="hljs-type">Memcached</span>]
+
+<span class="hljs-keyword">implicit</span> <span class="hljs-keyword">val</span> codec = <span class="hljs-keyword">new</span> <span class="hljs-type">Codec</span>
+when(memcachedMock.get(_ : <span class="hljs-type">String</span>)(_ : <span class="hljs-type">Codec</span>)).expects(<span class="hljs-string">"some_key"</span>, <span class="hljs-type">MatchAny</span>()).returning(<span class="hljs-type">Some</span>(<span class="hljs-number">123</span>))
+<span class="hljs-comment">// error:</span>
+<span class="hljs-comment">// error overriding method get in trait Memcached of type (key: String)(implicit codec: Codec): Option[Int];</span>
+<span class="hljs-comment">//   method get of type (key: String)(codec: Codec): Option[Int] has incompatible type</span>
+<span class="hljs-comment">// val fooMock = mock[Foo]</span>
+<span class="hljs-comment">//    ^</span>
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="repeated-parameters"></a><a href="#repeated-parameters" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Repeated parameters</h3>
+<p>Repeated parameters are represented as a Seq. For example, given:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Foo</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">takesRepeatedParameter</span></span>(x: <span class="hljs-type">Int</span>, ys: <span class="hljs-type">String</span>*): <span class="hljs-type">Unit</span>
+}
+
+<span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$5@304a161d</span>
+
+when(fooMock.takesRepeatedParameter).expects(<span class="hljs-number">42</span>, <span class="hljs-type">Seq</span>(<span class="hljs-string">"red"</span>, <span class="hljs-string">"green"</span>, <span class="hljs-string">"blue"</span>))
+<span class="hljs-comment">// res6: CallHandler2[Int, Seq[String], Unit] = takesRepeatedParameter(42, List(red, green, blue)) once (never called - UNSATISFIED)</span>
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="returning-values-oncall"></a><a href="#returning-values-oncall" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Returning values (onCall)</h2>
+<p>By default mocks and stubs return <code>null</code>. You can return predefined value using the <code>returning</code> method. When the returned value depends on function arguments, you can return the computed value (or throw a computed exception) with <code>onCall</code>. For example:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Foo</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">increment</span></span>(a: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span>
+}
+
+<span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$6@30f16b0c</span>
+
+when(fooMock.increment).expects(<span class="hljs-number">12</span>).returning(<span class="hljs-number">13</span>)
+<span class="hljs-comment">// selected MockFunction1 = increment</span>
+<span class="hljs-comment">// T1 = scala.Int</span>
+<span class="hljs-comment">// R =  scala.Int</span>
+<span class="hljs-comment">// res7: CallHandler1[Int, Int] = increment(12) once (called once)</span>
+assert(fooMock.increment(<span class="hljs-number">12</span>) == <span class="hljs-number">13</span>)
+
+when(fooMock.increment).expects(<span class="hljs-type">MatchAny</span>()).onCall { (arg: <span class="hljs-type">Int</span>) =&gt; arg + <span class="hljs-number">1</span>}
+<span class="hljs-comment">// selected MockFunction1 = increment</span>
+<span class="hljs-comment">// T1 = scala.Int</span>
+<span class="hljs-comment">// R =  scala.Int</span>
+<span class="hljs-comment">// res9: CallHandler1[Int, Int] = increment(*) once (called once)</span>
+assert(fooMock.increment(<span class="hljs-number">100</span>) == <span class="hljs-number">101</span>)
+
+when(fooMock.increment).expects(<span class="hljs-type">MatchAny</span>()).onCall { arg =&gt; <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-type">RuntimeException</span>(<span class="hljs-string">"message"</span>) }
+<span class="hljs-comment">// selected MockFunction1 = increment</span>
+<span class="hljs-comment">// T1 = scala.Int</span>
+<span class="hljs-comment">// R =  scala.Int</span>
+<span class="hljs-comment">// res11: CallHandler1[Int, Int] = increment(*) once (called once)</span>
+<span class="hljs-keyword">try</span> {
+    fooMock.increment(<span class="hljs-number">0</span>)
+    <span class="hljs-literal">false</span>
+} <span class="hljs-keyword">catch</span> {
+    <span class="hljs-keyword">case</span> _: <span class="hljs-type">RuntimeException</span> =&gt; <span class="hljs-literal">true</span>
+    <span class="hljs-keyword">case</span> _ =&gt; <span class="hljs-literal">false</span>
+}
+<span class="hljs-comment">// res12: Boolean = true</span>
+</code></pre>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">val</span> mockIncrement = mockFunction[<span class="hljs-type">Int</span>, <span class="hljs-type">Int</span>]
+<span class="hljs-comment">// mockIncrement: MockFunction1[Int, Int] = MockFunction1</span>
+mockIncrement.expects(<span class="hljs-type">MatchAny</span>()).onCall { (arg: <span class="hljs-type">Int</span>) =&gt; arg + <span class="hljs-number">1</span> }
+<span class="hljs-comment">// res13: CallHandler1[Int, Int] = MockFunction1(*) once (called once)</span>
+assert(mockIncrement(<span class="hljs-number">10</span>) == <span class="hljs-number">11</span>)
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="call-count"></a><a href="#call-count" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Call count</h2>
+<p>By default, mocks expect exactly one call. Alternative constraints can be set with <code>repeated</code>:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">val</span> mockedFunction = mockFunction[<span class="hljs-type">Int</span>, <span class="hljs-type">Int</span>]
+<span class="hljs-comment">// mockedFunction: MockFunction1[Int, Int] = MockFunction1</span>
+
+mockedFunction.expects(<span class="hljs-number">42</span>).returns(<span class="hljs-number">42</span>).repeated(<span class="hljs-number">3</span> to <span class="hljs-number">7</span>)
+<span class="hljs-comment">// res15: CallHandler1[Int, Int] = MockFunction1(42) between 3 and 7 times (never called - UNSATISFIED)</span>
+mockedFunction.expects(<span class="hljs-number">3</span>).repeated(<span class="hljs-number">10</span>)
+<span class="hljs-comment">// res16: CallHandler1[Int, Int] = MockFunction1(3) between 10 and 2147483646 times (never called - UNSATISFIED)</span>
+</code></pre>
+<p>There are various aliases for common expectations:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">val</span> mockedFunction1 = mockFunction[<span class="hljs-type">Int</span>, <span class="hljs-type">String</span>]
+<span class="hljs-comment">// mockedFunction1: MockFunction1[Int, String] = MockFunction1</span>
+<span class="hljs-keyword">val</span> mockedFunction2 = mockFunction[<span class="hljs-type">Int</span>, <span class="hljs-type">String</span>]
+<span class="hljs-comment">// mockedFunction2: MockFunction1[Int, String] = MockFunction1</span>
+<span class="hljs-keyword">val</span> mockedFunction3 = mockFunction[<span class="hljs-type">Int</span>, <span class="hljs-type">String</span>]
+<span class="hljs-comment">// mockedFunction3: MockFunction1[Int, String] = MockFunction1</span>
+<span class="hljs-keyword">val</span> mockedFunction4 = mockFunction[<span class="hljs-type">Int</span>, <span class="hljs-type">String</span>]
+<span class="hljs-comment">// mockedFunction4: MockFunction1[Int, String] = MockFunction1</span>
+<span class="hljs-keyword">val</span> mockedFunction5 = mockFunction[<span class="hljs-type">Int</span>, <span class="hljs-type">String</span>]
+<span class="hljs-comment">// mockedFunction5: MockFunction1[Int, String] = MockFunction1</span>
+
+mockedFunction1.expects(<span class="hljs-number">1</span>).returning(<span class="hljs-string">"foo"</span>).once
+<span class="hljs-comment">// res17: CallHandler1[Int, String] = MockFunction1(1) once (called once)</span>
+mockedFunction2.expects(<span class="hljs-number">2</span>).returning(<span class="hljs-string">"foo"</span>).noMoreThanTwice
+<span class="hljs-comment">// res18: CallHandler1[Int, String] = MockFunction1(2) no more than twice (never called)</span>
+mockedFunction3.expects(<span class="hljs-number">3</span>).returning(<span class="hljs-string">"foo"</span>).repeated(<span class="hljs-number">3</span>)
+<span class="hljs-comment">// res19: CallHandler1[Int, String] = MockFunction1(3) between 3 and 2147483646 times (called 3 times)</span>
+mockedFunction4.expects(<span class="hljs-number">4</span>).returning(<span class="hljs-string">"foo"</span>).repeated(atLeast = <span class="hljs-number">1</span>, atMost = <span class="hljs-number">2</span>)
+<span class="hljs-comment">// res20: CallHandler1[Int, String] = MockFunction1(4) between 1 and 2 times (called twice)</span>
+mockedFunction5.expects(<span class="hljs-number">5</span>).returning(<span class="hljs-string">"foo"</span>).exactly(<span class="hljs-number">2</span>)
+<span class="hljs-comment">// res21: CallHandler1[Int, String] = MockFunction1(5) twice (called twice)</span>
+mockedFunction5.expects(<span class="hljs-number">6</span>).returning(<span class="hljs-string">"foo"</span>).never
+<span class="hljs-comment">// res22: CallHandler1[Int, String] = MockFunction1(6) never (never called)</span>
+
+mockedFunction1(<span class="hljs-number">1</span>)
+<span class="hljs-comment">// res23: String = "foo"</span>
+
+mockedFunction3(<span class="hljs-number">3</span>)
+<span class="hljs-comment">// res24: String = "foo"</span>
+mockedFunction3(<span class="hljs-number">3</span>)
+<span class="hljs-comment">// res25: String = "foo"</span>
+mockedFunction3(<span class="hljs-number">3</span>)
+<span class="hljs-comment">// res26: String = "foo"</span>
+
+mockedFunction4(<span class="hljs-number">4</span>)
+<span class="hljs-comment">// res27: String = "foo"</span>
+mockedFunction4(<span class="hljs-number">4</span>)
+<span class="hljs-comment">// res28: String = "foo"</span>
+
+mockedFunction5(<span class="hljs-number">5</span>)
+<span class="hljs-comment">// res29: String = "foo"</span>
+mockedFunction5(<span class="hljs-number">5</span>)
+<span class="hljs-comment">// res30: String = "foo"</span>
+</code></pre>
+<p>For a complete list, see <code>handlers.CallHandler</code>.</p>
+<h2><a class="anchor" aria-hidden="true" id="exceptions"></a><a href="#exceptions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Exceptions</h2>
+<p>Instead of returning a value, mock can be instructed to throw an exception. This can be achieved either by throwing an exception in <code>onCall</code> or by using the <code>throws</code> method.</p>
+<pre><code class="hljs css language-scala"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Foo</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">increment</span></span>(a: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span>
+}
+
+<span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$7@5c2b7265</span>
+
+
+<span class="hljs-comment">// Using the throws or throwing function</span>
+when(fooMock.increment).expects(<span class="hljs-number">5</span>).<span class="hljs-keyword">throws</span>(<span class="hljs-keyword">new</span> <span class="hljs-type">RuntimeException</span>(<span class="hljs-string">"message"</span>))
+<span class="hljs-comment">// selected MockFunction1 = increment</span>
+<span class="hljs-comment">// T1 = scala.Int</span>
+<span class="hljs-comment">// R =  scala.Int</span>
+<span class="hljs-comment">// res31: CallHandler1[Int, Int] = increment(5) once (called once)</span>
+when(fooMock.increment).expects(<span class="hljs-number">6</span>).throwing(<span class="hljs-keyword">new</span> <span class="hljs-type">RuntimeException</span>(<span class="hljs-string">"message"</span>))
+<span class="hljs-comment">// selected MockFunction1 = increment</span>
+<span class="hljs-comment">// T1 = scala.Int</span>
+<span class="hljs-comment">// R =  scala.Int</span>
+<span class="hljs-comment">// res32: CallHandler1[Int, Int] = increment(6) once (never called - UNSATISFIED)</span>
+
+<span class="hljs-keyword">try</span> {
+    fooMock.increment(<span class="hljs-number">5</span>)
+    <span class="hljs-literal">false</span>
+} <span class="hljs-keyword">catch</span> {
+    <span class="hljs-keyword">case</span> _: <span class="hljs-type">RuntimeException</span> =&gt; <span class="hljs-literal">true</span>
+    <span class="hljs-keyword">case</span> _ =&gt; <span class="hljs-literal">false</span>
+}
+<span class="hljs-comment">// res33: Boolean = true</span>
+
+
+<span class="hljs-comment">// Throwing in an onCall definition</span>
+
+when(fooMock.increment).expects(<span class="hljs-type">MatchAny</span>()).onCall { (i) =&gt;
+  <span class="hljs-keyword">if</span>(i==<span class="hljs-number">0</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-type">RuntimeException</span>(<span class="hljs-string">"i == 0"</span>) 
+  <span class="hljs-keyword">else</span> i + <span class="hljs-number">1</span>
+}
+<span class="hljs-comment">// selected MockFunction1 = increment</span>
+<span class="hljs-comment">// T1 = scala.Int</span>
+<span class="hljs-comment">// R =  scala.Int</span>
+<span class="hljs-comment">// res34: CallHandler1[Int, Int] = increment(*) once (called once)</span>
+
+<span class="hljs-keyword">try</span> {
+    fooMock.increment(<span class="hljs-number">0</span>)
+    <span class="hljs-literal">false</span>
+} <span class="hljs-keyword">catch</span> {
+    <span class="hljs-keyword">case</span> _: <span class="hljs-type">RuntimeException</span> =&gt; <span class="hljs-literal">true</span>
+    <span class="hljs-keyword">case</span> _ =&gt; <span class="hljs-literal">false</span>
+}
+<span class="hljs-comment">// res35: Boolean = true</span>
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="argument-capture"></a><a href="#argument-capture" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Argument Capture</h2>
+<p>ScalaMock support capturing argument when using mocks. This allow the usage of <code>MatchAny</code> while asserting the argument after the fact.</p>
+<p>Scala3Mock doesn't current support this feature, although nothing in the library actively prevent its inclusion. Contribution welcome.</p>
+<blockquote>
+<p>:warn: TODO Insert issue number once created.</p>
+</blockquote>
+<h2><a class="anchor" aria-hidden="true" id="mocking-0-parameter-functions"></a><a href="#mocking-0-parameter-functions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Mocking 0-parameter functions</h2>
+<p>Mocking methods which have zero parameters or are parameter-less are a bit different. The <code>when</code> macro take a reference to the function without applying it. In the case of parameterless functions, such reference is indiguishable from applying it. Zero-parameters function could theoritically be seen as different, but that could lead to confusion (and indeed, it was legal in Scala 2 and turned out to be confusing).</p>
+<p>To go around this, you can simply wrap the method into a <code>() =&gt; mock.method</code> function:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">parameterless</span></span>: <span class="hljs-type">Int</span>
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">zeroParameter</span></span>(): <span class="hljs-type">Int</span>
+}
+
+<span class="hljs-keyword">val</span> m = mock[<span class="hljs-type">Test</span>]
+<span class="hljs-comment">// m: Test = repl.MdocSession$MdocApp$TestMock$1@529c3449</span>
+
+when(() =&gt; m.zeroParameter()).expects().returns(<span class="hljs-number">1</span>)
+<span class="hljs-comment">// res36: CallHandler0[Int] = zeroParameter() once (never called - UNSATISFIED)</span>
+when(() =&gt; m.parameterless).expects().returns(<span class="hljs-number">1</span>)
+<span class="hljs-comment">// res37: CallHandler0[Int] = parameterless() once (never called - UNSATISFIED)</span>
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/scala3mock/docs/user-guide/scalatest"><span class="arrow-prev">← </span><span class="function-name-prevnext">ScalaTest Integration</span></a><a class="docs-next button" href="/scala3mock/docs/user-guide/faq"><span>FAQ</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#mocking-overloaded-curried-and-polymorphic-methods">Mocking overloaded, curried and polymorphic methods</a><ul class="toc-headings"><li><a href="#overloaded-methods">Overloaded methods</a></li><li><a href="#polymorphic-methods">Polymorphic methods</a></li><li><a href="#curried-methods">Curried methods</a></li></ul></li><li><a href="#methods-with-implicit-parameters">Methods with implicit parameters</a><ul class="toc-headings"><li><a href="#repeated-parameters">Repeated parameters</a></li></ul></li><li><a href="#returning-values-oncall">Returning values (onCall)</a></li><li><a href="#call-count">Call count</a></li><li><a href="#exceptions">Exceptions</a></li><li><a href="#argument-capture">Argument Capture</a></li><li><a href="#mocking-0-parameter-functions">Mocking 0-parameter functions</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/scala3mock/" class="nav-home"><img src="/scala3mock/img/logo.svg" alt="scala3mock" width="66" height="58"/></a><div><h5>Docs</h5><a href="/scala3mock/docs/getting-started">Getting Started</a><a href="/scala3mock/docs/faq">FAQ</a></div></section><section class="copyright">Copyright (c) 2022-2023 François Monniot</section></footer></div></body></html>
