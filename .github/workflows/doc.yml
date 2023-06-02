@@ -16,8 +16,8 @@ jobs:
           java-version: '17'
           cache: 'sbt'
       - run: sbt 'docs/docusaurusPublishGhpages'
-#        env:
-#          GIT_DEPLOY_KEY: ${{ secrets.GIT_DEPLOY_KEY }}
+        env:
+          GIT_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
       - name: Check git diff
         if: ${{ failure() }}
         run: git diff
