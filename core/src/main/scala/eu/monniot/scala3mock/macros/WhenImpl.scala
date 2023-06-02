@@ -19,9 +19,10 @@ private[scala3mock] object WhenImpl:
     '{
       val mf = ${createMockFunction(f)}.asInstanceOf[MockFunction1[T1, R]]
 
-      println(s"selected MockFunction1 = $mf")
-      println(s"T1 = " + ${Expr(Type.show[T1])})
-      println(s"R =  " + ${Expr(Type.show[R])})
+      // used to debug what it is being infered
+      //println(s"selected MockFunction1 = $mf")
+      //println(s"T1 = " + ${Expr(Type.show[T1])})
+      //println(s"R =  " + ${Expr(Type.show[R])})
 
       mf
     }
