@@ -155,11 +155,6 @@ private[scala3mock] object WhenImpl:
       case Apply(fun, _) => transcribeTree(fun)
 
       case TypeApply(fun, _) => transcribeTree(fun)
-      case Ident(fun)        =>
-        // TODO That's probably not a valid advice anymore. Write a test case and update the error message accordingly.
-        report.errorAndAbort(
-          s"please declare '$fun' as MockFunctionXX or StubFunctionXX (e.g val $fun: MockFunction1[X, R] = ... if it has 1 parameter)"
-        )
       case _ =>
         report.errorAndAbort(
           s"ScalaMock: Unrecognised structure: ${tree.show(using Printer.TreeStructure)}." +
