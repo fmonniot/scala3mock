@@ -1,4 +1,9 @@
-## sbt project compiled with Scala 3
+## Scala3Mock
+
+Heads on to https://francois.monniot.eu/scala3mock for the documentation.
+
+> :warning: This project is, while nearing release, still early days. Expect rough edges and
+> minimal documentation all around.
 
 ### TODO
 - Implement remaining tests
