@@ -1,4 +1,4 @@
-name: Building Website
+name: Release
 on:
   push:
     branches: [main]
@@ -14,10 +14,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          cache: 'sbt'
-      - run: sbt 'docs/docusaurusPublishGhpages'
+      - uses: olafurpg/setup-gpg@v3
+      - name: Publish ${{ github.ref }}
+        run: sbt ci-release
         env:
-          GIT_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
       - name: Check git diff
         if: ${{ failure() }}
         run: git diff
