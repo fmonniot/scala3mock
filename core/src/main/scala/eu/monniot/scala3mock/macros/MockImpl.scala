@@ -10,7 +10,6 @@ import eu.monniot.scala3mock.functions.{
 import scala.annotation.experimental
 import scala.quoted.*
 
-
 private[scala3mock] object MockImpl:
 
   inline def apply[T](using ctx: MockContext): T & Mock =
@@ -25,7 +24,6 @@ private[scala3mock] object MockImpl:
       quotes: Quotes
   )(using Type[T]): Expr[T & Mock] =
     new MockImpl[T](ctx, debug).generate
-
 
 // TODO Add a guard to fail compilation if T is higher kinded
 //   This isn't supported, we need fully qualified type (the given type should be able to use

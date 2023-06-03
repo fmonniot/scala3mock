@@ -73,7 +73,7 @@ class MockSuite extends munit.FunSuite with MockFunctions {
 
       when(m.curried(_: Int)(_: Double)).expects(1, 2.1).returns("ok")
       assertEquals(m.curried(1)(2.1), "ok")
-      
+
       val doubleToString: Double => String = _ => "ok"
       when(m.curriedFuncReturn).expects(2).returns(doubleToString)
       assertEquals(m.curriedFuncReturn(2), doubleToString)
@@ -120,7 +120,6 @@ class MockSuite extends munit.FunSuite with MockFunctions {
       // TODO embedded trait
     }
   }
-
 
   test("TestTrait - onCall unary") {
     withExpectations() {

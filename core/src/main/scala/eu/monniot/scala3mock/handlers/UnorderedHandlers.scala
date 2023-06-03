@@ -23,12 +23,18 @@ class UnorderedHandlers(logging: Boolean = false) extends Handlers:
 
   /** Finds the first element of `iter` satisfying a predicate, if any.
     *
-    *  @param iter    the collection of elements
-    *  @param p       the predicate used to test elements.
-    *  @return        an option value containing the first element in the $coll
-    *                 that satisfies `p.isDefined`, or `None` if none exists.
+    * @param iter
+    *   the collection of elements
+    * @param p
+    *   the predicate used to test elements.
+    * @return
+    *   an option value containing the first element in the $coll that satisfies
+    *   `p.isDefined`, or `None` if none exists.
     */
-  private def findFirstOpt[A, B](iter: IterableOnce[A], p: A => Option[B]): Option[B] = {
+  private def findFirstOpt[A, B](
+      iter: IterableOnce[A],
+      p: A => Option[B]
+  ): Option[B] = {
     val it = iter.iterator
     while (it.hasNext) {
       val a = it.next()

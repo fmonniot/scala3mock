@@ -15,7 +15,7 @@ object Applicative {
 // functional programming world. I think.
 class TestClass[F[_]: Applicative](dep: String)(dep2: Int)(using User) {
   private def pm(x: Int) = x
-  
+
   def a(x: Int, y: String): (Int, String) = x -> y
   def b(x: Int): F[Int] = Applicative[F].pure(x)
 }

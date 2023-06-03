@@ -22,7 +22,8 @@ class CallHandler[R: Default](
     expectedCalls = range
     this.asInstanceOf[Derived]
 
-  def repeated(atLeast: Int = 1, atMost: Int = Int.MaxValue - 1): Derived = repeated(atLeast to atMost)
+  def repeated(atLeast: Int = 1, atMost: Int = Int.MaxValue - 1): Derived =
+    repeated(atLeast to atMost)
 
   def exactly(count: Int): Derived = repeated(count to count)
 
