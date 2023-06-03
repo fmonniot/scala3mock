@@ -8,6 +8,7 @@ ThisBuild / scmInfo := Some(
     url("https://github.com/fmonniot/scala3mock"),"git@github.com:fmonniot/scala3mock.git"
   )
 )
+ThisBuild / versionScheme := Some("early-semver")
 
 ThisBuild / developers := List(
   Developer(
