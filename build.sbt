@@ -1,5 +1,5 @@
 ThisBuild / scalaVersion := "3.2.2"
-ThisBuild / organization := "eu.monniot.scala3mock"
+ThisBuild / organization := "eu.monniot"
 ThisBuild / homepage := Some(url("https://github.com/fmonniot/scala3mock"))
 ThisBuild / licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
 ThisBuild / releaseNotesURL := Some(url("https://github.com/fmonniot/scala3mock/releases"))
