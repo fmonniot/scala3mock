@@ -9,6 +9,8 @@ import eu.monniot.scala3mock.functions.{
 
 import scala.annotation.experimental
 import scala.quoted.*
+import eu.monniot.scala3mock.main.Default
+
 
 private[scala3mock] object MockImpl:
 
@@ -101,16 +103,22 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
       val (mockFunctionSym, mockFunctionTypeParams) = buildMockFunctionType(sym)
       val mockFunctionTerm = Ident(mockFunctionSym.termRef)
 
+      val implicitDefaultType = TypeRepr.of[Default].appliedTo(mockFunctionTypeParams.last)
+      val defaultTypeClass = Implicits.search(implicitDefaultType) match {
+        case e: ImplicitSearchSuccess => e
+        case e: ImplicitSearchFailure => report.errorAndAbort(s"Couldn't find a Default instance for the return type: ${e.explanation}")
+      }
+
       val newMockFunction = TypeApply(
         Select(
           New(TypeIdent(mockFunctionSym)),
           mockFunctionSym.primaryConstructor
         ),
-        mockFunctionTypeParams.map(ref => Inferred(TypeRepr.of[Any]))
+        mockFunctionTypeParams.map(ref => Inferred(ref))
       )
 
       val createMF =
-        Apply(newMockFunction, List(ctxTerm, Literal(StringConstant(sym.name))))
+        Apply(newMockFunction, List(ctxTerm, Literal(StringConstant(sym.name)))).appliedTo(defaultTypeClass.tree)
 
       val tuple2Sym = defn.TupleClass(2)
 
@@ -258,11 +266,10 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
         Flags.Erased | Flags.Given | Flags.Implicit | Flags.Lazy | Flags.PrivateLocal
 
       val methodOverrides = methodsToOverride.map { m =>
+        val tpe = cls.typeRef.memberType(m)
         val flags = (m.flags & keepThoseFlags) | Flags.Override
         val privateWithin =
           m.privateWithin.map(_.typeSymbol).getOrElse(Symbol.noSymbol)
-
-        val tpe = cls.typeRef.memberType(m)
 
         Symbol.newMethod(cls, m.name, tpe, flags, privateWithin)
       }

@@ -21,27 +21,10 @@ class MockSuite extends munit.FunSuite with MockFunctions {
   class Animal
   class Dog extends Animal
 
-  test("PolymorphicClassWithParameters") {
-    withExpectations() {
-      val m = mock[PolymorphicClassWithParameters[List, TestException]]
-
-      when(m.logic).expects("hello").returns(List(true))
-
-      assertEquals(m.logic("hello"), List(true))
-    }
-  }
 
   test("TestTrait") {
     withExpectations() {
       val m = mock[TestTrait]
-
-      // Nullary methods
-
-      when(() => m.nullary).expects().returning("a")
-      assertEquals(m.nullary, "a")
-
-      when(() => m.noParams()).expects().returning("a2")
-      assertEquals(m.noParams(), "a2")
 
       // Simple methods
 

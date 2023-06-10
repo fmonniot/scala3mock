@@ -30,6 +30,7 @@ lazy val core = project
   .settings(
     name := "scala3mock-core",
     scalacOptions ++= Seq("-feature", "-explain"),
+    Test / scalacOptions += "-Xcheck-macros",
 
     // Useful when using the PrintAst[type] macro. That will provides the implementation
     // details of classes. Without it, only the signatures are available.
