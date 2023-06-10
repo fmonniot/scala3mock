@@ -99,8 +99,10 @@ class MockSuite extends munit.FunSuite with MockFunctions {
       // when(m.byNameParam).expects(3).returns("ok")
       // assertEquals(m.byNameParam(3), "ok")
 
-      // TODO Implicit/given parameters are not yet available. Waiting for
-      // Scala 3 to let us do that.
+      // implicit parameters
+      given y: Double = 1.23
+      when(m.implicitParam(_: Int)(_: Double)).expects(42, 1.23).returning("it works")
+      assertEquals(m.implicitParam(42), "it works")
 
       // type bound methods
       when(m.upperBound _).expects(TestException()).returns(1)
