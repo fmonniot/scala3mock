@@ -97,7 +97,7 @@ class ErrorReportingTest
 
       test("execute block of code") {
         val mockedTrait = mock[TestTrait]
-        when(mockedTrait.polymorphicMethod).expects(List(1)).returning("one")
+        when[List[Int], String](mockedTrait.polymorphicMethod).expects(List(1)).returning("one")
 
         suiteScopeMock.noParamMethod()
         mockedTrait.oneParamMethod(3)

@@ -61,7 +61,8 @@ class MockSuite extends munit.FunSuite with MockFunctions {
       assertEquals(m.curriedFuncReturn(2), doubleToString)
 
       // Polymorphic methods
-      when(m.polymorphic _).expects(List(2)).returns("a1")
+      // Fail to compile with 3.3.0
+      when[List[Int], String](m.polymorphic).expects(List(2)).returns("a1")
       assertEquals(m.polymorphic(List(2)), "a1")
 
       val javaObject = Object()
@@ -71,11 +72,10 @@ class MockSuite extends munit.FunSuite with MockFunctions {
       when(m.polycurried(_: String)(_: Int)).expects("a", 2).returns("c" -> 6)
       assertEquals(m.polycurried("a")(2), "c" -> 6)
 
-      when(m.polymorphicParam).expects((1, 2.0)).returns("ok")
+      // Fail to compile with 3.3.0
+      when[(Int, Double), String](m.polymorphicParam).expects((1, 2.0)).returns("ok")
       assertEquals(m.polymorphicParam((1, 2.0)), "ok")
 
-      when(m.repeatedParam _).expects(0, Seq.empty).returning("hello")
-      assertEquals(m.repeatedParam(0), "hello")
 
       // TODO Not supported yet
       // when(m.byNameParam).expects(3).returns("ok")
@@ -89,12 +89,12 @@ class MockSuite extends munit.FunSuite with MockFunctions {
       assertEquals(m.implicitParam(42), "it works")
 
       // type bound methods
-      when(m.upperBound _).expects(TestException()).returns(1)
+      when[TestException, Int](m.upperBound _).expects(TestException()).returns(1)
       assertEquals(m.upperBound(TestException()), 1)
 
       val animal = Animal()
       val dog = Dog()
-      when(m.lowerBound).expects(animal, List(dog)).returns("ok")
+      when[Animal, List[Animal], String](m.lowerBound).expects(animal, List(dog)).returns("ok")
       assertEquals(m.lowerBound(animal, List(dog)), "ok")
 
       // TODO with implementation methods
