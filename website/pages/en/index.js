@@ -39,12 +39,11 @@ class Index extends React.Component {
         // scalamock has some generic icons, but they do the job relatively well.
         const hookContent = [
             "**Simple yet powerful**: Scala3Mock has very clean and concise syntax, reasonable defaults, powerful features and is fully type-safe.",
-            "**[TBD] Full Scala support**: Full support for Scala 3 features¹ such as: Polymorphic methods, Operators, Overloaded methods, Type constraints, and more.",
-            "**[TBD] Popular Test framework integration**: Scala3Mock can be easily used in ScalaTest and Munit testing frameworks.",
+            "**Full Scala support**: Full support for Scala 3 features such as: Polymorphic methods, Operators, Overloaded methods, Type constraints, Implicits, and more.",
+            "**Popular Test framework integration**: Scala3Mock can be easily used in ScalaTest and Munit testing frameworks.",
             "**Quick Start**: Quick introduction to Scala3Mock describing basic usage of this mocking framework",
             "**User Guide**: Complete Scala3Mock manual with lots of hints and examples",
-            "**[TBD] Open Source**: Scala3Mock is open source and licenced under the MIT licence",
-            "\n\n\n¹ Except for feature without compiler support, like implicit/given parameters on methods."
+            "**Open Source**: Scala3Mock is open source and licenced under the MIT licence"
         ];
 
         return (

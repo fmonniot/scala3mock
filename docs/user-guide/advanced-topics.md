@@ -84,11 +84,9 @@ At the moment the `when` macro isn't smart enough to recognize a curried functio
 
 ## Methods with implicit parameters
 
-> :warn: This is currently not possible in Scala 3, as the macro system doesn't let us create given parameter list in the mock class.
-
 This case is very similar to curried methods. All you need to do is to help the Scala compiler know that `memcachedMock.get` should be converted to `MockFunction2`. For example:
 
-```scala mdoc:nest:fail
+```scala mdoc:nest
 class Codec()
 
 trait Memcached {
@@ -100,8 +98,6 @@ val memcachedMock = mock[Memcached]
 implicit val codec = new Codec
 when(memcachedMock.get(_ : String)(_ : Codec)).expects("some_key", MatchAny()).returning(Some(123))
 ```
-
-
 
 ### Repeated parameters
 

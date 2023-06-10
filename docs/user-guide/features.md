@@ -20,10 +20,6 @@ This includes:
 - support for repeated parameters and named parameters
 - mocking Java classes and interfaces
 
-Some notable features not supported:
-
-- implicit method parameters (lack of compiler support)
-
 Before going over the various features, let's define some types and import we can use along the way.
 
 ```scala mdoc
@@ -162,17 +158,4 @@ assert(dbMock.increment(100) == 101)
 // throw computed exception
 try dbMock.increment(0)
 catch e => println(s"caught $e")
-```
-
-## Unsupported feature
-
-At the time of writing, the Scala3 macro system doesn't support creating method with the `using`/`implicit` modifier. As a result, trying to mock any classes with a method using such modifier will fail. The example below show what error message you should expect when trying to do so. Hopefully that will save you some debugging time.
-
-```scala mdoc:fail
-
-abstract class TestClass {
-    def method(using String): String
-}
-
-val testClass = mock[TestClass]
 ```
