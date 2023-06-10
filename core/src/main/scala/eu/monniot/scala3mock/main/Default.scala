@@ -24,4 +24,4 @@ object Default:
   given Default[Unit] with { val default = () }
 
   // AnyRef
-  given [T >: Null]: Default[T] with { val default = null }
+  given [Y]: Default[Y] with { val default = null.asInstanceOf[Y] }
