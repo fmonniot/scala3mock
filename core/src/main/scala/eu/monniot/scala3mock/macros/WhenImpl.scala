@@ -137,20 +137,22 @@ private[scala3mock] object WhenImpl:
         qualifier -> n
 
       case Block(stats, _) =>
-        stats.collectFirst {
-          case term: Term => transcribeTree(term)
-          case t: DefDef  =>
-            t.rhs match
-              case None =>
-                report.errorAndAbort(
-                  "Method definition doesn't have a body to investigate. Please report your use case to the maintainers."
-                )
-              case Some(term) => transcribeTree(term)
-        }.getOrElse(
-          report.errorAndAbort(
-            "Block definition doesn't have a known term. Please report your use case to the maintainers."
+        stats
+          .collectFirst {
+            case term: Term => transcribeTree(term)
+            case t: DefDef =>
+              t.rhs match
+                case None =>
+                  report.errorAndAbort(
+                    "Method definition doesn't have a body to investigate. Please report your use case to the maintainers."
+                  )
+                case Some(term) => transcribeTree(term)
+          }
+          .getOrElse(
+            report.errorAndAbort(
+              "Block definition doesn't have a known term. Please report your use case to the maintainers."
+            )
           )
-        )
 
       case Apply(fun, _) => transcribeTree(fun)
 
