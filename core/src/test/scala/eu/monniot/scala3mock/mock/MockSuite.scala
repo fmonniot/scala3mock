@@ -21,7 +21,6 @@ class MockSuite extends munit.FunSuite with MockFunctions {
   class Animal
   class Dog extends Animal
 
-
   test("TestTrait") {
     withExpectations() {
       val m = mock[TestTrait]
@@ -84,7 +83,9 @@ class MockSuite extends munit.FunSuite with MockFunctions {
 
       // implicit parameters
       given y: Double = 1.23
-      when(m.implicitParam(_: Int)(_: Double)).expects(42, 1.23).returning("it works")
+      when(m.implicitParam(_: Int)(_: Double))
+        .expects(42, 1.23)
+        .returning("it works")
       assertEquals(m.implicitParam(42), "it works")
 
       // type bound methods

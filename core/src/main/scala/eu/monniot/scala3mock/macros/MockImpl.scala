@@ -11,7 +11,6 @@ import scala.annotation.experimental
 import scala.quoted.*
 import eu.monniot.scala3mock.main.Default
 
-
 private[scala3mock] object MockImpl:
 
   inline def apply[T](using ctx: MockContext): T & Mock =
@@ -103,10 +102,14 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
       val (mockFunctionSym, mockFunctionTypeParams) = buildMockFunctionType(sym)
       val mockFunctionTerm = Ident(mockFunctionSym.termRef)
 
-      val implicitDefaultType = TypeRepr.of[Default].appliedTo(mockFunctionTypeParams.last)
+      val implicitDefaultType =
+        TypeRepr.of[Default].appliedTo(mockFunctionTypeParams.last)
       val defaultTypeClass = Implicits.search(implicitDefaultType) match {
         case e: ImplicitSearchSuccess => e
-        case e: ImplicitSearchFailure => report.errorAndAbort(s"Couldn't find a Default instance for the return type: ${e.explanation}")
+        case e: ImplicitSearchFailure =>
+          report.errorAndAbort(
+            s"Couldn't find a Default instance for the return type: ${e.explanation}"
+          )
       }
 
       val newMockFunction = TypeApply(
@@ -118,7 +121,8 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
       )
 
       val createMF =
-        Apply(newMockFunction, List(ctxTerm, Literal(StringConstant(sym.name)))).appliedTo(defaultTypeClass.tree)
+        Apply(newMockFunction, List(ctxTerm, Literal(StringConstant(sym.name))))
+          .appliedTo(defaultTypeClass.tree)
 
       val tuple2Sym = defn.TupleClass(2)
 
