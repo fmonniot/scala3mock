@@ -28,9 +28,9 @@ trait TestTrait {
 
   // Can't do those two because Scala 3 doesn't seems to offer a way
   // to specify if a parameter list has a modifier or not.
-  // def implicitParam(x: Int)(implicit y: Double): String
-  // def usingParam(x: Int)(using y: Double): String
-  // def contextBound[T: ContextBound](x: T): String
+  def implicitParam(x: Int)(implicit y: Double): String
+  def usingParam(x: Int)(using y: Double): String
+  def contextBound[T: ContextBound](x: T): String
 
   def upperBound[T <: Product](x: T): Int
   def lowerBound[T >: U, U](x: T, y: List[U]): String
