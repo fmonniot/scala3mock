@@ -78,6 +78,7 @@ class MockSuite extends munit.FunSuite with MockFunctions {
       assertEquals(m.repeatedParam(0), "hello")
 
       // TODO Not supported yet
+      // https://github.com/fmonniot/scala3mock/issues/4
       // when(m.byNameParam).expects(3).returns("ok")
       // assertEquals(m.byNameParam(3), "ok")
 
@@ -97,13 +98,25 @@ class MockSuite extends munit.FunSuite with MockFunctions {
       when(m.lowerBound).expects(animal, List(dog)).returns("ok")
       assertEquals(m.lowerBound(animal, List(dog)), "ok")
 
-      // TODO with implementation methods
+      // non-abstract methods
+      when(m.withImplementation).expects(42).returning(1234)
+      assertEquals(m.withImplementation(42), 1234)
 
-      // TODO package references methods
+      // embedded trait and path-dependent types
+      // https://github.com/fmonniot/scala3mock/issues/3
+      /*
+      val e = mock[m.Embedded]
+      when(() => m.referencesEmbedded()).expects().returning(e)
+      assertEquals(m.referencesEmbedded(), e)
 
-      // TODO values
 
-      // TODO embedded trait
+      val o = mock[m.ATrait]
+      val i = mock[e.ATrait]
+      when(() => e.innerTrait()).expects().returning(i)
+      when(() => e.outerTrait()).expects().returning(o)
+      assertEquals(e.outerTrait(), o)
+      assertEquals(e.innerTrait(), i)
+      */
     }
   }
 

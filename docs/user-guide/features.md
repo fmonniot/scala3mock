@@ -4,9 +4,7 @@ title: Features
 
 This is an overview of Scala3Mock features. Some section in this page have a dedicated page as well. Those pages will be indicated when present.
 
-Do note that although the authors tried to be thorough when writing this page, some features might have slipped through the cracks. All supported use cases are covered by a test in the [core/features] and [core/mock] packages.
-
-> TODO Fix link once I know the full URL they should point to.
+Do note that although the authors tried to be thorough when writing this page, some features might have slipped through the cracks. All supported use cases are covered by a test in the [core/features](https://github.com/fmonniot/scala3mock/tree/main/core/src/test/scala/eu/monniot/scala3mock/features) and [core/mock](https://github.com/fmonniot/scala3mock/tree/main/core/src/test/scala/eu/monniot/scala3mock/mock) packages.
 
 
 Scala3Mock provides fully type-safe support for almost all Scala features. 
@@ -96,9 +94,7 @@ when(dbMock.sendMessage).expects(MatchPredicate.where { (receiver: Player, messa
 
 ## Call Ordering
 
-Mock ordering is not currently supported in Scala3Mock. If you wish it to be, please add a thumb up to [issue#000].
-
-> TODO Add correct issue number/link when I have one.
+Mock ordering is not currently supported in Scala3Mock. If you wish it to be, please chime in on [issue #6](https://github.com/fmonniot/scala3mock/issues/6).
 
 ```scala mdoc:fail:invisible
 // Keeping the snippet here just in case I end up implementing ordering

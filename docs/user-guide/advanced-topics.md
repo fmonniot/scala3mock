@@ -237,7 +237,7 @@ ScalaMock support capturing argument when using mocks. This allow the usage of `
 
 Scala3Mock doesn't current support this feature, although nothing in the library actively prevent its inclusion. Contribution welcome.
 
-> :warn: TODO Insert issue number once created.
+> See https://github.com/fmonniot/scala3mock/issues/5 if you'd like to help.
 
 ## Mocking 0-parameter functions
 

@@ -97,9 +97,6 @@ In the suite scope, you can
 
 Because each test case has its own instance, different test cases do not interfere with each other.
 
-> TODO Add a test case similar when working on the ScalaTest integration. Not sure how it's gonna
-> work yet, given we are relying on implicit for the context propagation. Let's see.
-
 ```scala mdoc
 import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers

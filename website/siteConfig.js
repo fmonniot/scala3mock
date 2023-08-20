@@ -1,4 +1,3 @@
-// TODO Understand how to update to docusaurus version 2.x
 // See https://docusaurus.io/docs/site-config for all the possible
 // site configuration options.
 

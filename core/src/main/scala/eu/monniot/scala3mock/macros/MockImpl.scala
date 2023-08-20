@@ -26,9 +26,6 @@ private[scala3mock] object MockImpl:
   )(using Type[T]): Expr[T & Mock] =
     new MockImpl[T](ctx, debug).generate
 
-// TODO Add a guard to fail compilation if T is higher kinded
-//   This isn't supported, we need fully qualified type (the given type should be able to use
-//   another type though)
 /*
 Some resources for macros:
 - https://docs.scala-lang.org/scala3/guides/macros/macros.html

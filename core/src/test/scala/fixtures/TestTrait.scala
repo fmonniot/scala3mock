@@ -62,13 +62,10 @@ trait TestTrait {
     trait ATrait
     def innerTrait(): ATrait
     def outerTrait(): TestTrait.this.ATrait
-    //def innerTraitProjected(): TestTrait#Embedded#ATrait
-    //def outerTraitProjected(): TestTrait#ATrait
   }
-   */
 
-  // trait ATrait
+  trait ATrait
 
-  // TODO Keep reference to the trait def here instead of the mock
-  // def referencesEmbedded(): Embedded
+  def referencesEmbedded(): Embedded
+  */
 }
