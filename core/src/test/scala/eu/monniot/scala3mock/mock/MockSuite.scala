@@ -118,13 +118,75 @@ class MockSuite extends munit.FunSuite with MockFunctions {
     }
   }
 
+  test("ManyParamsClass") {
+    withExpectations() {
+      val m = mock[ManyParamsClass]
+
+      when(m.methodWith1Ints).expects(1).returns(1)
+      assertEquals(m.methodWith1Ints(1), 1)
+
+      when(m.methodWith2Ints).expects(1, 1).returns(2)
+      assertEquals(m.methodWith2Ints(1, 1), 2)
+
+      when(m.methodWith3Ints).expects(1, 1, 1).returns(3)
+      assertEquals(m.methodWith3Ints(1, 1, 1), 3)
+
+      when(m.methodWith4Ints).expects(1, 1, 1, 1).returns(4)
+      assertEquals(m.methodWith4Ints(1, 1, 1, 1), 4)
+
+      when(m.methodWith5Ints).expects(1, 1, 1, 1, 1).returns(5)
+      assertEquals(m.methodWith5Ints(1, 1, 1, 1, 1), 5)
+
+      when(m.methodWith6Ints).expects(1, 1, 1, 1, 1, 1).returns(6)
+      assertEquals(m.methodWith6Ints(1, 1, 1, 1, 1, 1), 6)
+
+      when(m.methodWith7Ints).expects(1, 1, 1, 1, 1, 1, 1).returns(7)
+      assertEquals(m.methodWith7Ints(1, 1, 1, 1, 1, 1, 1), 7)
+
+      when(m.methodWith8Ints).expects(1, 1, 1, 1, 1, 1, 1, 1).returns(8)
+      assertEquals(m.methodWith8Ints(1, 1, 1, 1, 1, 1, 1, 1), 8)
+
+      when(m.methodWith9Ints).expects(1, 1, 1, 1, 1, 1, 1, 1, 1).returns(9)
+      assertEquals(m.methodWith9Ints(1, 1, 1, 1, 1, 1, 1, 1, 1), 9)
+
+      when(m.methodWith10Ints).expects(1, 1, 1, 1, 1, 1, 1, 1, 1, 1).returns(10)
+      assertEquals(m.methodWith10Ints(1, 1, 1, 1, 1, 1, 1, 1, 1, 1), 10)
+    }
+  }
+
   test("ManyParams") {
     withExpectations() {
-      // TODO Missing MockFunction impl for 3+ parameters
-      // val a = mock[ManyParamsClass]
-      // val b = mock[ManyParamsTrait]
+      val m = mock[ManyParamsTrait]
 
-      // TODO assertions
+      when(m.methodWith1Ints).expects(1).returns(1)
+      assertEquals(m.methodWith1Ints(1), 1)
+
+      when(m.methodWith2Ints).expects(1, 1).returns(2)
+      assertEquals(m.methodWith2Ints(1, 1), 2)
+
+      when(m.methodWith3Ints).expects(1, 1, 1).returns(3)
+      assertEquals(m.methodWith3Ints(1, 1, 1), 3)
+
+      when(m.methodWith4Ints).expects(1, 1, 1, 1).returns(4)
+      assertEquals(m.methodWith4Ints(1, 1, 1, 1), 4)
+
+      when(m.methodWith5Ints).expects(1, 1, 1, 1, 1).returns(5)
+      assertEquals(m.methodWith5Ints(1, 1, 1, 1, 1), 5)
+
+      when(m.methodWith6Ints).expects(1, 1, 1, 1, 1, 1).returns(6)
+      assertEquals(m.methodWith6Ints(1, 1, 1, 1, 1, 1), 6)
+
+      when(m.methodWith7Ints).expects(1, 1, 1, 1, 1, 1, 1).returns(7)
+      assertEquals(m.methodWith7Ints(1, 1, 1, 1, 1, 1, 1), 7)
+
+      when(m.methodWith8Ints).expects(1, 1, 1, 1, 1, 1, 1, 1).returns(8)
+      assertEquals(m.methodWith8Ints(1, 1, 1, 1, 1, 1, 1, 1), 8)
+
+      when(m.methodWith9Ints).expects(1, 1, 1, 1, 1, 1, 1, 1, 1).returns(9)
+      assertEquals(m.methodWith9Ints(1, 1, 1, 1, 1, 1, 1, 1, 1), 9)
+
+      when(m.methodWith10Ints).expects(1, 1, 1, 1, 1, 1, 1, 1, 1, 1).returns(10)
+      assertEquals(m.methodWith10Ints(1, 1, 1, 1, 1, 1, 1, 1, 1, 1), 10)
     }
   }
 
@@ -159,7 +221,7 @@ class MockSuite extends munit.FunSuite with MockFunctions {
     }
   }
 
-  test("SpecializedClass".ignore) {
+  test("SpecializedClass") {
     withExpectations() {
       val a = mock[SpecializedClass[Int]]
       when(a.identity).expects(42).returns(43)
