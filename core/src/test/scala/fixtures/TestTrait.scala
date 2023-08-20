@@ -54,18 +54,4 @@ trait TestTrait {
   val aVal: String
   val concreteVal = "foo"
   // val fnVal: String => Int
-
-  /*
-  trait Embedded {
-    def m(x: Int, y: Double): String
-
-    trait ATrait
-    def innerTrait(): ATrait
-    def outerTrait(): TestTrait.this.ATrait
-  }
-
-  trait ATrait
-
-  def referencesEmbedded(): Embedded
-  */
 }

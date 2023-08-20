@@ -101,22 +101,6 @@ class MockSuite extends munit.FunSuite with MockFunctions {
       // non-abstract methods
       when(m.withImplementation).expects(42).returning(1234)
       assertEquals(m.withImplementation(42), 1234)
-
-      // embedded trait and path-dependent types
-      // https://github.com/fmonniot/scala3mock/issues/3
-      /*
-      val e = mock[m.Embedded]
-      when(() => m.referencesEmbedded()).expects().returning(e)
-      assertEquals(m.referencesEmbedded(), e)
-
-
-      val o = mock[m.ATrait]
-      val i = mock[e.ATrait]
-      when(() => e.innerTrait()).expects().returning(i)
-      when(() => e.outerTrait()).expects().returning(o)
-      assertEquals(e.outerTrait(), o)
-      assertEquals(e.innerTrait(), i)
-      */
     }
   }
 
@@ -144,19 +128,34 @@ class MockSuite extends munit.FunSuite with MockFunctions {
     }
   }
 
-  test("PolymorphicClass") {
-    withExpectations() {
-      val c = mock[PolymorphicClass[String]]
-
-      // TODO assertions
-    }
-  }
-
   test("PolymorphicTrait") {
     withExpectations() {
       val d = mock[PolymorphicTrait[Int]]
 
-      // TODO assertions
+      // embedded trait and path-dependent types
+      // https://github.com/fmonniot/scala3mock/issues/3
+      /*
+      val e = mock[m.Embedded]
+      when(() => m.referenceEmbedded()).expects().returning(e)
+      assertEquals(m.referenceEmbedded(), e)
+
+
+      val o = mock[m.ATrait]
+      val i = mock[e.ATrait]
+      when(() => e.innerTrait()).expects().returning(i)
+      when(() => e.outerTrait()).expects().returning(o)
+      assertEquals(e.outerTrait(), o)
+      assertEquals(e.innerTrait(), i)
+      */
+    }
+  }
+
+  test("PolymorphicClassWithParameters") {
+    withExpectations() {
+      val c = mock[PolymorphicClassWithParameters[List, Int]]
+
+      when(c.logic).expects("param").returns(List(true))
+      assertEquals(c.logic("param"), List(true))
     }
   }
 

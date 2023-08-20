@@ -11,4 +11,6 @@ trait PolymorphicTrait[T] {
   }
 
   trait ATrait[A, B]
+
+  // def referenceEmbedded(): Embedded
 }
