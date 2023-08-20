@@ -161,12 +161,31 @@ class MockSuite extends munit.FunSuite with MockFunctions {
 
   test("SpecializedClass".ignore) {
     withExpectations() {
-      // Seems to be special case for scala.js ? Not entirely sure though
-      // val f = mock[SpecializedClass2[Int, Float]]
-      // I suppose that mean we can skip those for now.
-      val e = mock[SpecializedClass[Int]]
+      val a = mock[SpecializedClass[Int]]
+      when(a.identity).expects(42).returns(43)
+      assertEquals(a.identity(42), 43)
 
-      // TODO assertions
+      val b = mock[SpecializedClass2[Int, String]]
+      when(b.identity2).expects(42, "43").returns((44, "45"))
+      assertEquals(b.identity2(42, "43"), (44, "45"))
+
+      when(b.identity).expects(42).returns(44)
+      assertEquals(b.identity(42), 44)
+
+      val c = mock[SpecializedClass2[Int, Int]]
+      when(c.identity2).expects(42, 43).returns((44, 45))
+      assertEquals(c.identity2(42, 43), (44,45))
+
+      when(c.identity).expects(42).returns(44)
+      assertEquals(c.identity(42), 44)
+
+      val d = mock[SpecializedClass[String]]
+      when(d.identity).expects("one").returns("two")
+      assertEquals(d.identity("one"), "two")
+
+      val e = mock[SpecializedClass[List[String]]]
+      when(e.identity).expects(List("one")).returns(List("two"))
+      assertEquals(e.identity(List("one")), List("two"))
     }
   }
 
