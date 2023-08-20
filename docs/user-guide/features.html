@@ -55,10 +55,7 @@
               }
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">Features</h1></header><article><div><span><p>This is an overview of Scala3Mock features. Some section in this page have a dedicated page as well. Those pages will be indicated when present.</p>
-<p>Do note that although the authors tried to be thorough when writing this page, some features might have slipped through the cracks. All supported use cases are covered by a test in the [core/features] and [core/mock] packages.</p>
-<blockquote>
-<p>TODO Fix link once I know the full URL they should point to.</p>
-</blockquote>
+<p>Do note that although the authors tried to be thorough when writing this page, some features might have slipped through the cracks. All supported use cases are covered by a test in the <a href="https://github.com/fmonniot/scala3mock/tree/main/core/src/test/scala/eu/monniot/scala3mock/features">core/features</a> and <a href="https://github.com/fmonniot/scala3mock/tree/main/core/src/test/scala/eu/monniot/scala3mock/mock">core/mock</a> packages.</p>
 <p>Scala3Mock provides fully type-safe support for almost all Scala features.</p>
 <p>This includes:</p>
 <ul>
@@ -101,10 +98,10 @@
 <h2><a class="anchor" aria-hidden="true" id="mocking"></a><a href="#mocking" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Mocking</h2>
 <p>Scala3Mock can create mock out of classes (abstract or not, with parameters or not) and traits.</p>
 <pre><code class="hljs css language-scala"><span class="hljs-keyword">val</span> heaterMock  = mock[<span class="hljs-type">Heater</span>]
-<span class="hljs-comment">// heaterMock: Heater = repl.MdocSession$MdocApp$HeaterMock$1@77bc1ccb</span>
+<span class="hljs-comment">// heaterMock: Heater = repl.MdocSession$MdocApp$HeaterMock$1@5b69e387</span>
 <span class="hljs-comment">//val machineMock = mock[CoffeeMachine]</span>
 <span class="hljs-keyword">val</span> dbMock      = mock[<span class="hljs-type">Database</span>]
-<span class="hljs-comment">// dbMock: Database = repl.MdocSession$MdocApp$DatabaseMock$1@654ec118</span>
+<span class="hljs-comment">// dbMock: Database = repl.MdocSession$MdocApp$DatabaseMock$1@b414deb</span>
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="argument-matching"></a><a href="#argument-matching" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Argument matching</h2>
 <pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> eu.monniot.scala3mock.matchers.{<span class="hljs-type">MatchAny</span>, <span class="hljs-type">MatchEpsilon</span>, <span class="hljs-type">MatchPredicate</span>}
@@ -127,10 +124,7 @@ when(dbMock.sendMessage).expects(<span class="hljs-type">MatchPredicate</span>.w
 <span class="hljs-comment">// res3: CallHandler2[Nothing, Nothing, Unit] = sendMessage&lt;function1&gt; once (never called - UNSATISFIED)</span>
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="call-ordering"></a><a href="#call-ordering" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Call Ordering</h2>
-<p>Mock ordering is not currently supported in Scala3Mock. If you wish it to be, please add a thumb up to [issue#000].</p>
-<blockquote>
-<p>TODO Add correct issue number/link when I have one.</p>
-</blockquote>
+<p>Mock ordering is not currently supported in Scala3Mock. If you wish it to be, please chime in on <a href="https://github.com/fmonniot/scala3mock/issues/6">issue #6</a>.</p>
 <h2><a class="anchor" aria-hidden="true" id="call-count"></a><a href="#call-count" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Call count</h2>
 <pre><code class="hljs css language-scala"><span class="hljs-comment">// expect message to be sent twice</span>
 when(dbMock.sendMessage).expects(<span class="hljs-type">MatchAny</span>(), <span class="hljs-type">MatchAny</span>()).twice

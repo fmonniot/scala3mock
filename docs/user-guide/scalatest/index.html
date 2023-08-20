@@ -109,10 +109,6 @@
 <li>perform common test cases setup (eg. set up various mock expectations).</li>
 </ul>
 <p>Because each test case has its own instance, different test cases do not interfere with each other.</p>
-<blockquote>
-<p>TODO Add a test case similar when working on the ScalaTest integration. Not sure how it's gonna
-work yet, given we are relying on implicit for the context propagation. Let's see.</p>
-</blockquote>
 <pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> org.scalatest.<span class="hljs-type">OneInstancePerTest</span>
 <span class="hljs-keyword">import</span> org.scalatest.matchers.should.<span class="hljs-type">Matchers</span>
 
