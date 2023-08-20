@@ -146,7 +146,7 @@ class MockSuite extends munit.FunSuite with MockFunctions {
       when(() => e.outerTrait()).expects().returning(o)
       assertEquals(e.outerTrait(), o)
       assertEquals(e.innerTrait(), i)
-      */
+       */
     }
   }
 
@@ -174,7 +174,7 @@ class MockSuite extends munit.FunSuite with MockFunctions {
 
       val c = mock[SpecializedClass2[Int, Int]]
       when(c.identity2).expects(42, 43).returns((44, 45))
-      assertEquals(c.identity2(42, 43), (44,45))
+      assertEquals(c.identity2(42, 43), (44, 45))
 
       when(c.identity).expects(42).returns(44)
       assertEquals(c.identity(42), 44)
