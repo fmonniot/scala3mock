@@ -70,18 +70,28 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
         )
 
       case DefDef(name, params, returnTpt, _) =>
-        val args = params.flatMap {
-          case TermParamClause(vals) => vals
-          case TypeParamClause(_)    => List.empty
-        }
-
-        val types = args.map(_.tpt.tpe) :+ returnTpt.tpe
+        val args = params
+          .flatMap {
+            case TermParamClause(vals) => vals.map(_.tpt.tpe)
+            case TypeParamClause(_)    => List.empty
+          }
+          .map {
+            case ByNameType(inner) =>
+              // By-name types are interesting because internally they have a type-representation,
+              // but that is not something that we can actually do in "official" Scala. Not removing
+              // this node means that the by-name value isn't being evaluated and so when we compare
+              // the expectation (an evaluated value) vs the actual value (a lambda, as it's not evaluated)
+              // we ends up with some mismatch. By removing this type component, we are effectively saying to
+              // the compiler that we want to evaluate the argument before passing it to our MockFunction
+              inner
+            case otherwise => otherwise
+          }
 
         (
           Symbol.requiredClass(
             s"eu.monniot.scala3mock.functions.MockFunction${args.length}"
           ),
-          types
+          args :+ returnTpt.tpe
         )
 
       case tree =>
@@ -361,6 +371,8 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
                 None // We can ignore the rest as we are only looking at arguments here
             }
 
+            // Build the Map access. In scala that would look something like
+            // MockClassName.this.mocks.asInstanceOf[MockFunctionX].apply(x)
             val mockFnType =
               AppliedType(mockFunctionClsSym.typeRef, mockFnTypeArgs)
 
