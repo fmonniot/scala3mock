@@ -27,6 +27,9 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - run: sbt 'docs/mdoc'
+  # Note that the first Scala LTS 3.3 is unfortunately not compatible
+  # So we consider 3.2.2 as our baseline until we get a real LTS we
+  # can target.
   test-lts:
     name: Test (LTS)
     runs-on: ubuntu-latest
@@ -37,19 +40,21 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - run: sbt test
-# For when we have newer Scala versions
-#  test-newer:
-#    name: Test (${{ matrix.scalaV }})
-#    runs-on: ubuntu-latest
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        scalaV:
-#          - "3.3.1"
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: actions/setup-java@v3
-#        with:
-#          distribution: 'temurin'
-#          java-version: '11'
-#      - run: sbt '++${{ matrix.scalaV }}! test'
+  # We currently depends on a bug fix in 3.4, which at the time this
+  # check was written was not yet released. So instead we rely on a
+  # nightly version.
+  test-newer:
+    name: Test (${{ matrix.scalaV }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        scalaV:
+          - "3.4.0-RC1-bin-20230909-64c3138-NIGHTLY"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - run: sbt '++${{ matrix.scalaV }}! test'
