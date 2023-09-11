@@ -69,7 +69,7 @@
 }
 
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
-<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$1@15572e1b</span>
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$1@315e953a</span>
 
 when(fooMock.overloaded(_: <span class="hljs-type">Int</span>)).expects(<span class="hljs-number">10</span>)
 <span class="hljs-comment">// res0: CallHandler1[Int, String] = overloaded(10) once (never called - UNSATISFIED)</span>
@@ -84,7 +84,7 @@ when(fooMock.overloaded[<span class="hljs-type">Double</span>]).expects(<span cl
 }
 
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
-<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$2@3d5aa3e7</span>
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$2@4ef4f21</span>
 
 when(fooMock.polymorphic(_: <span class="hljs-type">List</span>[<span class="hljs-type">Int</span>])).expects(<span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>))
 <span class="hljs-comment">// res3: CallHandler1[List[Int], String] = polymorphic(List(1, 2, 3)) once (never called - UNSATISFIED)</span>
@@ -95,7 +95,7 @@ when(fooMock.polymorphic(_: <span class="hljs-type">List</span>[<span class="hlj
 }
 
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
-<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$3@59342605</span>
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$3@3302457a</span>
 
 when(fooMock.curried(_: <span class="hljs-type">Int</span>)(_: <span class="hljs-type">Double</span>)).expects(<span class="hljs-number">10</span>, <span class="hljs-number">1.23</span>)
 <span class="hljs-comment">// res4: CallHandler2[Int, Double, String] = curried(10, 1.23) once (never called - UNSATISFIED)</span>
@@ -108,7 +108,7 @@ when(fooMock.curried(_: <span class="hljs-type">Int</span>)(_: <span class="hljs
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
 
 when(fooMock.curried)
-<span class="hljs-comment">// java.lang.ClassCastException: class eu.monniot.scala3mock.functions.MockFunction2 cannot be cast to class eu.monniot.scala3mock.functions.MockFunction1 (eu.monniot.scala3mock.functions.MockFunction2 and eu.monniot.scala3mock.functions.MockFunction1 are in unnamed module of loader sbt.internal.LayeredClassLoader @2b9cbf)</span>
+<span class="hljs-comment">// java.lang.ClassCastException: class eu.monniot.scala3mock.functions.MockFunction2 cannot be cast to class eu.monniot.scala3mock.functions.MockFunction1 (eu.monniot.scala3mock.functions.MockFunction2 and eu.monniot.scala3mock.functions.MockFunction1 are in unnamed module of loader sbt.internal.LayeredClassLoader @bc9b971)</span>
 <span class="hljs-comment">//  at repl.MdocSession$MdocApp.$init$$$anonfun$1(advanced-topics.md:99)</span>
 </code></pre>
 <p>At the moment the <code>when</code> macro isn't smart enough to recognize a curried function whereas the <code>mock</code> macro is. That result in the underlying mock correctly creating a <code>MockFunction2[Int, Double, String]</code> (two args) but the <code>when</code> macro exposes a <code>MockFunction1[Int, Double =&gt; String]</code> (one arg).</p>
@@ -121,10 +121,10 @@ when(fooMock.curried)
 }
 
 <span class="hljs-keyword">val</span> memcachedMock = mock[<span class="hljs-type">Memcached</span>]
-<span class="hljs-comment">// memcachedMock: Memcached = repl.MdocSession$MdocApp$MemcachedMock$1@4ada59b5</span>
+<span class="hljs-comment">// memcachedMock: Memcached = repl.MdocSession$MdocApp$MemcachedMock$1@102c7846</span>
 
 <span class="hljs-keyword">implicit</span> <span class="hljs-keyword">val</span> codec = <span class="hljs-keyword">new</span> <span class="hljs-type">Codec</span>
-<span class="hljs-comment">// codec: Codec = repl.MdocSession$MdocApp$Codec$1@207e4916</span>
+<span class="hljs-comment">// codec: Codec = repl.MdocSession$MdocApp$Codec$1@77ebb5d1</span>
 when(memcachedMock.get(_ : <span class="hljs-type">String</span>)(_ : <span class="hljs-type">Codec</span>)).expects(<span class="hljs-string">"some_key"</span>, <span class="hljs-type">MatchAny</span>()).returning(<span class="hljs-type">Some</span>(<span class="hljs-number">123</span>))
 <span class="hljs-comment">// res5: CallHandler2[String, Codec, Option[Int]] = get(some_key, *) once (never called - UNSATISFIED)</span>
 </code></pre>
@@ -135,7 +135,7 @@ when(memcachedMock.get(_ : <span class="hljs-type">String</span>)(_ : <span clas
 }
 
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
-<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$5@b706b40</span>
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$5@27218e0a</span>
 
 when(fooMock.takesRepeatedParameter).expects(<span class="hljs-number">42</span>, <span class="hljs-type">Seq</span>(<span class="hljs-string">"red"</span>, <span class="hljs-string">"green"</span>, <span class="hljs-string">"blue"</span>))
 <span class="hljs-comment">// res6: CallHandler2[Int, Seq[String], Unit] = takesRepeatedParameter(42, List(red, green, blue)) once (never called - UNSATISFIED)</span>
@@ -147,7 +147,7 @@ when(fooMock.takesRepeatedParameter).expects(<span class="hljs-number">42</span>
 }
 
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
-<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$6@7647bb50</span>
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$6@36eb5607</span>
 
 when(fooMock.increment).expects(<span class="hljs-number">12</span>).returning(<span class="hljs-number">13</span>)
 <span class="hljs-comment">// res7: CallHandler1[Int, Int] = increment(12) once (called once)</span>
@@ -237,7 +237,7 @@ mockedFunction5(<span class="hljs-number">5</span>)
 }
 
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
-<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$7@2d9aab5b</span>
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$7@36c0282e</span>
 
 
 <span class="hljs-comment">// Using the throws or throwing function</span>
@@ -288,7 +288,7 @@ when(fooMock.increment).expects(<span class="hljs-type">MatchAny</span>()).onCal
 }
 
 <span class="hljs-keyword">val</span> m = mock[<span class="hljs-type">Test</span>]
-<span class="hljs-comment">// m: Test = repl.MdocSession$MdocApp$TestMock$1@3ac1541b</span>
+<span class="hljs-comment">// m: Test = repl.MdocSession$MdocApp$TestMock$1@72290fdb</span>
 
 when(() =&gt; m.zeroParameter()).expects().returns(<span class="hljs-number">1</span>)
 <span class="hljs-comment">// res36: CallHandler0[Int] = zeroParameter() once (never called - UNSATISFIED)</span>
