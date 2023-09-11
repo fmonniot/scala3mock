@@ -20,10 +20,13 @@ private[scala3mock] object WhenImpl:
       val mf = ${createMockFunction(f)}.asInstanceOf[MockFunction1[T1, R]]
 
       // used to debug what it is being infered
-      //println(s"selected MockFunction1 = $mf")
-      //println(s"T1 = " + ${Expr(Type.show[T1])})
-      //println(s"R =  " + ${Expr(Type.show[R])})
-
+      /*
+      println(s"""|selected MockFunction1 = $mf
+                  |T1 = ${${Expr(Type.show[T1])}}
+                  |T1.repr = ${${Expr(TypeRepr.of[T1].toString())}}
+                  |R = ${${Expr(Type.show[R])}}
+                  |""".stripMargin)
+      */
       mf
     }
 
@@ -127,7 +130,7 @@ private[scala3mock] object WhenImpl:
                 // If there are no overload, let's use the method name as the mock key. Otherwise
                 // append the index of the overload. Using the same sort here and in the mock
                 // declaration is important for the indices to match.
-                if overload.length == 1 then name
+                if overload.length < 2 then name
                 else {
                   val idx = overload.indexWhere(_.signature == signature)
 

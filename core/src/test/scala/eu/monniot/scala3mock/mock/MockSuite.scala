@@ -77,10 +77,14 @@ class MockSuite extends munit.FunSuite with MockFunctions {
       when(m.repeatedParam _).expects(0, Seq.empty).returning("hello")
       assertEquals(m.repeatedParam(0), "hello")
 
-      // TODO Not supported yet
-      // https://github.com/fmonniot/scala3mock/issues/4
-      // when(m.byNameParam).expects(3).returns("ok")
-      // assertEquals(m.byNameParam(3), "ok")
+      // Partially supported. Issue with type inference still. See https://github.com/fmonniot/scala3mock/issues/4
+      // Interestingly enough here if we do not force the types, the compiler will happily
+      // infer a type `((=> Int) => String)` which doesn't matches any of our `when` declarations.
+      // This can also be fixed by having the when/WhenImpl macros takes a by-name parameter. That
+      // second solution isn't very practical for 3+ matchers as it would explode the number of overload
+      // required to match all possible cases.
+      when[Int, String](m.byNameParam).expects(3).returns("ok")
+      assertEquals(m.byNameParam(3), "ok")
 
       // implicit parameters
       given y: Double = 1.23
