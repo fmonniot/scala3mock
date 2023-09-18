@@ -234,14 +234,19 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
           if tt != TypeTree.of[T]
           then tt
           else
-            // eg. T[x, y]
-            val typeApply = TypeApply(
-              Select(
-                New(TypeTree.of[T]),
-                classDef.constructor.symbol
-              ),
-              tType.typeArgs.map(Inferred(_))
+            val select = Select(
+              New(TypeTree.of[T]),
+              classDef.constructor.symbol
             )
+
+            val typeApply =
+              if tType.typeArgs.isEmpty then select
+              else
+                // eg. T[x, y]
+                TypeApply(
+                  select,
+                  tType.typeArgs.map(Inferred(_))
+                )
 
             // Apply the parameter list to build out the fully constructed parent
             classDef.constructor.paramss
