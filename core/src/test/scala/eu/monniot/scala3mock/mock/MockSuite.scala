@@ -266,4 +266,11 @@ class MockSuite extends munit.FunSuite with MockFunctions {
       assertEquals(g.b(1), List(4))
     }
   }
+
+  test("ClassWithoutTypeParameters") {
+    withExpectations() {
+      val m = mock[ClassWithoutTypeParameters]
+      assert(m.isInstanceOf[ClassWithoutTypeParameters])
+    }
+  }
 }
