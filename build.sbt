@@ -29,7 +29,7 @@ lazy val scala3mock = project
 lazy val core = project
   .in(file("./core"))
   .settings(
-    name := "scala3mock-core",
+    name := "scala3mock",
     scalacOptions ++= Seq("-feature", "-explain"),
     Test / scalacOptions += "-Xcheck-macros",
 
