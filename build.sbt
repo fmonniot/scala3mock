@@ -24,6 +24,7 @@ ThisBuild / developers := List(
 lazy val scala3mock = project
   .in(file("."))
   .aggregate(core, scalatest)
+  .settings(publish/skip := true)
 
 lazy val core = project
   .in(file("./core"))
