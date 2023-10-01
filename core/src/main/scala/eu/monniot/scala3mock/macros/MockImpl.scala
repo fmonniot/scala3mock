@@ -42,22 +42,24 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
   def debug(x: String): Unit =
     if debug then println(x) else ()
 
-  private def defaultLiteral(tpe: TypeRepr): Literal =
-    if tpe <:< TypeRepr.of[AnyRef] then Literal(NullConstant())
-    else if tpe =:= TypeRepr.of[Boolean] then Literal(BooleanConstant(false))
-    else if tpe =:= TypeRepr.of[Byte] then Literal(ByteConstant(0))
-    else if tpe =:= TypeRepr.of[Short] then Literal(ShortConstant(0))
-    else if tpe =:= TypeRepr.of[Int] then Literal(IntConstant(0))
-    else if tpe =:= TypeRepr.of[Long] then Literal(LongConstant(0))
-    else if tpe =:= TypeRepr.of[Float] then Literal(FloatConstant(0))
-    else if tpe =:= TypeRepr.of[Double] then Literal(DoubleConstant(0))
-    else if tpe =:= TypeRepr.of[Char] then Literal(CharConstant(0))
-    else if tpe =:= TypeRepr.of[String] then Literal(StringConstant(""))
-    else if tpe =:= TypeRepr.of[Unit] then Literal(UnitConstant())
-    else
-      throw new UnsupportedOperationException(
-        s"Don't know the default literal value of type $tpe."
-      )
+  private def defaultValueForType(tpe: TypeRepr): Term =
+    Implicits.search(TypeRepr.of[Default].appliedTo(tpe)) match {
+      case e: ImplicitSearchSuccess =>
+        // Here we are voluntarily not supporting classes that have
+        // type parameters. We can do so because the Default type class
+        // do not have any specific values with it, so it would default
+        // to the AnyRef one (given[Y]). The issue with this one is that
+        // we have to align the types, and I'm not entirely sure how to
+        // do so. So for now we always return null and future us can worry
+        // about this issue.
+        if (tpe.typeArgs.isEmpty) Select.unique(e.tree, "default")
+        else Literal(NullConstant())
+
+      case e: ImplicitSearchFailure =>
+        report.errorAndAbort(
+          s"Couldn't find a Default instance for the type ${tpe}: ${e.explanation}"
+        )
+    }
 
   // Given a symbol, return the MockFunction symbol as well as its type parameters
   private def buildMockFunctionType(symbol: Symbol): (Symbol, List[TypeRepr]) =
