@@ -273,4 +273,13 @@ class MockSuite extends munit.FunSuite with MockFunctions {
       assert(m.isInstanceOf[ClassWithoutTypeParameters])
     }
   }
+
+  test("PrintStream - class with private constructor - issue #15") {
+    withExpectations() {
+      val m = mock[java.io.PrintStream]
+
+      when(m.print(_: String)).expects("hello")
+      m.print("hello")
+    }
+  }
 }
