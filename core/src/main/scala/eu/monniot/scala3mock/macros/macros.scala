@@ -7,6 +7,12 @@ import eu.monniot.scala3mock.main.Default
 trait Mocks:
   inline def mock[T](using MockContext): T = MockImpl[T]
 
+  /** Like mock but enable internal debug log for our macros. Use when you have
+    * found an issue and want to report it to the maintainers.
+    */
+  inline def mockWithDebuggingOutput[T](using MockContext): T =
+    MockImpl.debug[T]
+
   import scala.quoted.*
 
   // The Default constraint on the return type somehow help the compiler
