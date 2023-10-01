@@ -273,4 +273,30 @@ class MockSuite extends munit.FunSuite with MockFunctions {
       assert(m.isInstanceOf[ClassWithoutTypeParameters])
     }
   }
+
+  test("PrintStream - class with private constructor - issue #15") {
+    withExpectations() {
+      val m = mock[java.io.PrintStream]
+
+      when(m.print(_: String)).expects("hello")
+      m.print("hello")
+    }
+  }
+
+  test("User's can define their own Default value") {
+    case class MyType(s: String)
+    given Default[MyType] with { val default = MyType("testing") }
+
+    trait MyService {
+      def service(): MyType
+    }
+
+    withExpectations() {
+      val m = mock[MyService]
+
+      when(() => m.service()).expects()
+
+      assertEquals(m.service(), MyType("testing"))
+    }
+  }
 }

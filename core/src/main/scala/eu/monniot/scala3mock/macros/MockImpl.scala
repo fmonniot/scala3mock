@@ -42,22 +42,24 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
   def debug(x: String): Unit =
     if debug then println(x) else ()
 
-  private def defaultLiteral(tpe: TypeRepr): Literal =
-    if tpe <:< TypeRepr.of[AnyRef] then Literal(NullConstant())
-    else if tpe =:= TypeRepr.of[Boolean] then Literal(BooleanConstant(false))
-    else if tpe =:= TypeRepr.of[Byte] then Literal(ByteConstant(0))
-    else if tpe =:= TypeRepr.of[Short] then Literal(ShortConstant(0))
-    else if tpe =:= TypeRepr.of[Int] then Literal(IntConstant(0))
-    else if tpe =:= TypeRepr.of[Long] then Literal(LongConstant(0))
-    else if tpe =:= TypeRepr.of[Float] then Literal(FloatConstant(0))
-    else if tpe =:= TypeRepr.of[Double] then Literal(DoubleConstant(0))
-    else if tpe =:= TypeRepr.of[Char] then Literal(CharConstant(0))
-    else if tpe =:= TypeRepr.of[String] then Literal(StringConstant(""))
-    else if tpe =:= TypeRepr.of[Unit] then Literal(UnitConstant())
-    else
-      throw new UnsupportedOperationException(
-        s"Don't know the default literal value of type $tpe."
-      )
+  private def defaultValueForType(tpe: TypeRepr): Term =
+    Implicits.search(TypeRepr.of[Default].appliedTo(tpe)) match {
+      case e: ImplicitSearchSuccess =>
+        // Here we are voluntarily not supporting classes that have
+        // type parameters. We can do so because the Default type class
+        // do not have any specific values with it, so it would default
+        // to the AnyRef one (given[Y]). The issue with this one is that
+        // we have to align the types, and I'm not entirely sure how to
+        // do so. So for now we always return null and future us can worry
+        // about this issue.
+        if (tpe.typeArgs.isEmpty) Select.unique(e.tree, "default")
+        else Literal(NullConstant())
+
+      case e: ImplicitSearchFailure =>
+        report.errorAndAbort(
+          s"Couldn't find a Default instance for the type ${tpe}: ${e.explanation}"
+        )
+    }
 
   // Given a symbol, return the MockFunction symbol as well as its type parameters
   private def buildMockFunctionType(symbol: Symbol): (Symbol, List[TypeRepr]) =
@@ -169,6 +171,20 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
           s"Unsupported symbol tree. Expected ClassDef but got ${tree.toString().split("\\(")(0)}"
         )
 
+    // We used to use classSymbol.constructor to find the main constructor, but it turns
+    // out that this can provide us with a private one, which isn't all that useful to us.
+    // I also haven't found a good way to list all available constructors, so I'm building
+    // that list manually by filtering on DefDef and name.
+    // We then exclude the private ones and take the first constructor available. If none
+    // are found, we can't build a mock class so we issue an error
+    val constructor = classSymbol.declarations
+      .filter(_.isDefDef)
+      .filter(_.name == "<init>")
+      .filterNot(_.flags.is(Flags.Private))
+      .map(_.tree.asInstanceOf[DefDef])
+      .headOption
+      .getOrElse(report.errorAndAbort("No public constructor found"))
+
     // If the class/trait has type parameters, build a replacements list. It maps from the
     // type parameter to the concrete type. We need to reference the concrete one when implementing
     // methods or when declaring mocks.
@@ -176,7 +192,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
       if (tType.typeArgs.isEmpty) then List.empty
       else
 
-        val typeParams = classDef.constructor.paramss
+        val typeParams = constructor.paramss
           .flatMap {
             case TypeParamClause(typeDefs) => typeDefs
             case _                         => None
@@ -226,7 +242,8 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
     // But when building the class definition, we need to use term if the mocked type T
     // needs to call the constructor of T with default values.
     val parentsTree: List[Tree] =
-      val termParams = classDef.constructor.termParamss.map(_.params).flatten
+
+      val termParams = constructor.termParamss.map(_.params).flatten
 
       if termParams.isEmpty then parentsTypes
       else
@@ -236,7 +253,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
           else
             val select = Select(
               New(TypeTree.of[T]),
-              classDef.constructor.symbol
+              constructor.symbol
             )
 
             val typeApply =
@@ -249,9 +266,9 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
                 )
 
             // Apply the parameter list to build out the fully constructed parent
-            classDef.constructor.paramss
+            constructor.paramss
               .collect { case TermParamClause(defs) =>
-                defs.map(valDef => defaultLiteral(valDef.tpt.tpe))
+                defs.map(valDef => defaultValueForType(valDef.tpt.tpe))
               }
               .foldLeft[Term](typeApply) { case (a, b) =>
                 Apply(a, b)
@@ -397,7 +414,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
     val valDefs = fieldsToOverride.map { sym =>
       val s = cls.fieldMember(sym.name)
 
-      ValDef(s, Some(defaultLiteral(s.typeRef)))
+      ValDef(s, Some(defaultValueForType(s.typeRef)))
     }
 
     // And we can now wire the class definition together
