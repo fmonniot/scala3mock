@@ -24,4 +24,11 @@ object Default:
   given Default[Unit] with { val default = () }
 
   // AnyRef
+  given Default[java.io.OutputStream] with {
+    val default = java.io.OutputStream.nullOutputStream()
+  }
+
+  // Note that our macro currently doesn't support Default instances of higher kinded types and instead
+  // uses `null` literal for those. If we want to add support for those here, we will need to improve
+  // our macro system first.
   given [Y]: Default[Y] with { val default = null.asInstanceOf[Y] }
