@@ -22,3 +22,9 @@ If your interface requires you to implement clone for example, you can create an
 ## Can I mock static Java calls?
 
 Scala3Mock works by creating a subclass and instantiating said subclasses. As static methods are defined on the original class itself, Scala3Mock cannot mock them. We recommend you use Dependency Injection, higher-order functions or OO patterns (interfaces, facades, etc) instead of depending directly on implementations.
+
+## Using Scala3Mock with Scala 3.3.x
+
+Unfortunately this serie of the Scala compiler [has a bug](https://github.com/fmonniot/scala3mock/pull/2) that, at the time of writing, is only fixed [in 3.4.x](https://github.com/lampepfl/dotty/pull/18092).
+
+Fortunately, the workaround for users of this library is pretty simple: when using the `when` macro, provide all the required types. For example, instead of `when(m.oneParam).expects(List(2)).returns("hello")` you'd have to write `when[List[Int], String](m.oneParam).expects(List(2)).returns("hello")`.
