@@ -40,7 +40,7 @@ lazy val core = project
     // details of classes. Without it, only the signatures are available.
     // Test / scalacOptions += "-Yretain-trees", // For debugging when writing macros
 
-    libraryDependencies += "org.scalameta" %% "munit" % "1.0.0-M7" % Test
+    libraryDependencies += "org.scalameta" %% "munit" % "1.0.0-M10" % Test
   )
 
 lazy val scalatest = project
