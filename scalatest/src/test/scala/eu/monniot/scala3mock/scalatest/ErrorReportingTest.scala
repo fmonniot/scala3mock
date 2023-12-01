@@ -59,7 +59,7 @@ class ErrorReportingTest
     getThrowable[NullPointerException](outcome) shouldBe a[NullPointerException]
   }
 
-  it should "report default mock names" in pendingUntilFixed {
+  it should "report default mock names" in {
     class TestedSuite extends AnyFunSuite with MockFactory {
       test("execute block of code") {
         val mockA = mock[TestTrait]
@@ -73,21 +73,22 @@ class ErrorReportingTest
     val outcome = runTestCase[TestedSuite](new TestedSuite)
     val errorMessage = getErrorMessage[TestFailedException](outcome)
     errorMessage shouldBe
-      """|Unexpected call: <mock-2> TestTrait.oneParamMethod(3)
+      """|Unexpected call: <ErrorReportingTest.scala#L65> TestTrait.oneParamMethod(3)
         |
         |Expected:
         |inAnyOrder {
-        |  <mock-1> TestTrait.oneParamMethod(3) once (never called - UNSATISFIED)
+        |  <ErrorReportingTest.scala#L64> TestTrait.oneParamMethod(3) once (never called - UNSATISFIED)
         |}
         |
         |Actual:
-        |  <mock-2> TestTrait.oneParamMethod(3)
+        |  <ErrorReportingTest.scala#L65> TestTrait.oneParamMethod(3)
       """.stripMargin.trim
   }
 
-  it should "report unexpected calls in readable manner" in pendingUntilFixed {
-    trait OuterTestTrait
-        extends TestTrait // To have a different name being reported
+  it should "report unexpected calls in readable manner" in {
+    // To have a different name being reported
+    trait OuterTestTrait extends TestTrait
+
     class TestedSuite extends AnyFunSuite with MockFactory {
       val suiteScopeMock = mock[OuterTestTrait]
       when(() => suiteScopeMock.noParamMethod())
@@ -107,17 +108,17 @@ class ErrorReportingTest
     val outcome = runTestCase[TestedSuite](new TestedSuite)
     val errorMessage = getErrorMessage[TestFailedException](outcome)
     errorMessage shouldBe
-      """|Unexpected call: <mock-1> TestTrait.oneParamMethod(3)
+      """|Unexpected call: <ErrorReportingTest.scala#L99> TestTrait.oneParamMethod(3)
          |
          |Expected:
          |inAnyOrder {
-         |  <suite mock> TestTrait.noParamMethod() twice (called once - UNSATISFIED)
-         |  <mock-1> TestTrait.polymorphicMethod[T](List(1)) once (never called - UNSATISFIED)
+         |  <ErrorReportingTest.scala#L92> OuterTestTrait.noParamMethod() twice (called once - UNSATISFIED)
+         |  <ErrorReportingTest.scala#L99> TestTrait.polymorphicMethod[T](List(1)) once (never called - UNSATISFIED)
          |}
          |
          |Actual:
-         |  <suite mock> TestTrait.noParamMethod()
-         |  <mock-1> TestTrait.oneParamMethod(3)
+         |  <ErrorReportingTest.scala#L92> OuterTestTrait.noParamMethod()
+         |  <ErrorReportingTest.scala#L99> TestTrait.oneParamMethod(3)
       """.stripMargin.trim
   }
 }
