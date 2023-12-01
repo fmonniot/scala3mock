@@ -133,8 +133,16 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
       // from the mock's Map keys (which is what mockName refer to). It includes a few
       // more information to make it more user friendly.
       val pos = Position.ofMacroExpansion
+      // For now I'm going to assume that there can only be one type parameter list. That might
+      // be (or become) wrong but it does simplify the name generation quite a bit.
+      val typeParameters =
+        val tpe = sym.paramSymss.filter(_.exists(_.isType)).flatten
+
+        if tpe.isEmpty then ""
+        else tpe.map(_.typeRef.show).mkString("[", ",", "]")
+
       val mockToStringName =
-        s"<${pos.sourceFile.name}#L${pos.startLine}> $mockedClassName.${sym.name}"
+        s"<${pos.sourceFile.name}#L${pos.startLine}> $mockedClassName.${sym.name}${typeParameters}"
 
       val createMF =
         Apply(

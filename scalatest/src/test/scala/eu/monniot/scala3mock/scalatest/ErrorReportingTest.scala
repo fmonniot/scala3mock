@@ -107,14 +107,13 @@ class ErrorReportingTest
 
     val outcome = runTestCase[TestedSuite](new TestedSuite)
     val errorMessage = getErrorMessage[TestFailedException](outcome)
-    // TODO Missing the type parameters on polymorphicMethod expected (`*Method[T](List(1))`)
     errorMessage shouldBe
       """|Unexpected call: <ErrorReportingTest.scala#L99> TestTrait.oneParamMethod(3)
          |
          |Expected:
          |inAnyOrder {
          |  <ErrorReportingTest.scala#L92> OuterTestTrait.noParamMethod() twice (called once - UNSATISFIED)
-         |  <ErrorReportingTest.scala#L99> TestTrait.polymorphicMethod(List(1)) once (never called - UNSATISFIED)
+         |  <ErrorReportingTest.scala#L99> TestTrait.polymorphicMethod[T](List(1)) once (never called - UNSATISFIED)
          |}
          |
          |Actual:
