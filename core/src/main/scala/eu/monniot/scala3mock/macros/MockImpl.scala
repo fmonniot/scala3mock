@@ -133,10 +133,14 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
       // from the mock's Map keys (which is what mockName refer to). It includes a few
       // more information to make it more user friendly.
       val pos = Position.ofMacroExpansion
-      val mockToStringName = s"<${pos.sourceFile.name}#L${pos.startLine}> $mockedClassName.${sym.name}"
+      val mockToStringName =
+        s"<${pos.sourceFile.name}#L${pos.startLine}> $mockedClassName.${sym.name}"
 
-      val createMF =  
-        Apply(newMockFunction, List(ctxTerm, Literal(StringConstant(mockToStringName))))
+      val createMF =
+        Apply(
+          newMockFunction,
+          List(ctxTerm, Literal(StringConstant(mockToStringName)))
+        )
           .appliedTo(defaultTypeClass.tree)
 
       val tuple2Sym = defn.TupleClass(2)
