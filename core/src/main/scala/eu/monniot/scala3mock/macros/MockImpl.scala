@@ -105,11 +105,11 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
 
   private def buildMocksSeq(
       functionsToMock: List[(String, Symbol)],
-      ctxTerm: Term
+      ctxTerm: Term,
+      mockedClassName: String
   ): List[Expr[(String, MockFunction)]] =
     functionsToMock.map { case (mockName, sym) =>
       val (mockFunctionSym, mockFunctionTypeParams) = buildMockFunctionType(sym)
-      val mockFunctionTerm = Ident(mockFunctionSym.termRef)
 
       val implicitDefaultType =
         TypeRepr.of[Default].appliedTo(mockFunctionTypeParams.last)
@@ -129,8 +129,13 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
         mockFunctionTypeParams.map(ref => Inferred(ref))
       )
 
-      val createMF =
-        Apply(newMockFunction, List(ctxTerm, Literal(StringConstant(sym.name))))
+      // The name of the mock as passed to the MockFunctionX trait is slightly different
+      // from the mock's Map keys (which is what mockName refer to). It includes a few
+      // more information to make it more user friendly.
+      val mockToStringName = mockedClassName + "." + sym.name
+
+      val createMF =  
+        Apply(newMockFunction, List(ctxTerm, Literal(StringConstant(mockToStringName))))
           .appliedTo(defaultTypeClass.tree)
 
       val tuple2Sym = defn.TupleClass(2)
@@ -359,7 +364,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
 
     // mocks map
     val tuplesAsExpression =
-      Expr.ofSeq(buildMocksSeq(methodsOverridesSymbols, ctxTerm))
+      Expr.ofSeq(buildMocksSeq(methodsOverridesSymbols, ctxTerm, classDef.name))
     val mocksValSym = cls.declaredField("mocks")
     val mocksVal =
       ValDef(mocksValSym, Some('{ Map.from(${ tuplesAsExpression }) }.asTerm))
