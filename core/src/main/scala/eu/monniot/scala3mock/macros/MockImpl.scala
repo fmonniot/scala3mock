@@ -132,7 +132,8 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
       // The name of the mock as passed to the MockFunctionX trait is slightly different
       // from the mock's Map keys (which is what mockName refer to). It includes a few
       // more information to make it more user friendly.
-      val mockToStringName = mockedClassName + "." + sym.name
+      val pos = Position.ofMacroExpansion
+      val mockToStringName = s"<${pos.sourceFile.name}#L${pos.startLine}> $mockedClassName.${sym.name}"
 
       val createMF =  
         Apply(newMockFunction, List(ctxTerm, Literal(StringConstant(mockToStringName))))
