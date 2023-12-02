@@ -5,6 +5,8 @@ title: Getting Started
 
 This article describes how to get started with Scala3Mock. Because it is only an introduction, only the basics usage are described. For a comprehensive guide, see the [User Guide](user-guide/features.md).
 
+If you are coming from ScalaMock for Scala 2, there are a few changes you need to be aware of. See the [FAQ](/user-guide/faq.md#moving-from-scalaMock-to-scala3mock).
+
 ## Install
 
 To get started with SBT and ScalaTest, add the following dependencies to your **build.sbt**:
@@ -16,7 +18,7 @@ libraryDependencies += "eu.monniot" %% "scala3mock-scalatest" % "@VERSION@" % Te
 While some testing framework integration exits, Scala3Mock at its core do not require one.
 You can learn more about the various testing framework integration by going to to the dedicated page in the user guide. If there is no page, it means no special integration has been written yet (or it is not required). 
 
-If you need more information on other build system, or the different versions of Scala3Mock, head on to the [Installation](user-guide/installation.md) part of the user guide.
+
 
 ## Basic Usage
 
