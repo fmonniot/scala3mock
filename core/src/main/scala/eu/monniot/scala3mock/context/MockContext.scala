@@ -38,4 +38,4 @@ trait MockContext:
     )
 
   def errorContext(callLog: ListBuffer[Call], expectationContext: Handlers) =
-    s"Expected:\n$expectationContext\n\nActual:\n$callLog"
+    s"Expected:\n$expectationContext\n\nActual:\n${callLog.mkString("  ", "\n  ", "")}"
