@@ -5,4 +5,5 @@ object Matchers extends Matchers
 trait Matchers extends MatchPredicate:
 
   def * = MatchAny()
-  def ~(value: Double) = MatchEpsilon(value)
+
+  extension (value: Double) def unary_~ = MatchEpsilon(value)
