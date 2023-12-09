@@ -3,7 +3,7 @@ package eu.monniot.scala3mock.functions
 import eu.monniot.scala3mock.context.{Call, MockContext}
 import eu.monniot.scala3mock.handlers.*
 import eu.monniot.scala3mock.matchers.MatcherBase
-import eu.monniot.scala3mock.main.Default
+import eu.monniot.scala3mock.Default
 
 trait MockFunction:
   self: FakeFunction =>

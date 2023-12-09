@@ -3,7 +3,7 @@ package eu.monniot.scala3mock.handlers
 import eu.monniot.scala3mock.functions.*
 import eu.monniot.scala3mock.context.Call
 import eu.monniot.scala3mock.matchers.{ArgumentMatcher, MatcherBase}
-import eu.monniot.scala3mock.main.Default
+import eu.monniot.scala3mock.Default
 
 class CallHandler0[R: Default](
     target: FakeFunction,

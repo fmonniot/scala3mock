@@ -1,4 +1,4 @@
-package eu.monniot.scala3mock.main
+package eu.monniot.scala3mock
 
 /** Provides a default value for some type. This is used for mocked functions to
   * return something if no specific value have beeen provided.

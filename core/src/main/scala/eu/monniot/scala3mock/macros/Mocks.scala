@@ -2,7 +2,7 @@ package eu.monniot.scala3mock.macros
 
 import eu.monniot.scala3mock.context.{Mock, MockContext}
 import eu.monniot.scala3mock.functions._
-import eu.monniot.scala3mock.main.Default
+import eu.monniot.scala3mock.Default
 
 trait Mocks:
   inline def mock[T](using MockContext): T = MockImpl[T]

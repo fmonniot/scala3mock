@@ -8,7 +8,7 @@ import eu.monniot.scala3mock.functions.{
 }
 import eu.monniot.scala3mock.context.Call
 import eu.monniot.scala3mock.matchers.ArgumentMatcher
-import eu.monniot.scala3mock.main.Default
+import eu.monniot.scala3mock.Default
 
 class CallHandler[R: Default](
     val target: FakeFunction,

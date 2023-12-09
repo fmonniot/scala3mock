@@ -2,7 +2,7 @@ package eu.monniot.scala3mock.macros
 
 import eu.monniot.scala3mock.functions.*
 import eu.monniot.scala3mock.context.Mock
-import eu.monniot.scala3mock.main.Default
+import eu.monniot.scala3mock.Default
 
 private[scala3mock] object WhenImpl:
 
