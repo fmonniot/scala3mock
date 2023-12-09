@@ -10,8 +10,6 @@ import scala.annotation.unused
 import scala.collection.mutable.ListBuffer
 import scala.util.control.NonFatal
 
-
-
 object ScalaMocks extends ScalaMocks
 
 /** Helper trait that provide access to all components (mandatory or optional)
@@ -26,9 +24,9 @@ trait ScalaMocks
   // parameter. That might have been fixed in 3.3+, but we can't use
   // that version so for now we will duplicate the definition.
   def withExpectations[F[_], A](verifyAfterRun: Boolean = true)(
-    f: MockContext ?=> F[A]
-)(using MonadError[F, Throwable]): F[A] = eu.monniot.scala3mock.cats.withExpectations(verifyAfterRun)(f)
-
+      f: MockContext ?=> F[A]
+  )(using MonadError[F, Throwable]): F[A] =
+    eu.monniot.scala3mock.cats.withExpectations(verifyAfterRun)(f)
 
 // A standalone function to run a test with a mock context, asserting all expectations at the end.
 def withExpectations[F[_], A](verifyAfterRun: Boolean = true)(
@@ -69,8 +67,6 @@ def withExpectations[F[_], A](verifyAfterRun: Boolean = true)(
       try
         verifyExpectations()
         me.pure(a)
-      catch
-        case t => me.raiseError(t)
-    else
-      me.pure(a)
+      catch case t => me.raiseError(t)
+    else me.pure(a)
   }
