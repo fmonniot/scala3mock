@@ -15,7 +15,7 @@ libraryDependencies += "eu.monniot" %% "scala3mock" % "@VERSION@" % Test
 libraryDependencies += "eu.monniot" %% "scala3mock-scalatest" % "@VERSION@" % Test
 ```
 
-While some testing framework integration exits, Scala3Mock at its core do not require one.
+While some testing framework integration exists, Scala3Mock at its core do not require one.
 You can learn more about the various testing framework integration by going to to the dedicated page in the user guide. If there is no page, it means no special integration has been written yet (or it is not required). 
 
 
