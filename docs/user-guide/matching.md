@@ -16,10 +16,10 @@ In this page we will make use of a few common declarations, so let's get them ou
 // Don't do that in your test cases folks :)
 given eu.monniot.scala3mock.context.MockContext = 
   new eu.monniot.scala3mock.context.MockContext:
-    override type ExpectationException = eu.monniot.scala3mock.main.TestExpectationEx
+    override type ExpectationException = eu.monniot.scala3mock.MockExpectationFailed
 
     override def newExpectationException(message: String, methodName: Option[String]): ExpectationException =
-      eu.monniot.scala3mock.main.TestExpectationEx(message, methodName)
+      eu.monniot.scala3mock.MockExpectationFailed(message, methodName)
 
     override def toString() = s"MockContext()"
 ```

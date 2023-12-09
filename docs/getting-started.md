@@ -5,7 +5,7 @@ title: Getting Started
 
 This article describes how to get started with Scala3Mock. Because it is only an introduction, only the basics usage are described. For a comprehensive guide, see the [User Guide](user-guide/features.md).
 
-If you are coming from ScalaMock for Scala 2, there are a few changes you need to be aware of. See the [FAQ](/user-guide/faq.md#moving-from-scalaMock-to-scala3mock).
+If you are coming from ScalaMock for Scala 2, there are a few changes you need to be aware of. See the [FAQ](user-guide/faq.md#moving-from-scalamock-to-scala3mock).
 
 ## Install
 
@@ -48,7 +48,7 @@ For example, we can check that the name is actually being used and that our form
 To create a new mock, place the following contents into a Scala file within your project:
 
 ```scala mdoc
-import eu.monniot.scala3mock.main.withExpectations
+import eu.monniot.scala3mock.withExpectations
 import eu.monniot.scala3mock.macros.{mock, when}
 
 withExpectations() {
