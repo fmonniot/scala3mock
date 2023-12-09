@@ -17,4 +17,4 @@ trait ScalaMocks
   // that version so for now we will duplicate the definition.
   def withExpectations[A](verifyAfterRun: Boolean = true)(
       f: MockContext ?=> A
-  ): A = main.withExpectations(verifyAfterRun)(f)
+  ): A = eu.monniot.scala3mock.withExpectations(verifyAfterRun)(f)

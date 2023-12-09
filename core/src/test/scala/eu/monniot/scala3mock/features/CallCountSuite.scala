@@ -1,10 +1,9 @@
 package features
 
-import eu.monniot.scala3mock.main.withExpectations
-import eu.monniot.scala3mock.functions.MockFunctions
+import eu.monniot.scala3mock.ScalaMocks
 import eu.monniot.scala3mock.main.TestExpectationEx
 
-class CallCountSuite extends munit.FunSuite with MockFunctions {
+class CallCountSuite extends munit.FunSuite with ScalaMocks {
 
   test("should fail if an unexpected call is made") {
     withExpectations() {

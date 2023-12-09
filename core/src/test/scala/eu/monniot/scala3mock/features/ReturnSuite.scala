@@ -1,13 +1,8 @@
 package features
 
-import eu.monniot.scala3mock.main.withExpectations
-import eu.monniot.scala3mock.functions.MockFunctions
-import eu.monniot.scala3mock.main.TestExpectationEx
-import eu.monniot.scala3mock.matchers.MatchAny
+import eu.monniot.scala3mock.ScalaMocks
 
-class ReturnSuite extends munit.FunSuite with MockFunctions {
-
-  def * = new MatchAny
+class ReturnSuite extends munit.FunSuite with ScalaMocks {
 
   test("should return null by default") {
     withExpectations() {
