@@ -4,11 +4,30 @@ import cats.MonadError
 import eu.monniot.scala3mock.context.{Call, MockContext}
 import eu.monniot.scala3mock.functions.MockFunction1
 import eu.monniot.scala3mock.handlers.{CallHandler, Handler, UnorderedHandlers}
-import eu.monniot.scala3mock.main.TestExpectationEx
+import eu.monniot.scala3mock.MockExpectationFailed
 
 import scala.annotation.unused
 import scala.collection.mutable.ListBuffer
 import scala.util.control.NonFatal
+
+
+
+object ScalaMocks extends ScalaMocks
+
+/** Helper trait that provide access to all components (mandatory or optional)
+  * used by the library to build mocks.
+  */
+trait ScalaMocks
+    extends eu.monniot.scala3mock.functions.MockFunctions
+    with eu.monniot.scala3mock.macros.Mocks
+    with eu.monniot.scala3mock.matchers.Matchers:
+
+  // apparently using export in 3.2.2 lose the default value of the
+  // parameter. That might have been fixed in 3.3+, but we can't use
+  // that version so for now we will duplicate the definition.
+  def withExpectations[F[_], A](verifyAfterRun: Boolean = true)(
+    f: MockContext ?=> F[A]
+)(using MonadError[F, Throwable]): F[A] = eu.monniot.scala3mock.cats.withExpectations(verifyAfterRun)(f)
 
 
 // A standalone function to run a test with a mock context, asserting all expectations at the end.
@@ -17,13 +36,13 @@ def withExpectations[F[_], A](verifyAfterRun: Boolean = true)(
 )(using MonadError[F, Throwable]): F[A] =
 
   val ctx = new MockContext:
-    override type ExpectationException = TestExpectationEx
+    override type ExpectationException = MockExpectationFailed
 
     override def newExpectationException(
         message: String,
         methodName: Option[String]
     ): ExpectationException =
-      new TestExpectationEx(message, methodName)
+      new MockExpectationFailed(message, methodName)
 
     override def toString() = s"MockContext(callLog = $callLog)"
 
@@ -42,14 +61,16 @@ def withExpectations[F[_], A](verifyAfterRun: Boolean = true)(
     if !oldExpectationContext.isSatisfied then
       ctx.reportUnsatisfiedExpectation(oldCallLog, oldExpectationContext)
 
-  try
-    initializeExpectations()
-    MonadError[F, Throwable] // TODO Wire the result and verification correctly
-    val result = f(using ctx)
-    if verifyAfterRun then verifyExpectations()
-    result
-  catch
-    case NonFatal(ex) =>
-      // do not verify expectations - just clear them. Throw original exception
-      // see issue #72
-      throw ex
+  initializeExpectations()
+  val me = MonadError[F, Throwable]
+
+  me.flatMap(f(using ctx)) { a =>
+    if verifyAfterRun then
+      try
+        verifyExpectations()
+        me.pure(a)
+      catch
+        case t => me.raiseError(t)
+    else
+      me.pure(a)
+  }
