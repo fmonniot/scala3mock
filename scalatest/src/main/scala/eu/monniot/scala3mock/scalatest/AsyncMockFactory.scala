@@ -3,7 +3,7 @@ package eu.monniot.scala3mock.scalatest
 import eu.monniot.scala3mock.context.{Mock, MockContext}
 import eu.monniot.scala3mock.macros.{MockImpl, WhenImpl}
 import eu.monniot.scala3mock.functions.*
-import eu.monniot.scala3mock.main.TestExpectationEx
+import eu.monniot.scala3mock.MockExpectationFailed
 import eu.monniot.scala3mock.handlers.UnorderedHandlers
 import scala.collection.mutable.ListBuffer
 import eu.monniot.scala3mock.context.Call

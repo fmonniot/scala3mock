@@ -13,7 +13,7 @@ class BasicTest extends AnyFlatSpec with Matchers with MockFactory {
 
   it should "allow to use mock defined in test case scope" in {
     val mockedTrait = mock[TestTrait]
-    when(mockedTrait.oneParamMethod).expects(1).returning("one")
+    when(mockedTrait.oneParamMethod).expects(*).returning("one")
     when(mockedTrait.oneParamMethod).expects(2).returning("two")
     when(() => mockedTrait.noParamMethod()).expects().returning("yey")
 

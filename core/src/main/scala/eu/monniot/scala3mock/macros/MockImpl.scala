@@ -9,7 +9,7 @@ import eu.monniot.scala3mock.functions.{
 
 import scala.annotation.experimental
 import scala.quoted.*
-import eu.monniot.scala3mock.main.Default
+import eu.monniot.scala3mock.Default
 
 private[scala3mock] object MockImpl:
 

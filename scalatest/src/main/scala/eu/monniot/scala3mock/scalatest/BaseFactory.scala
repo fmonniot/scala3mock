@@ -1,10 +1,11 @@
 package eu.monniot.scala3mock.scalatest
 
 import eu.monniot.scala3mock.context.{Mock, MockContext}
-import eu.monniot.scala3mock.macros.{MockImpl, WhenImpl}
-import eu.monniot.scala3mock.functions.*
-import eu.monniot.scala3mock.main.TestExpectationEx
+import eu.monniot.scala3mock.macros.Mocks
+import eu.monniot.scala3mock.functions.MockFunctions
+import eu.monniot.scala3mock.MockExpectationFailed
 import eu.monniot.scala3mock.handlers.UnorderedHandlers
+import eu.monniot.scala3mock.matchers.Matchers
 import scala.collection.mutable.ListBuffer
 import eu.monniot.scala3mock.context.Call
 import eu.monniot.scala3mock.macros.Mocks
@@ -17,7 +18,7 @@ import org.scalatest.exceptions.TestFailedException
 import org.scalatest.exceptions.StackDepthException
 import eu.monniot.scala3mock.handlers.Handlers
 
-trait BaseFactory extends Mocks:
+trait BaseFactory extends MockFunctions with Mocks with Matchers:
 
   protected var autoVerify = true
 

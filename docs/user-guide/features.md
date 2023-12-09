@@ -46,8 +46,7 @@ abstract class Database {
 }
 
 // And import the scala3mock content.
-import eu.monniot.scala3mock.macros.{mock, when}
-import eu.monniot.scala3mock.matchers.MatchAny
+import eu.monniot.scala3mock.ScalaMocks.*
 ```
 
 ```scala mdoc:invisible
@@ -55,10 +54,10 @@ import eu.monniot.scala3mock.matchers.MatchAny
 // Don't do that in your test cases folks :)
 given eu.monniot.scala3mock.context.MockContext = 
   new eu.monniot.scala3mock.context.MockContext:
-    override type ExpectationException = eu.monniot.scala3mock.main.TestExpectationEx
+    override type ExpectationException = eu.monniot.scala3mock.MockExpectationFailed
 
     override def newExpectationException(message: String, methodName: Option[String]): ExpectationException =
-      eu.monniot.scala3mock.main.TestExpectationEx(message, methodName)
+      eu.monniot.scala3mock.MockExpectationFailed(message, methodName)
 
     override def toString() = s"MockContext()"
 ```
@@ -69,25 +68,31 @@ Scala3Mock can create mock out of classes (abstract or not, with parameters or n
 
 ```scala mdoc
 val heaterMock  = mock[Heater]
-//val machineMock = mock[CoffeeMachine]
 val dbMock      = mock[Database]
 ```
 
 ## Argument matching
 
+```scala mdoc:invisible
+// This is a hack because for some reason mdoc doesn't work very well
+// with the tilde extension method. We have a test in the lib to check
+// that there is no need for this re-definition in user's code.
+extension (value: Double)
+    def unary_~ = eu.monniot.scala3mock.matchers.MatchEpsilon(value)
+```
+
 ```scala mdoc
-import eu.monniot.scala3mock.matchers.{MatchAny, MatchEpsilon, MatchPredicate}
 // expect someMethod("foo", 42) to be called
 when(dbMock.someMethod).expects("foo", 42)  
 
 // expect someMethod("foo", x) to be called for some integer x
-when(dbMock.someMethod).expects("foo", MatchAny())
+when(dbMock.someMethod).expects("foo", *)
 
 // expect someMethod("foo", x) to be called for some float x that is close to 42.0
-when(dbMock.otherMethod).expects("foo", MatchEpsilon(42.0))
+when(dbMock.otherMethod).expects("foo", ~42.0)
 
 // expect sendMessage(receiver, message) for some receiver with name starting with "A"
-when(dbMock.sendMessage).expects(MatchPredicate.where { (receiver: Player, message: Message) => 
+when(dbMock.sendMessage).expects(where { (receiver: Player, message: Message) => 
     receiver.name.startsWith("A")
 }) 
 ```
@@ -116,13 +121,13 @@ inAnyOrder {
 
 ```scala mdoc:silent
 // expect message to be sent twice
-when(dbMock.sendMessage).expects(MatchAny(), MatchAny()).twice
+when(dbMock.sendMessage).expects(*, *).twice
 
 // expect message to be sent any number of times
-when(dbMock.sendMessage).expects(MatchAny(), MatchAny()).anyNumberOfTimes
+when(dbMock.sendMessage).expects(*, *).anyNumberOfTimes
 
 // expect message to be sent no more than twice
-when(dbMock.sendMessage).expects(MatchAny(), MatchAny()).noMoreThanTwice
+when(dbMock.sendMessage).expects(*, *).noMoreThanTwice
 ```
 
 ## Returning values
@@ -143,7 +148,7 @@ when(dbMock.getPlayerByName).expects("George").throwing(new NoSuchElementExcepti
 If your mock needs to do more complex calculation, `onCall` will let you do exactly that:
 
 ```scala mdoc:silent
-when(dbMock.increment).expects(MatchAny()).onCall {
+when(dbMock.increment).expects(*).onCall {
     case 0 => throw RuntimeException("0 will throw")
     case arg => arg + 1
 }.twice

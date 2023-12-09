@@ -1,7 +1,7 @@
 package eu.monniot.scala3mock.functions
 
 import eu.monniot.scala3mock.context.MockContext
-import eu.monniot.scala3mock.main.Default
+import eu.monniot.scala3mock.Default
 
 object MockFunctions extends MockFunctions
 trait MockFunctions {

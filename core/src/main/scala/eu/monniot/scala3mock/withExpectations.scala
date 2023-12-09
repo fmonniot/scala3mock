@@ -1,4 +1,4 @@
-package eu.monniot.scala3mock.main
+package eu.monniot.scala3mock
 
 import eu.monniot.scala3mock.context.{Call, MockContext}
 import eu.monniot.scala3mock.functions.MockFunction1
@@ -8,23 +8,19 @@ import scala.annotation.unused
 import scala.collection.mutable.ListBuffer
 import scala.util.control.NonFatal
 
-class TestExpectationEx(message: String, methodName: Option[String])
-    extends Throwable:
-  override def getMessage(): String = message
-
 // A standalone function to run a test with a mock context, asserting all expectations at the end.
 def withExpectations[A](verifyAfterRun: Boolean = true)(
     f: MockContext ?=> A
 ): A =
 
   val ctx = new MockContext:
-    override type ExpectationException = TestExpectationEx
+    override type ExpectationException = MockExpectationFailed
 
     override def newExpectationException(
         message: String,
         methodName: Option[String]
     ): ExpectationException =
-      new TestExpectationEx(message, methodName)
+      new MockExpectationFailed(message, methodName)
 
     override def toString() = s"MockContext(callLog = $callLog)"
 

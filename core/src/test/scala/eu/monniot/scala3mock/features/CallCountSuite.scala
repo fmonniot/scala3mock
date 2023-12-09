@@ -1,16 +1,15 @@
 package features
 
-import eu.monniot.scala3mock.main.withExpectations
-import eu.monniot.scala3mock.functions.MockFunctions
-import eu.monniot.scala3mock.main.TestExpectationEx
+import eu.monniot.scala3mock.ScalaMocks
+import eu.monniot.scala3mock.MockExpectationFailed
 
-class CallCountSuite extends munit.FunSuite with MockFunctions {
+class CallCountSuite extends munit.FunSuite with ScalaMocks {
 
   test("should fail if an unexpected call is made") {
     withExpectations() {
       val intFunMock = mockFunction[Int, String]
 
-      intercept[TestExpectationEx] { intFunMock(42) }
+      intercept[MockExpectationFailed] { intFunMock(42) }
     }
   }
 
@@ -43,12 +42,12 @@ class CallCountSuite extends munit.FunSuite with MockFunctions {
 
       intFunMock(42)
       intFunMock(42)
-      intercept[TestExpectationEx] { intFunMock(42) }
+      intercept[MockExpectationFailed] { intFunMock(42) }
     }
   }
 
   test("should fail if a method isn't called often enough (twice)") {
-    intercept[TestExpectationEx] {
+    intercept[MockExpectationFailed] {
       withExpectations() {
         val noArgFunMock = mockFunction[String]
         val intFunMock = mockFunction[Int, String]
@@ -68,7 +67,7 @@ class CallCountSuite extends munit.FunSuite with MockFunctions {
 
       intFunMock(42)
       intFunMock(42)
-      intercept[TestExpectationEx] { intFunMock(42) }
+      intercept[MockExpectationFailed] { intFunMock(42) }
     }
   }
 
@@ -110,7 +109,7 @@ class CallCountSuite extends munit.FunSuite with MockFunctions {
       intFunMock.expects(2).noMoreThanTwice
       intFunMock(2)
       intFunMock(2)
-      intercept[TestExpectationEx] { intFunMock(42) }
+      intercept[MockExpectationFailed] { intFunMock(42) }
     }
   }
 
@@ -129,7 +128,7 @@ class CallCountSuite extends munit.FunSuite with MockFunctions {
       val intFunMock = mockFunction[Int, String]
 
       intFunMock.expects(2).never
-      intercept[TestExpectationEx] { intFunMock(2) }
+      intercept[MockExpectationFailed] { intFunMock(2) }
     }
   }
 
@@ -147,7 +146,7 @@ class CallCountSuite extends munit.FunSuite with MockFunctions {
   }
 
   test("should handle repeated(1 to 2) call count (0)") {
-    intercept[TestExpectationEx] {
+    intercept[MockExpectationFailed] {
       withExpectations() {
         val intFunMock = mockFunction[Int, String]
 
@@ -185,7 +184,7 @@ class CallCountSuite extends munit.FunSuite with MockFunctions {
       intFunMock.expects(2).repeated(1 to 2)
       intFunMock(2)
       intFunMock(2)
-      intercept[TestExpectationEx] { intFunMock(2) }
+      intercept[MockExpectationFailed] { intFunMock(2) }
     }
   }
 
