@@ -1,19 +1,10 @@
 package mock
 
-import eu.monniot.scala3mock.main.withExpectations
-import eu.monniot.scala3mock.functions.MockFunctions
-import eu.monniot.scala3mock.main.TestExpectationEx
-import eu.monniot.scala3mock.matchers.MatchAny
-import eu.monniot.scala3mock.macros.*
-import fixtures.*
-import eu.monniot.scala3mock.handlers.CallHandler1
-import eu.monniot.scala3mock.functions.MockFunction1
-import eu.monniot.scala3mock.context.MockContext
+import eu.monniot.scala3mock.ScalaMocks
 import eu.monniot.scala3mock.main.Default
+import fixtures.*
 
-class MockSuite extends munit.FunSuite with MockFunctions {
-
-  def * = new MatchAny
+class MockSuite extends munit.FunSuite with ScalaMocks {
 
   case class TestException() extends RuntimeException
   case class AnotherTestException() extends RuntimeException
