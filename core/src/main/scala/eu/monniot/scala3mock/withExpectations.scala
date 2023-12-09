@@ -3,7 +3,6 @@ package eu.monniot.scala3mock
 import eu.monniot.scala3mock.context.{Call, MockContext}
 import eu.monniot.scala3mock.functions.MockFunction1
 import eu.monniot.scala3mock.handlers.{CallHandler, Handler, UnorderedHandlers}
-import eu.monniot.scala3mock.main.TestExpectationEx
 
 import scala.annotation.unused
 import scala.collection.mutable.ListBuffer
@@ -15,13 +14,13 @@ def withExpectations[A](verifyAfterRun: Boolean = true)(
 ): A =
 
   val ctx = new MockContext:
-    override type ExpectationException = TestExpectationEx
+    override type ExpectationException = MockExpectationFailed
 
     override def newExpectationException(
         message: String,
         methodName: Option[String]
     ): ExpectationException =
-      new TestExpectationEx(message, methodName)
+      new MockExpectationFailed(message, methodName)
 
     override def toString() = s"MockContext(callLog = $callLog)"
 
