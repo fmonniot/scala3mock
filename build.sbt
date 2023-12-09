@@ -26,7 +26,7 @@ ThisBuild / developers := List(
 
 lazy val scala3mock = project
   .in(file("."))
-  .aggregate(core, scalatest)
+  .aggregate(core, cats, scalatest)
   .settings(publish / skip := true)
 
 lazy val core = project
@@ -41,6 +41,14 @@ lazy val core = project
     // Test / scalacOptions += "-Yretain-trees", // For debugging when writing macros
 
     libraryDependencies += "org.scalameta" %% "munit" % "1.0.0-M10" % Test
+  )
+
+lazy val cats = project
+  .in(file("./cats"))
+  .dependsOn(core)
+  .settings(
+    name := "scala3mock-scalatest",
+    libraryDependencies += "org.typelevel" %% "cats-core" % "2.9.0"
   )
 
 lazy val scalatest = project
