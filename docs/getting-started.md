@@ -48,8 +48,7 @@ For example, we can check that the name is actually being used and that our form
 To create a new mock, place the following contents into a Scala file within your project:
 
 ```scala mdoc
-import eu.monniot.scala3mock.withExpectations
-import eu.monniot.scala3mock.macros.{mock, when}
+import eu.monniot.scala3mock.ScalaMocks.*
 
 withExpectations() {
     val formatter = mock[Formatter]
@@ -63,13 +62,9 @@ withExpectations() {
 }
 ```
 
-Note that you do not have to specify the argument specifically but can instead accept any arguments to a mock with `AnyMatcher`. ScalaMock had a `*` alias for this. We are currently debating including that method in Scala3Mock, but you can do so yourself pretty easily as demonstrated below.
+Note that you do not have to specify the argument specifically but can instead accept any arguments to a mock with `AnyMatcher` or its `*` alias.
 
 ```scala mdoc
-import eu.monniot.scala3mock.matchers.MatchAny
-
-def * = MatchAny()
-
 withExpectations() {
     val formatter = mock[Formatter]
 
@@ -121,8 +116,6 @@ withExpectations() {
 ## Verifying arguments dynamically
 
 ```scala mdoc
-import eu.monniot.scala3mock.matchers.MatchPredicate.where
-
 withExpectations() {
   val teamNatsu = Set("Natsu", "Lucy", "Happy", "Erza", "Gray", "Wendy", "Carla")
   val formatter = mock[Formatter]
@@ -170,10 +163,10 @@ withExpectations(verifyAfterRun=false) {
   val httpClient = mock[HttpClient]
   val counterMock = mock[Counter]
 
-  when(httpClient.sendRequest).expects(Method.GET, MatchAny(), MatchAny()).twice
-  when(httpClient.sendRequest).expects(Method.POST, "http://scalamock.org", MatchAny()).noMoreThanOnce
-  when(httpClient.sendRequest).expects(Method.POST, "http://example.com", MatchAny()).returning(Http.NotFound)
-  when(counterMock.increment).expects(MatchAny()).onCall { (arg: Int) => arg + 1}
+  when(httpClient.sendRequest).expects(Method.GET, *, *).twice
+  when(httpClient.sendRequest).expects(Method.POST, "http://scalamock.org", *).noMoreThanOnce
+  when(httpClient.sendRequest).expects(Method.POST, "http://example.com", *).returning(Http.NotFound)
+  when(counterMock.increment).expects(*).onCall { (arg: Int) => arg + 1}
   when(() => counterMock.decrement).expects().onCall { () => throw RuntimeException("here") }
 }
 ```

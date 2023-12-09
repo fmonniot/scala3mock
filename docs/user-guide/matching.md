@@ -25,21 +25,17 @@ given eu.monniot.scala3mock.context.MockContext =
 ```
 
 ```scala mdoc
-import eu.monniot.scala3mock.matchers.{MatchAny, MatchPredicate}
-import eu.monniot.scala3mock.functions.MockFunctions.mockFunction
-import eu.monniot.scala3mock.macros.{mock, when}
+import eu.monniot.scala3mock.ScalaMocks.*
 
 val mockedFunction = mockFunction[String, Any, Unit]
 ```
 
-> :warning: The original ScalaMock provided some nice operators like `*` and `~`. We should do it too.
-
 ## Any matching
 
-Any matching are defined using the `AnyMatcher` class. For example:
+Any matching are defined using the `MatchAny` class, or more commonly its `*` alias. For example:
 
 ```scala mdoc
-mockedFunction.expects("", MatchAny()).anyNumberOfTimes
+mockedFunction.expects("", *).anyNumberOfTimes
 ```
 
 will match any of the following:
@@ -83,8 +79,6 @@ Now imagine that we want to put an expectation that `addPointsForPlayer` is call
 Achieving that can be done using the `where` predicate:
 
 ```scala mdoc
-import MatchPredicate.where
-
 when(leaderBoardMock.addPointsForPlayer).expects(where {
   (player: Player, points: Int) => player.id == 789 && points == 100
 }) 
@@ -102,13 +96,12 @@ mockedFunction2.expects(where { _ < _ }) // expects that arg1 < arg2
 
 ## Epsilon matching
 
-Epsilon matching is useful when dealing with floating point values. An epsilon match is specified with the `MatchEpsilon` class:
+Epsilon matching is useful when dealing with floating point values. An epsilon match is specified with the `MatchEpsilon` class, or more commonly its `~` alias:
 
 ```scala mdoc
-import eu.monniot.scala3mock.matchers.MatchEpsilon
 val mockedFunction3 = mockFunction[Double, Unit] // (Double, Double) => Unit
 
-mockedFunction3.expects(MatchEpsilon(42.0)).anyNumberOfTimes
+mockedFunction3.expects(~42.0).anyNumberOfTimes
 ```
 
 will match:

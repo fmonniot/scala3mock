@@ -15,12 +15,10 @@ given eu.monniot.scala3mock.context.MockContext =
     override def toString() = s"MockContext()"
 ```
 
-First let's have some global imports
+First let's import the mocking functions for all our topics
 
 ```scala mdoc
-import eu.monniot.scala3mock.macros.{mock, when}
-import eu.monniot.scala3mock.matchers.MatchAny
-import eu.monniot.scala3mock.functions.MockFunctions.mockFunction
+import eu.monniot.scala3mock.ScalaMocks.*
 ```
 
 ## Mocking overloaded, curried and polymorphic methods
@@ -96,7 +94,7 @@ trait Memcached {
 val memcachedMock = mock[Memcached]
 
 implicit val codec = new Codec
-when(memcachedMock.get(_ : String)(_ : Codec)).expects("some_key", MatchAny()).returning(Some(123))
+when(memcachedMock.get(_ : String)(_ : Codec)).expects("some_key", *).returning(Some(123))
 ```
 
 ### Repeated parameters
@@ -129,10 +127,10 @@ val fooMock = mock[Foo]
 when(fooMock.increment).expects(12).returning(13)
 assert(fooMock.increment(12) == 13)
 
-when(fooMock.increment).expects(MatchAny()).onCall { (arg: Int) => arg + 1}
+when(fooMock.increment).expects(*).onCall { (arg: Int) => arg + 1}
 assert(fooMock.increment(100) == 101)
 
-when(fooMock.increment).expects(MatchAny()).onCall { arg => throw new RuntimeException("message") }
+when(fooMock.increment).expects(*).onCall { arg => throw new RuntimeException("message") }
 try {
     fooMock.increment(0)
     false
@@ -144,7 +142,7 @@ try {
 
 ```scala mdoc:nest
 val mockIncrement = mockFunction[Int, Int]
-mockIncrement.expects(MatchAny()).onCall { (arg: Int) => arg + 1 }
+mockIncrement.expects(*).onCall { (arg: Int) => arg + 1 }
 assert(mockIncrement(10) == 11)
 ```
 
@@ -217,7 +215,7 @@ try {
 
 // Throwing in an onCall definition
 
-when(fooMock.increment).expects(MatchAny()).onCall { (i) =>
+when(fooMock.increment).expects(*).onCall { (i) =>
   if(i==0) throw new RuntimeException("i == 0") 
   else i + 1
 }
