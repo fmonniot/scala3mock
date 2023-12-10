@@ -26,7 +26,7 @@ ThisBuild / developers := List(
 
 lazy val scala3mock = project
   .in(file("."))
-  .aggregate(core, scalatest)
+  .aggregate(core, cats, scalatest)
   .settings(publish / skip := true)
 
 lazy val core = project
@@ -43,6 +43,19 @@ lazy val core = project
     libraryDependencies += "org.scalameta" %% "munit" % "1.0.0-M10" % Test
   )
 
+lazy val cats = project
+  .in(file("./cats"))
+  .dependsOn(core)
+  .settings(
+    name := "scala3mock-cats",
+    libraryDependencies += "org.typelevel" %% "cats-core" % "2.9.0",
+
+    libraryDependencies ++= Seq(
+      "org.scalameta" %% "munit" % "1.0.0-M10" % Test,
+      "org.typelevel" %% "cats-effect" % "3.5.2" % Test
+    )
+  )
+
 lazy val scalatest = project
   .in(file("./scalatest"))
   .dependsOn(core)
@@ -53,11 +66,12 @@ lazy val scalatest = project
 
 lazy val docs = project
   .in(file("site-docs")) // important: it must not be docs/
-  .dependsOn(core, scalatest)
+  .dependsOn(core, cats, scalatest)
   .enablePlugins(MdocPlugin, DocusaurusPlugin)
   .settings(
     publish / skip := true,
     mdocVariables := Map(
       "VERSION" -> (core / version).value
-    )
+    ),
+    libraryDependencies += "org.typelevel" %% "cats-effect" % "3.5.2"
   )
