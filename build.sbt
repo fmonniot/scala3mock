@@ -66,11 +66,12 @@ lazy val scalatest = project
 
 lazy val docs = project
   .in(file("site-docs")) // important: it must not be docs/
-  .dependsOn(core, scalatest)
+  .dependsOn(core, cats, scalatest)
   .enablePlugins(MdocPlugin, DocusaurusPlugin)
   .settings(
     publish / skip := true,
     mdocVariables := Map(
       "VERSION" -> (core / version).value
-    )
+    ),
+    libraryDependencies += "org.typelevel" %% "cats-effect" % "3.5.2"
   )
