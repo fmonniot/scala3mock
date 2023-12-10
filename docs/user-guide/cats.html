@@ -1,0 +1,30 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Cats Integration · scala3mock</title><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Scala3Mock comes with a Cats integration that provides a `withExpectations` function that work with a `MonadError[?, Throwable]` instead of the simple value that the default library provide. This is pretty useful if your tests are defined in term of monads (Cats-Effect&#x27;s `IO`, Scala&#x27;s `Future` via alleycats, etc…)."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Cats Integration · scala3mock"/><meta property="og:type" content="website"/><meta property="og:url" content="https://francois.monniot.eu/scala3mock/"/><meta property="og:description" content="Scala3Mock comes with a Cats integration that provides a `withExpectations` function that work with a `MonadError[?, Throwable]` instead of the simple value that the default library provide. This is pretty useful if your tests are defined in term of monads (Cats-Effect&#x27;s `IO`, Scala&#x27;s `Future` via alleycats, etc…)."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/scala3mock/img/favicon.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github-gist.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/scala3mock/js/scrollSpy.js"></script><link rel="stylesheet" href="/scala3mock/css/main.css"/><script src="/scala3mock/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/scala3mock/"><img class="logo" src="/scala3mock/img/logo.svg" alt="scala3mock"/><h2 class="headerTitleWithLogo">scala3mock</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/scala3mock/docs/getting-started" target="_self">Docs</a></li><li class=""><a href="https://github.com/fmonniot/scala3mock" target="_blank">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">Cats Integration</h1></header><article><div><span><p>Scala3Mock comes with a Cats integration that provides a <code>withExpectations</code> function that work with a <code>MonadError[?, Throwable]</code> instead of the simple value that the default library provide. This is pretty useful if your tests are defined in term of monads (Cats-Effect's <code>IO</code>, Scala's <code>Future</code> via alleycats, etc…).</p>
+<p>You'll need to add a new dependency to your <strong>build.sbt</strong>:</p>
+<pre><code class="hljs css language-scala">libraryDependencies += <span class="hljs-string">"eu.monniot"</span> %% <span class="hljs-string">"scala3mock-cats"</span> % <span class="hljs-string">"0.6.0"</span> % <span class="hljs-type">Test</span>
+</code></pre>
+<p>Once added, simply replace the <code>ScalaMocks</code> import with the Cats one:</p>
+<pre><code class="hljs css language-diff"><span class="hljs-deletion">- import eu.monniot.scala3mock.ScalaMocks.*</span>
+<span class="hljs-addition">+ import eu.monniot.scala3mock.cats.ScalaMocks.*</span>
+</code></pre>
+<p>You can then use the library like usual, with the value passed to <code>withExpectations</code> being a monad instead of any values.</p>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> eu.monniot.scala3mock.cats.<span class="hljs-type">ScalaMocks</span>.*
+<span class="hljs-keyword">import</span> cats.effect.<span class="hljs-type">SyncIO</span>
+
+<span class="hljs-keyword">val</span> fa = withExpectations() {
+    <span class="hljs-keyword">val</span> fn = mockFunction[<span class="hljs-type">Int</span>, <span class="hljs-type">String</span>]
+    fn.expects(*).returns(<span class="hljs-string">"Hello reader"</span>)
+
+    <span class="hljs-type">SyncIO</span>(fn(<span class="hljs-number">2</span>))
+}
+<span class="hljs-comment">// fa: SyncIO[String] = FlatMap(</span>
+<span class="hljs-comment">//   ioe = Suspend(</span>
+<span class="hljs-comment">//     hint = Delay,</span>
+<span class="hljs-comment">//     thunk = repl.MdocSession$MdocApp$$Lambda$11888/0x0000000102f82c40@6474edcc</span>
+<span class="hljs-comment">//   ),</span>
+<span class="hljs-comment">//   f = eu.monniot.scala3mock.cats.ScalaMocks$package$$$Lambda$11889/0x0000000102f87040@16943425</span>
+<span class="hljs-comment">// )</span>
+
+fa.unsafeRunSync()
+<span class="hljs-comment">// res0: String = "Hello reader"</span>
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/scala3mock/" class="nav-home"><img src="/scala3mock/img/logo.svg" alt="scala3mock" width="66" height="58"/></a><div><h5>Docs</h5><a href="/scala3mock/docs/getting-started">Getting Started</a><a href="/scala3mock/docs/faq">FAQ</a></div></section><section class="copyright">Copyright (c) 2022-2023 François Monniot</section></footer></div></body></html>

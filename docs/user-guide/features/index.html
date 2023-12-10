@@ -92,48 +92,45 @@
 }
 
 <span class="hljs-comment">// And import the scala3mock content.</span>
-<span class="hljs-keyword">import</span> eu.monniot.scala3mock.macros.{mock, when}
-<span class="hljs-keyword">import</span> eu.monniot.scala3mock.matchers.<span class="hljs-type">MatchAny</span>
+<span class="hljs-keyword">import</span> eu.monniot.scala3mock.<span class="hljs-type">ScalaMocks</span>.*
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="mocking"></a><a href="#mocking" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Mocking</h2>
 <p>Scala3Mock can create mock out of classes (abstract or not, with parameters or not) and traits.</p>
 <pre><code class="hljs css language-scala"><span class="hljs-keyword">val</span> heaterMock  = mock[<span class="hljs-type">Heater</span>]
-<span class="hljs-comment">// heaterMock: Heater = repl.MdocSession$MdocApp$HeaterMock$1@12d260cd</span>
-<span class="hljs-comment">//val machineMock = mock[CoffeeMachine]</span>
+<span class="hljs-comment">// heaterMock: Heater = repl.MdocSession$MdocApp$HeaterMock$1@600f211f</span>
 <span class="hljs-keyword">val</span> dbMock      = mock[<span class="hljs-type">Database</span>]
-<span class="hljs-comment">// dbMock: Database = repl.MdocSession$MdocApp$DatabaseMock$1@4804646d</span>
+<span class="hljs-comment">// dbMock: Database = repl.MdocSession$MdocApp$DatabaseMock$1@46b6ab25</span>
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="argument-matching"></a><a href="#argument-matching" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Argument matching</h2>
-<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> eu.monniot.scala3mock.matchers.{<span class="hljs-type">MatchAny</span>, <span class="hljs-type">MatchEpsilon</span>, <span class="hljs-type">MatchPredicate</span>}
-<span class="hljs-comment">// expect someMethod("foo", 42) to be called</span>
+<pre><code class="hljs css language-scala"><span class="hljs-comment">// expect someMethod("foo", 42) to be called</span>
 when(dbMock.someMethod).expects(<span class="hljs-string">"foo"</span>, <span class="hljs-number">42</span>)  
-<span class="hljs-comment">// res0: CallHandler2[String, Int, Int] = &lt;features.md#L60&gt; Database.someMethod(foo, 42) once (never called - UNSATISFIED)  </span>
+<span class="hljs-comment">// res0: CallHandler2[String, Int, Int] = &lt;features.md#L57&gt; Database.someMethod(foo, 42) once (never called - UNSATISFIED)  </span>
 
 <span class="hljs-comment">// expect someMethod("foo", x) to be called for some integer x</span>
-when(dbMock.someMethod).expects(<span class="hljs-string">"foo"</span>, <span class="hljs-type">MatchAny</span>())
-<span class="hljs-comment">// res1: CallHandler2[String, Int, Int] = &lt;features.md#L60&gt; Database.someMethod(foo, *) once (never called - UNSATISFIED)</span>
+when(dbMock.someMethod).expects(<span class="hljs-string">"foo"</span>, *)
+<span class="hljs-comment">// res1: CallHandler2[String, Int, Int] = &lt;features.md#L57&gt; Database.someMethod(foo, *) once (never called - UNSATISFIED)</span>
 
 <span class="hljs-comment">// expect someMethod("foo", x) to be called for some float x that is close to 42.0</span>
-when(dbMock.otherMethod).expects(<span class="hljs-string">"foo"</span>, <span class="hljs-type">MatchEpsilon</span>(<span class="hljs-number">42.0</span>))
-<span class="hljs-comment">// res2: CallHandler2[String, Float, Int] = &lt;features.md#L60&gt; Database.otherMethod(foo, ~42.0) once (never called - UNSATISFIED)</span>
+when(dbMock.otherMethod).expects(<span class="hljs-string">"foo"</span>, ~<span class="hljs-number">42.0</span>)
+<span class="hljs-comment">// res2: CallHandler2[String, Float, Int] = &lt;features.md#L57&gt; Database.otherMethod(foo, ~42.0) once (never called - UNSATISFIED)</span>
 
 <span class="hljs-comment">// expect sendMessage(receiver, message) for some receiver with name starting with "A"</span>
-when(dbMock.sendMessage).expects(<span class="hljs-type">MatchPredicate</span>.where { (receiver: <span class="hljs-type">Player</span>, message: <span class="hljs-type">Message</span>) =&gt; 
+when(dbMock.sendMessage).expects(where { (receiver: <span class="hljs-type">Player</span>, message: <span class="hljs-type">Message</span>) =&gt; 
     receiver.name.startsWith(<span class="hljs-string">"A"</span>)
 }) 
-<span class="hljs-comment">// res3: CallHandler2[Nothing, Nothing, Unit] = &lt;features.md#L60&gt; Database.sendMessage&lt;function1&gt; once (never called - UNSATISFIED)</span>
+<span class="hljs-comment">// res3: CallHandler2[Nothing, Nothing, Unit] = &lt;features.md#L57&gt; Database.sendMessage&lt;function1&gt; once (never called - UNSATISFIED)</span>
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="call-ordering"></a><a href="#call-ordering" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Call Ordering</h2>
 <p>Mock ordering is not currently supported in Scala3Mock. If you wish it to be, please chime in on <a href="https://github.com/fmonniot/scala3mock/issues/6">issue #6</a>.</p>
 <h2><a class="anchor" aria-hidden="true" id="call-count"></a><a href="#call-count" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Call count</h2>
 <pre><code class="hljs css language-scala"><span class="hljs-comment">// expect message to be sent twice</span>
-when(dbMock.sendMessage).expects(<span class="hljs-type">MatchAny</span>(), <span class="hljs-type">MatchAny</span>()).twice
+when(dbMock.sendMessage).expects(*, *).twice
 
 <span class="hljs-comment">// expect message to be sent any number of times</span>
-when(dbMock.sendMessage).expects(<span class="hljs-type">MatchAny</span>(), <span class="hljs-type">MatchAny</span>()).anyNumberOfTimes
+when(dbMock.sendMessage).expects(*, *).anyNumberOfTimes
 
 <span class="hljs-comment">// expect message to be sent no more than twice</span>
-when(dbMock.sendMessage).expects(<span class="hljs-type">MatchAny</span>(), <span class="hljs-type">MatchAny</span>()).noMoreThanTwice
+when(dbMock.sendMessage).expects(*, *).noMoreThanTwice
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="returning-values"></a><a href="#returning-values" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Returning values</h2>
 <pre><code class="hljs css language-scala">when(dbMock.getPlayerByName).expects(<span class="hljs-string">"Hans"</span>).returning(<span class="hljs-type">Player</span>(name=<span class="hljs-string">"Hans"</span>, country=<span class="hljs-string">"Germany"</span>))
@@ -144,7 +141,7 @@ when(dbMock.getPlayerByName).expects(<span class="hljs-string">"Boris"</span>).r
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="call-handlers"></a><a href="#call-handlers" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Call Handlers</h2>
 <p>If your mock needs to do more complex calculation, <code>onCall</code> will let you do exactly that:</p>
-<pre><code class="hljs css language-scala">when(dbMock.increment).expects(<span class="hljs-type">MatchAny</span>()).onCall {
+<pre><code class="hljs css language-scala">when(dbMock.increment).expects(*).onCall {
     <span class="hljs-keyword">case</span> <span class="hljs-number">0</span> =&gt; <span class="hljs-keyword">throw</span> <span class="hljs-type">RuntimeException</span>(<span class="hljs-string">"0 will throw"</span>)
     <span class="hljs-keyword">case</span> arg =&gt; arg + <span class="hljs-number">1</span>
 }.twice
