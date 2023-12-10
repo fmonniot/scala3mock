@@ -8,6 +8,7 @@
             "user-guide/features",
             "user-guide/matching",
             "user-guide/scalatest",
+            "user-guide/cats",
             "user-guide/advanced-topics",
             "user-guide/faq"
         ]
