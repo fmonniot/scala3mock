@@ -48,8 +48,7 @@ lazy val cats = project
   .dependsOn(core)
   .settings(
     name := "scala3mock-cats",
-    libraryDependencies += "org.typelevel" %% "cats-core" % "2.9.0",
-
+    libraryDependencies += "org.typelevel" %% "cats-core" % "2.10.0",
     libraryDependencies ++= Seq(
       "org.scalameta" %% "munit" % "1.0.0-M10" % Test,
       "org.typelevel" %% "cats-effect" % "3.5.2" % Test
