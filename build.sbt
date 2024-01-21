@@ -49,10 +49,9 @@ lazy val cats = project
   .settings(
     name := "scala3mock-cats",
     libraryDependencies += "org.typelevel" %% "cats-core" % "2.9.0",
-
     libraryDependencies ++= Seq(
       "org.scalameta" %% "munit" % "1.0.0-M10" % Test,
-      "org.typelevel" %% "cats-effect" % "3.5.2" % Test
+      "org.typelevel" %% "cats-effect" % "3.5.3" % Test
     )
   )
 
@@ -73,5 +72,5 @@ lazy val docs = project
     mdocVariables := Map(
       "VERSION" -> (core / version).value
     ),
-    libraryDependencies += "org.typelevel" %% "cats-effect" % "3.5.2"
+    libraryDependencies += "org.typelevel" %% "cats-effect" % "3.5.3"
   )
