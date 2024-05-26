@@ -40,7 +40,7 @@ lazy val core = project
     // details of classes. Without it, only the signatures are available.
     // Test / scalacOptions += "-Yretain-trees", // For debugging when writing macros
 
-    libraryDependencies += "org.scalameta" %% "munit" % "1.0.0-M11" % Test
+    libraryDependencies += "org.scalameta" %% "munit" % "1.0.0" % Test
   )
 
 lazy val cats = project
@@ -50,7 +50,7 @@ lazy val cats = project
     name := "scala3mock-cats",
     libraryDependencies += "org.typelevel" %% "cats-core" % "2.9.0",
     libraryDependencies ++= Seq(
-      "org.scalameta" %% "munit" % "1.0.0-M11" % Test,
+      "org.scalameta" %% "munit" % "1.0.0" % Test,
       "org.typelevel" %% "cats-effect" % "3.5.4" % Test
     )
   )
