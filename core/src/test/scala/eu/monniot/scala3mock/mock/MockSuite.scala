@@ -3,6 +3,7 @@ package mock
 import eu.monniot.scala3mock.ScalaMocks
 import eu.monniot.scala3mock.Default
 import fixtures.*
+import eu.monniot.scala3mock.macros.PrintAst
 
 class MockSuite extends munit.FunSuite with ScalaMocks {
 
@@ -283,11 +284,27 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
     }
 
     withExpectations() {
-      val m = mock[MyService]
+      val m = mockWithDebuggingOutput[MyService]
 
       when(() => m.service()).expects()
 
       assertEquals(m.service(), MyType("testing"))
     }
   }
+
+  test(
+    "parameterized trait ContextBoundInheritance is indirectly implemented - issue #48"
+  ) {
+    withExpectations() {
+      PrintAst {
+        class ChildMock
+            extends Object
+            with fixtures.ContextBoundInheritanceChild[List]
+
+        new ChildMock
+      }
+      mockWithDebuggingOutput[ContextBoundInheritanceChild[List]]
+    }
+  }
+
 }

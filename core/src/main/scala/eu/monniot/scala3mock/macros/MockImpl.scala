@@ -164,6 +164,47 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
         .asExprOf[Tuple2[String, MockFunction]]
     }
 
+    /** Find the first non-private constructor of this symbol.
+      *
+      * We used to use classSymbol.constructor to find the main constructor, but
+      * it turns out that this can provide us with a private one, which isn't
+      * all that useful to us. I also haven't found a good way to list all
+      * available constructors, so I'm building that list manually by filtering
+      * on DefDef and name. We then exclude the private ones and take the first
+      * constructor available. If none are found, we can't build a mock class so
+      * we issue an error
+      *
+      * @param sym
+      *   the symbol we are looking a constructor at
+      * @return
+      *   the DefDef of the constructor, if any
+      */
+  private def findFirstNonPrivateConstructor(sym: Symbol): Option[DefDef] =
+    sym.declarations
+      .filter(_.isDefDef)
+      .filter(_.name == "<init>")
+      .filterNot(_.flags.is(Flags.Private))
+      .map(_.tree.asInstanceOf[DefDef])
+      .headOption
+
+  /** Walk the given symbol hierarchy to find all trait which have parameters */
+  private def findParameterizedTraits(
+      lookedUpSymbol: Symbol
+  ): List[TypeTree] =
+    val traitsWithParameters = lookedUpSymbol.typeRef.baseClasses.filter {
+      sym =>
+        val isTrait = sym.flags.is(Flags.Trait)
+        val params = sym.primaryConstructor.paramSymss.flatten
+        val notTypeParam = params.filterNot(_.isTypeParam)
+        val isLookedUpClass = sym == lookedUpSymbol
+
+        isTrait && notTypeParam.nonEmpty && !isLookedUpClass
+    }
+
+    traitsWithParameters.map(TypeTree.ref) ++ traitsWithParameters.flatMap(
+      findParameterizedTraits
+    )
+
   @experimental def generate: Expr[T & Mock] =
     val ctxTerm = ctx.asTerm match
       case i: Inlined => i.body
@@ -189,18 +230,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
           s"Unsupported symbol tree. Expected ClassDef but got ${tree.toString().split("\\(")(0)}"
         )
 
-    // We used to use classSymbol.constructor to find the main constructor, but it turns
-    // out that this can provide us with a private one, which isn't all that useful to us.
-    // I also haven't found a good way to list all available constructors, so I'm building
-    // that list manually by filtering on DefDef and name.
-    // We then exclude the private ones and take the first constructor available. If none
-    // are found, we can't build a mock class so we issue an error
-    val constructor = classSymbol.declarations
-      .filter(_.isDefDef)
-      .filter(_.name == "<init>")
-      .filterNot(_.flags.is(Flags.Private))
-      .map(_.tree.asInstanceOf[DefDef])
-      .headOption
+    val constructor = findFirstNonPrivateConstructor(classSymbol)
       .getOrElse(report.errorAndAbort("No public constructor found"))
 
     // If the class/trait has type parameters, build a replacements list. It maps from the
@@ -209,7 +239,6 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
     val replacements =
       if (tType.typeArgs.isEmpty) then List.empty
       else
-
         val typeParams = constructor.paramss
           .flatMap {
             case TypeParamClause(typeDefs) => typeDefs
@@ -233,8 +262,6 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
               "Found type with type parameters but given type isn't applied."
             )
 
-    val isTrait = classSymbol.flags.is(Flags.Trait)
-
     val objectMembers = Symbol.requiredClass("java.lang.Object").methodMembers
     val anyMembers = Symbol.requiredClass("scala.Any").methodMembers
 
@@ -251,47 +278,96 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
     // Start by declaring the "signature" of the class. That includes all its interfaces, but not the implementation
     val name: String = s"${classDef.name}Mock"
 
+    val isTrait = classSymbol.flags.is(Flags.Trait)
+
     // When declaring a class symbol, we need the TypeTree of every parents
+    // For traits we also need to extends a base class, we use java.lang.Object for that.
     val parentsTypes =
       if isTrait then
-        List(TypeTree.of[Object], TypeTree.of[T], TypeTree.of[Mock])
+        val traitWithParams = findParameterizedTraits(classSymbol)
+        val base = List(TypeTree.of[Object], TypeTree.of[T], TypeTree.of[Mock])
+
+        base ++ traitWithParams
       else List(TypeTree.of[T], TypeTree.of[Mock])
 
-    // But when building the class definition, we need to use term if the mocked type T
+    // When building the class definition, if T (or parameterized traits in its hierarchy)
+    // has constructors that needs to be called, then we need to call those constructors.
+    // When building the class definition, we need to use term if the mocked type T
     // needs to call the constructor of T with default values.
-    val parentsTree: List[Tree] =
+    val parentsTree = parentsTypes.map { typeTree =>
+      if typeTree == TypeTree.of[T] then
+        // special case the mocked type constructor
+        val select = Select(
+          New(TypeTree.of[T]),
+          constructor.symbol
+        )
 
-      val termParams = constructor.termParamss.map(_.params).flatten
-
-      if termParams.isEmpty then parentsTypes
-      else
-        parentsTypes.map { tt =>
-          if tt != TypeTree.of[T]
-          then tt
+        val typeApply =
+          if tType.typeArgs.isEmpty then select
           else
-            val select = Select(
-              New(TypeTree.of[T]),
-              constructor.symbol
+            // eg. T[x, y]
+            TypeApply(
+              select,
+              tType.typeArgs.map(Inferred(_))
             )
 
-            val typeApply =
-              if tType.typeArgs.isEmpty then select
-              else
-                // eg. T[x, y]
-                TypeApply(
-                  select,
-                  tType.typeArgs.map(Inferred(_))
-                )
+        // Apply the parameter list to build out the fully constructed parent
+        constructor.paramss
+          .collect { case TermParamClause(defs) =>
+            defs.map(valDef => defaultValueForType(valDef.tpt.tpe))
+          }
+          .foldLeft[Term](typeApply) { case (a, b) =>
+            Apply(a, b)
+          }
+      else
+        // For super types that are not the mocked type, we only modify the TypeTree
+        // when the constructors have parameters
+        findFirstNonPrivateConstructor(typeTree.symbol) match
+          case None => typeTree
+          case Some(constructor) =>
+            val allTermParams = constructor.termParamss.map(_.params).flatten
 
-            // Apply the parameter list to build out the fully constructed parent
-            constructor.paramss
-              .collect { case TermParamClause(defs) =>
-                defs.map(valDef => defaultValueForType(valDef.tpt.tpe))
+            // If there are no type or term parameters, we don't have to modify the type tree at all
+            if allTermParams.isEmpty
+            then typeTree
+            else
+              val termParams = constructor.paramss.collect {
+                case TermParamClause(defs) => defs
               }
-              .foldLeft[Term](typeApply) { case (a, b) =>
-                Apply(a, b)
+              val typeParams = constructor.paramss.collect {
+                case TypeParamClause(defs) => defs
               }
-        }
+
+              debug(s"  looking at: " + typeTree.show)
+              debug(
+                s"  tree struct: " + typeTree.show(using Printer.TreeStructure)
+              )
+              debug(s"  constructor: " + constructor.show)
+              debug(s"  termParams: " + termParams.toString)
+              debug(s"  typeParams: " + typeParams.map(_.map(_.show)))
+
+              val select = New(typeTree).select(constructor.symbol)
+
+              // TODO Does not support multi type parameter list at the moment
+              val appliedType =
+                if typeParams.flatten.isEmpty
+                then select
+                else
+                  select.appliedToTypeTrees(
+                    typeParams.flatten.map(_ => TypeTree.of[Any])
+                  )
+
+              termParams
+                .map(_.map(valDef => defaultValueForType(valDef.tpt.tpe)))
+                .foldLeft[Term](appliedType) { case (a, b) =>
+                  Apply(a, b)
+                }
+    }
+
+    debug("parentsWithTermFilledIn")
+    parentsTree.foreach(tree =>
+      debug("  - " + tree.show + " / " + tree.show(using Printer.TreeStructure))
+    )
 
     def declarations(cls: Symbol): List[Symbol] =
       val mocks = Symbol.newVal(
