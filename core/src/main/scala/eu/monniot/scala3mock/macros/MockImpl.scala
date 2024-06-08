@@ -214,7 +214,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
         )
 
     val tType: TypeRepr = TypeRepr.of[T].dealias
-    debug(s"Mocking type $tType")
+    debug(s"Mocking type ${tType.show}")
 
     val classSymbol = tType.classSymbol match
       case Some(sym) if sym.isClassDef => sym
@@ -264,59 +264,52 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
     // two ways: for T itself we use its own type as provided by the mock call site, for
     // other types we use `Any`.
     val parentsTree = parentsTypes.map { typeTree =>
-      if typeTree == TypeTree.of[T] then
-        val constructor = findFirstNonPrivateConstructor(classSymbol)
-          .getOrElse(report.errorAndAbort("No public constructor found"))
+      val isTypeBeingMocked = typeTree == TypeTree.of[T]
 
-        // special case the mocked type constructor to simplify type parameter substitution
-        val select = New(TypeTree.of[T]).select(constructor.symbol)
+      // We only modify the TypeTree when there is a public constructor available
+      findFirstNonPrivateConstructor(
+        if isTypeBeingMocked then classSymbol else typeTree.symbol
+      ) match
+        case None => typeTree
+        case Some(constructor) =>
+          val allTermParams = constructor.termParamss.map(_.params).flatten
 
-        val typeApply =
-          if tType.typeArgs.isEmpty then select
-          else select.appliedToTypes(tType.typeArgs)
+          // If there are no type or term parameters, we don't have to modify the type tree at all
+          if allTermParams.isEmpty
+          then typeTree
+          else
+            val termParams = constructor.paramss.collect {
+              case TermParamClause(defs) => defs
+            }
+            val typeParams = constructor.paramss.collect {
+              case TypeParamClause(defs) => defs
+            }
 
-        // Apply the parameter list to build out the fully constructed parent
-        constructor.paramss
-          .collect { case TermParamClause(defs) =>
-            defs.map(valDef => defaultValueForType(valDef.tpt.tpe))
-          }
-          .foldLeft[Term](typeApply) { case (a, b) =>
-            Apply(a, b)
-          }
-      else
-        // For super types that are not the mocked type, we only modify the TypeTree
-        // when the constructors have parameters
-        findFirstNonPrivateConstructor(typeTree.symbol) match
-          case None => typeTree
-          case Some(constructor) =>
-            val allTermParams = constructor.termParamss.map(_.params).flatten
+            val select = New(typeTree).select(constructor.symbol)
 
-            // If there are no type or term parameters, we don't have to modify the type tree at all
-            if allTermParams.isEmpty
-            then typeTree
-            else
-              val termParams = constructor.paramss.collect {
-                case TermParamClause(defs) => defs
-              }
-              val typeParams = constructor.paramss.collect {
-                case TypeParamClause(defs) => defs
-              }
-
-              val select = New(typeTree).select(constructor.symbol)
-
-              // For those types we cheat a bit and instead of finding the correct type parameter
-              // to substitute, we simply use `Any` for all of them. Let's see if that's good a
-              // thing or not. If you are debugging an issue lead by this decision, I'm sorry.
-              val appliedType = typeParams.foldLeft[Term](select) {
-                case (term, typeParameters) =>
-                  term.appliedToTypes(typeParameters.map(_ => TypeRepr.of[Any]))
-              }
-
-              termParams
-                .map(_.map(valDef => defaultValueForType(valDef.tpt.tpe)))
-                .foldLeft[Term](appliedType) { case (a, b) =>
-                  Apply(a, b)
+            // special case the mocked type constructor to simplify type parameter substitution
+            // For other types we cheat a bit and instead of finding the correct type parameter
+            // to substitute, we simply use `Any` for all of them. Let's see if that's good a
+            // thing or not. If you are debugging an issue lead by this decision, I'm sorry.
+            val appliedType =
+              if isTypeBeingMocked
+              then
+                if tType.typeArgs.isEmpty
+                then select
+                else select.appliedToTypes(tType.typeArgs)
+              else
+                typeParams.foldLeft[Term](select) {
+                  case (term, typeParameters) =>
+                    term.appliedToTypes(
+                      typeParameters.map(_ => TypeRepr.of[Any])
+                    )
                 }
+
+            termParams
+              .map(_.map(valDef => defaultValueForType(valDef.tpt.tpe)))
+              .foldLeft[Term](appliedType) { case (a, b) =>
+                Apply(a, b)
+              }
     }
 
     def declarations(cls: Symbol): List[Symbol] =
