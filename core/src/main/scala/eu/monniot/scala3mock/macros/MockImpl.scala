@@ -292,10 +292,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
             // thing or not. If you are debugging an issue lead by this decision, I'm sorry.
             val appliedType =
               if isTypeBeingMocked
-              then
-                if tType.typeArgs.isEmpty
-                then select
-                else select.appliedToTypes(tType.typeArgs)
+              then select.appliedToTypes(tType.typeArgs)
               else
                 typeParams.foldLeft[Term](select) {
                   case (term, typeParameters) =>
