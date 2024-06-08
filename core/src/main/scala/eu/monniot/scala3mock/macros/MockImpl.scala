@@ -253,9 +253,8 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
     val parentsTypes =
       if isTrait then
         val base = List(TypeTree.of[Object], TypeTree.of[T], TypeTree.of[Mock])
-        val traitWithParams = findParameterizedTraits(classSymbol)
 
-        base ++ traitWithParams
+        base ++ findParameterizedTraits(classSymbol)
       else List(TypeTree.of[T], TypeTree.of[Mock])
 
     // When building the class definition, if T (or parameterized traits in its hierarchy)
