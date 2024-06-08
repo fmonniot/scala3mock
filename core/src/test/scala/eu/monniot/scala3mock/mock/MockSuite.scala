@@ -290,4 +290,13 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
       assertEquals(m.service(), MyType("testing"))
     }
   }
+
+  test(
+    "parameterized trait ContextBoundInheritance is indirectly implemented - issue #48"
+  ) {
+    withExpectations() {
+      mock[ContextBoundInheritanceChild[List]]
+    }
+  }
+
 }
