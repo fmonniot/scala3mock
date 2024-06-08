@@ -232,36 +232,6 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
 
     val constructor = findFirstNonPrivateConstructor(classSymbol)
       .getOrElse(report.errorAndAbort("No public constructor found"))
-
-    // If the class/trait has type parameters, build a replacements list. It maps from the
-    // type parameter to the concrete type. We need to reference the concrete one when implementing
-    // methods or when declaring mocks.
-    val replacements =
-      if (tType.typeArgs.isEmpty) then List.empty
-      else
-        val typeParams = constructor.paramss
-          .flatMap {
-            case TypeParamClause(typeDefs) => typeDefs
-            case _                         => None
-          }
-          .map { case TypeDef(name, _) =>
-            classSymbol.typeMember(name)
-          }
-
-        tType match
-          case AppliedType(tycon, args) =>
-            if (args.size != typeParams.size)
-              report.errorAndAbort(
-                "Number of type params and concrete types isn't equal"
-              )
-
-            typeParams.zip(args)
-
-          case _ =>
-            report.errorAndAbort(
-              "Found type with type parameters but given type isn't applied."
-            )
-
     val objectMembers = Symbol.requiredClass("java.lang.Object").methodMembers
     val anyMembers = Symbol.requiredClass("scala.Any").methodMembers
 
