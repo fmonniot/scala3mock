@@ -3,7 +3,6 @@ package mock
 import eu.monniot.scala3mock.ScalaMocks
 import eu.monniot.scala3mock.Default
 import fixtures.*
-import eu.monniot.scala3mock.macros.PrintAst
 
 class MockSuite extends munit.FunSuite with ScalaMocks {
 
