@@ -332,14 +332,13 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
 
               val select = New(typeTree).select(constructor.symbol)
 
-              // TODO Does not support multi type parameter list at the moment
-              val appliedType =
-                if typeParams.flatten.isEmpty
-                then select
-                else
-                  select.appliedToTypeTrees(
-                    typeParams.flatten.map(_ => TypeTree.of[Any])
-                  )
+              // For those types we cheat a bit and instead of finding the correct type parameter
+              // to substitute, we simply use `Any` for all of them. Let's see if that's good a
+              // thing or not. If you are debugging an issue lead by this decision, I'm sorry.
+              val appliedType = typeParams.foldLeft[Term](select) {
+                case (term, typeParameters) =>
+                  term.appliedToTypes(typeParameters.map(_ => TypeRepr.of[Any]))
+              }
 
               termParams
                 .map(_.map(valDef => defaultValueForType(valDef.tpt.tpe)))
