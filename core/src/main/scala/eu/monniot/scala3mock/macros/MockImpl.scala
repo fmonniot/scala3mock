@@ -284,8 +284,8 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
     // For traits we also need to extends a base class, we use java.lang.Object for that.
     val parentsTypes =
       if isTrait then
-        val traitWithParams = findParameterizedTraits(classSymbol)
         val base = List(TypeTree.of[Object], TypeTree.of[T], TypeTree.of[Mock])
+        val traitWithParams = findParameterizedTraits(classSymbol)
 
         base ++ traitWithParams
       else List(TypeTree.of[T], TypeTree.of[Mock])
@@ -296,20 +296,12 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
     // needs to call the constructor of T with default values.
     val parentsTree = parentsTypes.map { typeTree =>
       if typeTree == TypeTree.of[T] then
-        // special case the mocked type constructor
-        val select = Select(
-          New(TypeTree.of[T]),
-          constructor.symbol
-        )
+        // special case the mocked type constructor to simplify type parameter substitution
+        val select = New(TypeTree.of[T]).select(constructor.symbol)
 
         val typeApply =
           if tType.typeArgs.isEmpty then select
-          else
-            // eg. T[x, y]
-            TypeApply(
-              select,
-              tType.typeArgs.map(Inferred(_))
-            )
+          else select.appliedToTypes(tType.typeArgs)
 
         // Apply the parameter list to build out the fully constructed parent
         constructor.paramss
@@ -338,14 +330,6 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
                 case TypeParamClause(defs) => defs
               }
 
-              debug(s"  looking at: " + typeTree.show)
-              debug(
-                s"  tree struct: " + typeTree.show(using Printer.TreeStructure)
-              )
-              debug(s"  constructor: " + constructor.show)
-              debug(s"  termParams: " + termParams.toString)
-              debug(s"  typeParams: " + typeParams.map(_.map(_.show)))
-
               val select = New(typeTree).select(constructor.symbol)
 
               // TODO Does not support multi type parameter list at the moment
@@ -363,11 +347,6 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
                   Apply(a, b)
                 }
     }
-
-    debug("parentsWithTermFilledIn")
-    parentsTree.foreach(tree =>
-      debug("  - " + tree.show + " / " + tree.show(using Printer.TreeStructure))
-    )
 
     def declarations(cls: Symbol): List[Symbol] =
       val mocks = Symbol.newVal(

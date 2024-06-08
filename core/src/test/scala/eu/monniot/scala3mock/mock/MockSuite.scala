@@ -284,7 +284,7 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
     }
 
     withExpectations() {
-      val m = mockWithDebuggingOutput[MyService]
+      val m = mock[MyService]
 
       when(() => m.service()).expects()
 
@@ -296,14 +296,7 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
     "parameterized trait ContextBoundInheritance is indirectly implemented - issue #48"
   ) {
     withExpectations() {
-      PrintAst {
-        class ChildMock
-            extends Object
-            with fixtures.ContextBoundInheritanceChild[List]
-
-        new ChildMock
-      }
-      mockWithDebuggingOutput[ContextBoundInheritanceChild[List]]
+      mock[ContextBoundInheritanceChild[List]]
     }
   }
 
