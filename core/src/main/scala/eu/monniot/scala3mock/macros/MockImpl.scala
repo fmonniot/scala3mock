@@ -230,8 +230,6 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
           s"Unsupported symbol tree. Expected ClassDef but got ${tree.toString().split("\\(")(0)}"
         )
 
-    val constructor = findFirstNonPrivateConstructor(classSymbol)
-      .getOrElse(report.errorAndAbort("No public constructor found"))
     val objectMembers = Symbol.requiredClass("java.lang.Object").methodMembers
     val anyMembers = Symbol.requiredClass("scala.Any").methodMembers
 
@@ -267,6 +265,9 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
     // other types we use `Any`.
     val parentsTree = parentsTypes.map { typeTree =>
       if typeTree == TypeTree.of[T] then
+        val constructor = findFirstNonPrivateConstructor(classSymbol)
+          .getOrElse(report.errorAndAbort("No public constructor found"))
+
         // special case the mocked type constructor to simplify type parameter substitution
         val select = New(TypeTree.of[T]).select(constructor.symbol)
 
