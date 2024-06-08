@@ -292,8 +292,9 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
 
     // When building the class definition, if T (or parameterized traits in its hierarchy)
     // has constructors that needs to be called, then we need to call those constructors.
-    // When building the class definition, we need to use term if the mocked type T
-    // needs to call the constructor of T with default values.
+    // For such constructors, we use `Default` implementation for terms. For types, we have
+    // two ways: for T itself we use its own type as provided by the mock call site, for
+    // other types we use `Any`.
     val parentsTree = parentsTypes.map { typeTree =>
       if typeTree == TypeTree.of[T] then
         // special case the mocked type constructor to simplify type parameter substitution
