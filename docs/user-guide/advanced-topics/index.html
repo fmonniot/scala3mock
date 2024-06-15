@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Advanced Topics · scala3mock</title><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="generator" content="Docusaurus"/><meta name="description" content="First let&#x27;s import the mocking functions for all our topics"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Advanced Topics · scala3mock"/><meta property="og:type" content="website"/><meta property="og:url" content="https://francois.monniot.eu/scala3mock/"/><meta property="og:description" content="First let&#x27;s import the mocking functions for all our topics"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/scala3mock/img/favicon.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github-gist.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/scala3mock/js/scrollSpy.js"></script><link rel="stylesheet" href="/scala3mock/css/main.css"/><script src="/scala3mock/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/scala3mock/"><img class="logo" src="/scala3mock/img/logo.svg" alt="scala3mock"/><h2 class="headerTitleWithLogo">scala3mock</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/scala3mock/docs/getting-started" target="_self">Docs</a></li><li class=""><a href="https://github.com/fmonniot/scala3mock" target="_blank">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>User Guide</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Overview</h3><ul class=""><li class="navListItem"><a class="navItem" href="/scala3mock/docs/getting-started">Getting Started</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">User Guide</h3><ul class=""><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/features">Features</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/matching">Argument matching</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/scalatest">ScalaTest Integration</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/scala3mock/docs/user-guide/advanced-topics">Advanced Topics</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/faq">FAQ</a></li></ul></div></div></section></div><script>
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Advanced Topics · scala3mock</title><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="generator" content="Docusaurus"/><meta name="description" content="First let&#x27;s import the mocking functions for all our topics"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Advanced Topics · scala3mock"/><meta property="og:type" content="website"/><meta property="og:url" content="https://francois.monniot.eu/scala3mock/"/><meta property="og:description" content="First let&#x27;s import the mocking functions for all our topics"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/scala3mock/img/favicon.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github-gist.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/scala3mock/js/scrollSpy.js"></script><link rel="stylesheet" href="/scala3mock/css/main.css"/><script src="/scala3mock/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/scala3mock/"><img class="logo" src="/scala3mock/img/logo.svg" alt="scala3mock"/><h2 class="headerTitleWithLogo">scala3mock</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/scala3mock/docs/getting-started" target="_self">Docs</a></li><li class=""><a href="https://github.com/fmonniot/scala3mock" target="_blank">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>User Guide</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Overview</h3><ul class=""><li class="navListItem"><a class="navItem" href="/scala3mock/docs/getting-started">Getting Started</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">User Guide</h3><ul class=""><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/features">Features</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/matching">Argument matching</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/scalatest">ScalaTest Integration</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/cats">Cats Integration</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/scala3mock/docs/user-guide/advanced-topics">Advanced Topics</a></li><li class="navListItem"><a class="navItem" href="/scala3mock/docs/user-guide/faq">FAQ</a></li></ul></div></div></section></div><script>
             var coll = document.getElementsByClassName('collapsible');
             var checkActiveCategory = true;
             for (var i = 0; i < coll.length; i++) {
@@ -67,7 +67,7 @@
 }
 
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
-<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$1@58207400</span>
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$1@1448e221</span>
 
 when(fooMock.overloaded(_: <span class="hljs-type">Int</span>)).expects(<span class="hljs-number">10</span>)
 <span class="hljs-comment">// res0: CallHandler1[Int, String] = &lt;advanced-topics.md#L31&gt; Foo.overloaded(10) once (never called - UNSATISFIED)</span>
@@ -82,7 +82,7 @@ when(fooMock.overloaded[<span class="hljs-type">Double</span>]).expects(<span cl
 }
 
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
-<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$2@11a93cb6</span>
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$2@6e32ef35</span>
 
 when(fooMock.polymorphic(_: <span class="hljs-type">List</span>[<span class="hljs-type">Int</span>])).expects(<span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>))
 <span class="hljs-comment">// res3: CallHandler1[List[Int], String] = &lt;advanced-topics.md#L58&gt; Foo.polymorphic[T](List(1, 2, 3)) once (never called - UNSATISFIED)</span>
@@ -93,7 +93,7 @@ when(fooMock.polymorphic(_: <span class="hljs-type">List</span>[<span class="hlj
 }
 
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
-<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$3@47acc465</span>
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$3@5d69d4c7</span>
 
 when(fooMock.curried(_: <span class="hljs-type">Int</span>)(_: <span class="hljs-type">Double</span>)).expects(<span class="hljs-number">10</span>, <span class="hljs-number">1.23</span>)
 <span class="hljs-comment">// res4: CallHandler2[Int, Double, String] = &lt;advanced-topics.md#L75&gt; Foo.curried(10, 1.23) once (never called - UNSATISFIED)</span>
@@ -106,7 +106,7 @@ when(fooMock.curried(_: <span class="hljs-type">Int</span>)(_: <span class="hljs
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
 
 when(fooMock.curried)
-<span class="hljs-comment">// java.lang.ClassCastException: class eu.monniot.scala3mock.functions.MockFunction2 cannot be cast to class eu.monniot.scala3mock.functions.MockFunction1 (eu.monniot.scala3mock.functions.MockFunction2 and eu.monniot.scala3mock.functions.MockFunction1 are in unnamed module of loader sbt.internal.LayeredClassLoader @6e93d660)</span>
+<span class="hljs-comment">// java.lang.ClassCastException: class eu.monniot.scala3mock.functions.MockFunction2 cannot be cast to class eu.monniot.scala3mock.functions.MockFunction1 (eu.monniot.scala3mock.functions.MockFunction2 and eu.monniot.scala3mock.functions.MockFunction1 are in unnamed module of loader sbt.internal.LayeredClassLoader @50be3652)</span>
 <span class="hljs-comment">//  at repl.MdocSession$MdocApp.$init$$$anonfun$1(advanced-topics.md:93)</span>
 </code></pre>
 <p>At the moment the <code>when</code> macro isn't smart enough to recognize a curried function whereas the <code>mock</code> macro is. That result in the underlying mock correctly creating a <code>MockFunction2[Int, Double, String]</code> (two args) but the <code>when</code> macro exposes a <code>MockFunction1[Int, Double =&gt; String]</code> (one arg).</p>
@@ -119,10 +119,10 @@ when(fooMock.curried)
 }
 
 <span class="hljs-keyword">val</span> memcachedMock = mock[<span class="hljs-type">Memcached</span>]
-<span class="hljs-comment">// memcachedMock: Memcached = repl.MdocSession$MdocApp$MemcachedMock$1@3984358e</span>
+<span class="hljs-comment">// memcachedMock: Memcached = repl.MdocSession$MdocApp$MemcachedMock$1@7c0e7c95</span>
 
 <span class="hljs-keyword">implicit</span> <span class="hljs-keyword">val</span> codec = <span class="hljs-keyword">new</span> <span class="hljs-type">Codec</span>
-<span class="hljs-comment">// codec: Codec = repl.MdocSession$MdocApp$Codec$1@61c03d6e</span>
+<span class="hljs-comment">// codec: Codec = repl.MdocSession$MdocApp$Codec$1@24fed960</span>
 when(memcachedMock.get(_ : <span class="hljs-type">String</span>)(_ : <span class="hljs-type">Codec</span>)).expects(<span class="hljs-string">"some_key"</span>, *).returning(<span class="hljs-type">Some</span>(<span class="hljs-number">123</span>))
 <span class="hljs-comment">// res5: CallHandler2[String, Codec, Option[Int]] = &lt;advanced-topics.md#L109&gt; Memcached.get(some_key, *) once (never called - UNSATISFIED)</span>
 </code></pre>
@@ -133,7 +133,7 @@ when(memcachedMock.get(_ : <span class="hljs-type">String</span>)(_ : <span clas
 }
 
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
-<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$5@2769ffb6</span>
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$5@1a61fcbe</span>
 
 when(fooMock.takesRepeatedParameter).expects(<span class="hljs-number">42</span>, <span class="hljs-type">Seq</span>(<span class="hljs-string">"red"</span>, <span class="hljs-string">"green"</span>, <span class="hljs-string">"blue"</span>))
 <span class="hljs-comment">// res6: CallHandler2[Int, Seq[String], Unit] = &lt;advanced-topics.md#L130&gt; Foo.takesRepeatedParameter(42, List(red, green, blue)) once (never called - UNSATISFIED)</span>
@@ -145,7 +145,7 @@ when(fooMock.takesRepeatedParameter).expects(<span class="hljs-number">42</span>
 }
 
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
-<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$6@29103c13</span>
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$6@10f0231a</span>
 
 when(fooMock.increment).expects(<span class="hljs-number">12</span>).returning(<span class="hljs-number">13</span>)
 <span class="hljs-comment">// res7: CallHandler1[Int, Int] = &lt;advanced-topics.md#L147&gt; Foo.increment(12) once (called once)</span>
@@ -235,7 +235,7 @@ mockedFunction5(<span class="hljs-number">5</span>)
 }
 
 <span class="hljs-keyword">val</span> fooMock = mock[<span class="hljs-type">Foo</span>]
-<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$7@708ed89b</span>
+<span class="hljs-comment">// fooMock: Foo = repl.MdocSession$MdocApp$FooMock$7@60cbdc7f</span>
 
 
 <span class="hljs-comment">// Using the throws or throwing function</span>
@@ -286,11 +286,11 @@ when(fooMock.increment).expects(*).onCall { (i) =&gt;
 }
 
 <span class="hljs-keyword">val</span> m = mock[<span class="hljs-type">Test</span>]
-<span class="hljs-comment">// m: Test = repl.MdocSession$MdocApp$TestMock$1@756f1a8c</span>
+<span class="hljs-comment">// m: Test = repl.MdocSession$MdocApp$TestMock$1@56f4fa70</span>
 
 when(() =&gt; m.zeroParameter()).expects().returns(<span class="hljs-number">1</span>)
 <span class="hljs-comment">// res36: CallHandler0[Int] = &lt;advanced-topics.md#L374&gt; Test.zeroParameter() once (never called - UNSATISFIED)</span>
 when(() =&gt; m.parameterless).expects().returns(<span class="hljs-number">1</span>)
 <span class="hljs-comment">// res37: CallHandler0[Int] = &lt;advanced-topics.md#L374&gt; Test.parameterless() once (never called - UNSATISFIED)</span>
 </code></pre>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/scala3mock/docs/user-guide/scalatest"><span class="arrow-prev">← </span><span class="function-name-prevnext">ScalaTest Integration</span></a><a class="docs-next button" href="/scala3mock/docs/user-guide/faq"><span>FAQ</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#mocking-overloaded-curried-and-polymorphic-methods">Mocking overloaded, curried and polymorphic methods</a><ul class="toc-headings"><li><a href="#overloaded-methods">Overloaded methods</a></li><li><a href="#polymorphic-methods">Polymorphic methods</a></li><li><a href="#curried-methods">Curried methods</a></li></ul></li><li><a href="#methods-with-implicit-parameters">Methods with implicit parameters</a><ul class="toc-headings"><li><a href="#repeated-parameters">Repeated parameters</a></li></ul></li><li><a href="#returning-values-oncall">Returning values (onCall)</a></li><li><a href="#call-count">Call count</a></li><li><a href="#exceptions">Exceptions</a></li><li><a href="#argument-capture">Argument Capture</a></li><li><a href="#mocking-0-parameter-functions">Mocking 0-parameter functions</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/scala3mock/" class="nav-home"><img src="/scala3mock/img/logo.svg" alt="scala3mock" width="66" height="58"/></a><div><h5>Docs</h5><a href="/scala3mock/docs/getting-started">Getting Started</a><a href="/scala3mock/docs/faq">FAQ</a></div></section><section class="copyright">Copyright (c) 2022-2023 François Monniot</section></footer></div></body></html>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/scala3mock/docs/user-guide/cats"><span class="arrow-prev">← </span><span>Cats Integration</span></a><a class="docs-next button" href="/scala3mock/docs/user-guide/faq"><span>FAQ</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#mocking-overloaded-curried-and-polymorphic-methods">Mocking overloaded, curried and polymorphic methods</a><ul class="toc-headings"><li><a href="#overloaded-methods">Overloaded methods</a></li><li><a href="#polymorphic-methods">Polymorphic methods</a></li><li><a href="#curried-methods">Curried methods</a></li></ul></li><li><a href="#methods-with-implicit-parameters">Methods with implicit parameters</a><ul class="toc-headings"><li><a href="#repeated-parameters">Repeated parameters</a></li></ul></li><li><a href="#returning-values-oncall">Returning values (onCall)</a></li><li><a href="#call-count">Call count</a></li><li><a href="#exceptions">Exceptions</a></li><li><a href="#argument-capture">Argument Capture</a></li><li><a href="#mocking-0-parameter-functions">Mocking 0-parameter functions</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/scala3mock/" class="nav-home"><img src="/scala3mock/img/logo.svg" alt="scala3mock" width="66" height="58"/></a><div><h5>Docs</h5><a href="/scala3mock/docs/getting-started">Getting Started</a><a href="/scala3mock/docs/faq">FAQ</a></div></section><section class="copyright">Copyright (c) 2022-2023 François Monniot</section></footer></div></body></html>
