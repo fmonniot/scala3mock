@@ -108,77 +108,77 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
       ctxTerm: Term,
       mockedClassName: String
   ): List[Expr[(String, MockFunction)]] =
-    functionsToMock.map { case (mockName, sym) =>
-      val (mockFunctionSym, mockFunctionTypeParams) = buildMockFunctionType(sym)
+  functionsToMock.map { case (mockName, sym) =>
+    val (mockFunctionSym, mockFunctionTypeParams) = buildMockFunctionType(sym)
 
-      val implicitDefaultType =
-        TypeRepr.of[Default].appliedTo(mockFunctionTypeParams.last)
-      val defaultTypeClass = Implicits.search(implicitDefaultType) match {
-        case e: ImplicitSearchSuccess => e
-        case e: ImplicitSearchFailure =>
-          report.errorAndAbort(
-            s"Couldn't find a Default instance for the return type: ${e.explanation}"
-          )
-      }
-
-      val newMockFunction = TypeApply(
-        Select(
-          New(TypeIdent(mockFunctionSym)),
-          mockFunctionSym.primaryConstructor
-        ),
-        mockFunctionTypeParams.map(ref => Inferred(ref))
-      )
-
-      // The name of the mock as passed to the MockFunctionX trait is slightly different
-      // from the mock's Map keys (which is what mockName refer to). It includes a few
-      // more information to make it more user friendly.
-      val pos = Position.ofMacroExpansion
-      // For now I'm going to assume that there can only be one type parameter list. That might
-      // be (or become) wrong but it does simplify the name generation quite a bit.
-      val typeParameters =
-        val tpe = sym.paramSymss.filter(_.exists(_.isType)).flatten
-
-        if tpe.isEmpty then ""
-        else tpe.map(_.typeRef.show).mkString("[", ",", "]")
-
-      val mockToStringName =
-        s"<${pos.sourceFile.name}#L${pos.startLine}> $mockedClassName.${sym.name}${typeParameters}"
-
-      val createMF =
-        Apply(
-          newMockFunction,
-          List(ctxTerm, Literal(StringConstant(mockToStringName)))
+    val implicitDefaultType =
+      TypeRepr.of[Default].appliedTo(mockFunctionTypeParams.last)
+    val defaultTypeClass = Implicits.search(implicitDefaultType) match {
+      case e: ImplicitSearchSuccess => e
+      case e: ImplicitSearchFailure =>
+        report.errorAndAbort(
+          s"Couldn't find a Default instance for the return type: ${e.explanation}"
         )
-          .appliedTo(defaultTypeClass.tree)
-
-      val tuple2Sym = defn.TupleClass(2)
-
-      val NewTuple =
-        Select(New(TypeIdent(tuple2Sym)), tuple2Sym.primaryConstructor)
-      val TypedNewTuple = TypeApply(
-        NewTuple,
-        List(Inferred(TypeRepr.of[String]), Inferred(TypeRepr.of[MockFunction]))
-      )
-
-      Apply(TypedNewTuple, List(Literal(StringConstant(mockName)), createMF))
-        .asExprOf[Tuple2[String, MockFunction]]
     }
 
-    /** Find the first non-private constructor of this symbol.
-      *
-      * We used to use classSymbol.constructor to find the main constructor, but
-      * it turns out that this can provide us with a private one, which isn't
-      * all that useful to us. I also haven't found a good way to list all
-      * available constructors, so I'm building that list manually by filtering
-      * on DefDef and name. We then exclude the private ones and take the first
-      * constructor available. If none are found, we can't build a mock class so
-      * we issue an error
-      *
-      * @param sym
-      *   the symbol we are looking a constructor at
-      * @return
-      *   the DefDef of the constructor, if any
-      */
+    val newMockFunction = TypeApply(
+      Select(
+        New(TypeIdent(mockFunctionSym)),
+        mockFunctionSym.primaryConstructor
+      ),
+      mockFunctionTypeParams.map(ref => Inferred(ref))
+    )
+
+    // The name of the mock as passed to the MockFunctionX trait is slightly different
+    // from the mock's Map keys (which is what mockName refer to). It includes a few
+    // more information to make it more user friendly.
+    val pos = Position.ofMacroExpansion
+    // For now I'm going to assume that there can only be one type parameter list. That might
+    // be (or become) wrong but it does simplify the name generation quite a bit.
+    val typeParameters =
+      val tpe = sym.paramSymss.filter(_.exists(_.isType)).flatten
+
+      if tpe.isEmpty then ""
+      else tpe.map(_.typeRef.show).mkString("[", ",", "]")
+
+    val mockToStringName =
+      s"<${pos.sourceFile.name}#L${pos.startLine}> $mockedClassName.${sym.name}${typeParameters}"
+
+    val createMF =
+      Apply(
+        newMockFunction,
+        List(ctxTerm, Literal(StringConstant(mockToStringName)))
+      )
+        .appliedTo(defaultTypeClass.tree)
+
+    val tuple2Sym = defn.TupleClass(2)
+
+    val NewTuple =
+      Select(New(TypeIdent(tuple2Sym)), tuple2Sym.primaryConstructor)
+    val TypedNewTuple = TypeApply(
+      NewTuple,
+      List(Inferred(TypeRepr.of[String]), Inferred(TypeRepr.of[MockFunction]))
+    )
+
+    Apply(TypedNewTuple, List(Literal(StringConstant(mockName)), createMF))
+      .asExprOf[Tuple2[String, MockFunction]]
+  }
+
+  /** Find the first non-private constructor of this symbol.
+    *
+    * We used to use classSymbol.constructor to find the main constructor, but
+    * it turns out that this can provide us with a private one, which isn't all
+    * that useful to us. I also haven't found a good way to list all available
+    * constructors, so I'm building that list manually by filtering on DefDef
+    * and name. We then exclude the private ones and take the first constructor
+    * available. If none are found, we can't build a mock class so we issue an
+    * error
+    *
+    * @param sym
+    *   the symbol we are looking a constructor at
+    * @return
+    *   the DefDef of the constructor, if any
+    */
   private def findFirstNonPrivateConstructor(sym: Symbol): Option[DefDef] =
     sym.declarations
       .filter(_.isDefDef)
