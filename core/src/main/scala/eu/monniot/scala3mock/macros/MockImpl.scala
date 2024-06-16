@@ -164,21 +164,21 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
         .asExprOf[Tuple2[String, MockFunction]]
     }
 
-    /** Find the first non-private constructor of this symbol.
-      *
-      * We used to use classSymbol.constructor to find the main constructor, but
-      * it turns out that this can provide us with a private one, which isn't
-      * all that useful to us. I also haven't found a good way to list all
-      * available constructors, so I'm building that list manually by filtering
-      * on DefDef and name. We then exclude the private ones and take the first
-      * constructor available. If none are found, we can't build a mock class so
-      * we issue an error
-      *
-      * @param sym
-      *   the symbol we are looking a constructor at
-      * @return
-      *   the DefDef of the constructor, if any
-      */
+  /** Find the first non-private constructor of this symbol.
+    *
+    * We used to use classSymbol.constructor to find the main constructor, but
+    * it turns out that this can provide us with a private one, which isn't all
+    * that useful to us. I also haven't found a good way to list all available
+    * constructors, so I'm building that list manually by filtering on DefDef
+    * and name. We then exclude the private ones and take the first constructor
+    * available. If none are found, we can't build a mock class so we issue an
+    * error
+    *
+    * @param sym
+    *   the symbol we are looking a constructor at
+    * @return
+    *   the DefDef of the constructor, if any
+    */
   private def findFirstNonPrivateConstructor(sym: Symbol): Option[DefDef] =
     sym.declarations
       .filter(_.isDefDef)
