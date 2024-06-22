@@ -191,7 +191,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
     val objectMembers = Symbol.requiredClass("java.lang.Object").methodMembers
     val anyMembers = Symbol.requiredClass("scala.Any").methodMembers
 
-    // First we refine all the members but removing the methods on Object and Any
+    // First we refine the methods by removing the methods inherited from Object and Any
     val candidates = sym.methodMembers
       .filter { m =>
         !(objectMembers.contains(m) || anyMembers.contains(m))
@@ -199,6 +199,9 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
       .filterNot(_.flags.is(Flags.Private)) // Do not override private members
 
     // Then we find the methods which have default values, and how many default values.
+    // This will be used to filter out the default value methods that the compiler generate.
+    // I don't know of a good way to find those via the Quotes API, so instead I use the fact
+    // that the compiler always use the same naming scheme to filter them out.
     val methodsWithDefault = candidates
       .map { sym =>
         sym.name -> sym.paramSymss
@@ -207,9 +210,6 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
       }
       .filter(_._2 > 0)
 
-    // Then we can filter out the default value methods. The compiler always use the same naming
-    // scheme, so we can use this knowledge to filter out methods which are generated for default
-    // values.
     if (methodsWithDefault.isEmpty) candidates
     else
       val names = methodsWithDefault.flatMap { case (name, count) =>
