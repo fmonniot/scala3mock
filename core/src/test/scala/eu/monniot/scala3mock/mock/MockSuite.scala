@@ -299,4 +299,15 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
     }
   }
 
+  test("TestDefaultParameters - issue #53") {
+    withExpectations() {
+      val m = mock[TestDefaultParameters]
+
+      when(m.foo).expects(9).returns("ok")
+      when(m.foo).expects(42).returns("ok2")
+
+      assertEquals(m.foo(), "ok")
+      assertEquals(m.foo(42), "ok2")
+    }
+  }
 }

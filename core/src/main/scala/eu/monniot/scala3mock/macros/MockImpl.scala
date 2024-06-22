@@ -187,6 +187,39 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
       .map(_.tree.asInstanceOf[DefDef])
       .headOption
 
+  private def findMethodsToOverride(sym: Symbol): List[Symbol] =
+    val objectMembers = Symbol.requiredClass("java.lang.Object").methodMembers
+    val anyMembers = Symbol.requiredClass("scala.Any").methodMembers
+
+    // First we refine all the members but removing the methods on Object and Any
+    val candidates = sym.methodMembers
+      .filter { m =>
+        !(objectMembers.contains(m) || anyMembers.contains(m))
+      }
+      .filterNot(_.flags.is(Flags.Private)) // Do not override private members
+
+    // Then we find the methods which have default values, and how many default values.
+    val methodsWithDefault = candidates
+      .map { sym =>
+        sym.name -> sym.paramSymss
+          .flatMap(_.map(s => s.flags.is(Flags.HasDefault)))
+          .count(identity)
+      }
+      .filter(_._2 > 0)
+
+    // Then we can filter out the default value methods. The compiler always use the same naming
+    // scheme, so we can use this knowledge to filter out methods which are generated for default
+    // values.
+    if (methodsWithDefault.isEmpty) candidates
+    else
+      val names = methodsWithDefault.flatMap { case (name, count) =>
+        (0 to count).map(i => s"$name$$default$$$i")
+      }
+
+      candidates.filterNot { m =>
+        names.contains(m.name)
+      }
+
   /** Walk the given symbol hierarchy to find all trait which have parameters */
   private def findParameterizedTraits(
       lookedUpSymbol: Symbol
@@ -233,11 +266,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
     val objectMembers = Symbol.requiredClass("java.lang.Object").methodMembers
     val anyMembers = Symbol.requiredClass("scala.Any").methodMembers
 
-    val methodsToOverride: List[Symbol] = classSymbol.methodMembers
-      .filter { m =>
-        !(objectMembers.contains(m) || anyMembers.contains(m))
-      }
-      .filterNot(_.flags.is(Flags.Private)) // Do not override private members
+    val methodsToOverride = findMethodsToOverride(classSymbol)
 
     // fields are values. TIL that scala has val without implementation :)
     val fieldsToOverride =
