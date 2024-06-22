@@ -28,10 +28,10 @@ jobs:
           java-version: '11'
       - run: sbt 'docs/mdoc'
   # Note that the first Scala LTS 3.3 is unfortunately not compatible
-  # So we consider 3.2.2 as our baseline until we get a real LTS we
+  # So we consider 3.2.2 as our baseline until we get a LTS we
   # can target.
-  test-lts:
-    name: Test (LTS)
+  test-base:
+    name: Test (3.2.2)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
