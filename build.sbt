@@ -60,7 +60,7 @@ lazy val scalatest = project
   .dependsOn(core)
   .settings(
     name := "scala3mock-scalatest",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18"
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.19"
   )
 
 lazy val docs = project
