@@ -198,27 +198,25 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
       }
       .filterNot(_.flags.is(Flags.Private)) // Do not override private members
 
-    // Then we find the methods which have default values, and how many default values.
-    // This will be used to filter out the default value methods that the compiler generate.
-    // I don't know of a good way to find those via the Quotes API, so instead I use the fact
-    // that the compiler always use the same naming scheme to filter them out.
-    val methodsWithDefault = candidates
-      .map { sym =>
-        sym.name -> sym.paramSymss
-          .flatMap(_.map(s => s.flags.is(Flags.HasDefault)))
-          .count(identity)
+    // We then generate a list of methods to ignore for default values. We do this because the
+    // compiler generate methods (following the `<methodName>$default$<parameterPosition>` naming
+    // scheme) to hold the default value of a parameter (and insert them automatically at call site).
+    // We do not want to override those.
+    val namesToIgnore = candidates
+      .flatMap { sym =>
+        sym.paramSymss
+          .filterNot(_.exists(_.isType))
+          .flatten
+          .zipWithIndex
+          .collect {
+            case (parameter, position)
+                if parameter.flags.is(Flags.HasDefault) =>
+              s"${sym.name}$$default$$${position + 1}"
+          }
       }
-      .filter(_._2 > 0)
 
-    if (methodsWithDefault.isEmpty) candidates
-    else
-      val names = methodsWithDefault.flatMap { case (name, count) =>
-        (0 to count).map(i => s"$name$$default$$$i")
-      }
-
-      candidates.filterNot { m =>
-        names.contains(m.name)
-      }
+    candidates.filterNot(m => namesToIgnore.contains(m.name))
+  end findMethodsToOverride
 
   /** Walk the given symbol hierarchy to find all trait which have parameters */
   private def findParameterizedTraits(
