@@ -306,8 +306,18 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
       when(m.foo).expects(9).returns("ok")
       when(m.foo).expects(42).returns("ok2")
 
+      when(m.multiParamList(_: Int, _: Int)(_: Long, _: Long))
+        .expects(1, 1, 1, 1)
+        .returns("one")
+      when(m.multiParamList(_: Int, _: Int)(_: Long, _: Long))
+        .expects(1, 0, 1, 0)
+        .returns("default")
+
       assertEquals(m.foo(), "ok")
       assertEquals(m.foo(42), "ok2")
+
+      assertEquals(m.multiParamList(1, 1)(1, 1), "one")
+      assertEquals(m.multiParamList(1)(1), "default")
     }
   }
 }
