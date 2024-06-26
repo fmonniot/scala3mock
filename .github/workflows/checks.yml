@@ -61,4 +61,4 @@ jobs:
           java-version: '11'
       - run: |
           sbt 'core/publishLocal'
-          sbt '++${{ matrix.scalaV }}! test'
+          sbt '++${{ matrix.scalaV }}! integration/test'
