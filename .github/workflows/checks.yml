@@ -40,21 +40,25 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - run: sbt test
-  # We currently depends on a bug fix in 3.4, which at the time this
-  # check was written was not yet released. So instead we rely on a
-  # nightly version.
-  test-newer:
-    name: Test (${{ matrix.scalaV }})
+  # We still want to be able to test out the library on newer Scala version.
+  # For those version, we compile the library using 3.2 and then run the tests
+  # against the newer version. This effectively emulate what our users are doing.
+  test-integration:
+    name: Integration Test (${{ matrix.scalaV }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         scalaV:
-          - "3.4.0-RC1-bin-20230909-64c3138-NIGHTLY"
+          - "3.3.3"
+          - "3.4.2"
+          - "3.5.0-RC1"
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
-      - run: sbt '++${{ matrix.scalaV }}! test'
+      - run: |
+          sbt 'core/publishLocal'
+          sbt '++${{ matrix.scalaV }}! integration/test'

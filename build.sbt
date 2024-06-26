@@ -74,3 +74,24 @@ lazy val docs = project
     ),
     libraryDependencies += "org.typelevel" %% "cats-effect" % "3.5.4"
   )
+
+/* This project is a bit particular in how it operates. Because compiling the library itself
+  is restricted to 3.2.x at the moment, we cannot use the regular cross compilation scheme for
+  testing. Instead, what we do is that we compile the library using 3.2.2, and then depend on
+  that compiled jar in the integration tests using more recent version of the compiler.
+
+  This project is only used to provide this integration point (the src directory only contain
+  a symlink to the core tests). See the GitHub Actions to see how to use it.
+
+ */
+lazy val integration = project
+  .in(file("./integration"))
+  .settings(
+    name := "scala3mock-integration-tests",
+
+    crossScalaVersions := Seq("3.3.3", "3.4.0", "3.5.0-RC1"),
+
+    // Note that this means we need to publish core via publishLocal first.
+    libraryDependencies += "eu.monniot" %% "scala3mock" % version.value % Test,
+    libraryDependencies += "org.scalameta" %% "munit" % "1.0.0-M11" % Test,
+  )
