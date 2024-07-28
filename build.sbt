@@ -88,10 +88,9 @@ lazy val integration = project
   .in(file("./integration"))
   .settings(
     name := "scala3mock-integration-tests",
-
     crossScalaVersions := Seq("3.3.3", "3.4.0", "3.5.0-RC1"),
 
     // Note that this means we need to publish core via publishLocal first.
     libraryDependencies += "eu.monniot" %% "scala3mock" % version.value % Test,
-    libraryDependencies += "org.scalameta" %% "munit" % "1.0.0-M11" % Test,
+    libraryDependencies += "org.scalameta" %% "munit" % "1.0.0-M11" % Test
   )
