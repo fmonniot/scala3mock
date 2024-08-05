@@ -84,6 +84,18 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
         .returning("it works")
       assertEquals(m.implicitParam(42), "it works")
 
+      when(m.usingParam(_: Int)(using _: Double))
+        .expects(43, 1.23)
+        .returning("ok")
+      assertEquals(m.usingParam(43), "ok")
+
+      given cb: ContextBound[String] = new ContextBound {}
+
+      when(m.contextBound(_: String)(_: ContextBound[String]))
+        .expects("arg", cb)
+        .returning("ok")
+      assertEquals(m.contextBound("arg"), "ok")
+
       // type bound methods
       when(m.upperBound _).expects(TestException()).returns(1)
       assertEquals(m.upperBound(TestException()), 1)

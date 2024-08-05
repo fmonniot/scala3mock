@@ -26,8 +26,6 @@ trait TestTrait {
   def repeatedParam(x: Int, ys: String*): String
   def byNameParam(x: => Int): String
 
-  // Can't do those two because Scala 3 doesn't seems to offer a way
-  // to specify if a parameter list has a modifier or not.
   def implicitParam(x: Int)(implicit y: Double): String
   def usingParam(x: Int)(using y: Double): String
   def contextBound[T: ContextBound](x: T): String
