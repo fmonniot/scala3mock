@@ -91,7 +91,7 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
 
       given cb: ContextBound[String] = new ContextBound {}
 
-      when(m.contextBound(_: String)(_: ContextBound[String]))
+      when(m.contextBound(_: String)(using _: ContextBound[String]))
         .expects("arg", cb)
         .returning("ok")
       assertEquals(m.contextBound("arg"), "ok")
