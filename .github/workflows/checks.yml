@@ -45,7 +45,7 @@ jobs:
       - run: sbt 'inspect version'
       - name: Print published version
         run: >
-        echo ----------- TXT=[info] Setting: java.lang.String = 0.6.3+18-8c53acad-SNAPSHOT echo echo ----------- TXT= 0.6.3+18-8c53acad-SNAPSHOT echo echo ----------- TXT=0.6.3+18-8c53acad-SNAPSHOT echo echo -----------
+          echo ----------- TXT=[info] Setting: java.lang.String = 0.6.3+18-8c53acad-SNAPSHOT echo echo ----------- TXT= 0.6.3+18-8c53acad-SNAPSHOT echo echo ----------- TXT=0.6.3+18-8c53acad-SNAPSHOT echo echo -----------
           TXT=$(sbt 'inspect version' | grep 'Setting:' | cut -d '=' -f2 | tr -d ' ')
           echo $TXT
           echo "-----------\n"
