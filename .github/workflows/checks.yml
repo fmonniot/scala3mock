@@ -41,16 +41,17 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - run: sbt test
+      #- run: sbt test
       - run: sbt 'inspect version'
       - name: Print published version
-        run: >
-          echo ----------- TXT=[info] Setting: java.lang.String = 0.6.3+18-8c53acad-SNAPSHOT echo echo ----------- TXT= 0.6.3+18-8c53acad-SNAPSHOT echo echo ----------- TXT=0.6.3+18-8c53acad-SNAPSHOT echo echo -----------
+        run: |
           TXT=$(sbt 'inspect version' | grep 'Setting:' | cut -d '=' -f2 | tr -d ' ')
+          echo b------------
           echo $TXT
-          echo "-----------\n"
+          echo a-----------
 
           VERSION=$(sbt 'inspect version' | grep "Setting: java.lang.String" | cut -d '=' -f2 | tr -d ' ')
+          echo version
           echo $VERSION
           echo '### Snapshot published !' >> $GITHUB_STEP_SUMMARY
           echo "version: $VERSION" >> $GITHUB_STEP_SUMMARY
