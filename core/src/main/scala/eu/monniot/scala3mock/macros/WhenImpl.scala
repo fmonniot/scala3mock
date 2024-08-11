@@ -117,7 +117,7 @@ private[scala3mock] object WhenImpl:
             name
 
           case Some(signature) =>
-            classSymbol.map(_.methodMembers) match
+            classSymbol.map(utils.findMethodsToOverride) match
               case None =>
                 report.errorAndAbort(
                   "The when parameter is composed of more than one type, which isn't supported at the moment."

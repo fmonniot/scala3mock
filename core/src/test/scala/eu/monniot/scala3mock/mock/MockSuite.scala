@@ -332,4 +332,18 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
       assertEquals(m.multiParamList(1)(1), "default")
     }
   }
+
+  test("overloaded private method - issue #68") {
+    class Service {
+      def method(value: String): String = method(2, true)
+      private def method(value: Int, value2: Boolean): String = "nok"
+    }
+
+    withExpectations() {
+      val service = mock[Service]
+
+      when(service.method).expects("").returns("ok")
+      assertEquals(service.method(""), "ok")
+    }
+  }
 }
