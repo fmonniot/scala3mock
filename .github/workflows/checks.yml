@@ -45,20 +45,13 @@ jobs:
       - run: sbt 'inspect version'
       - name: Print published version
         run: >
-          TXT=$(sbt 'inspect version')
-          echo $TXT
-          echo '-----------'
-          TXT=$(sbt 'inspect version' | grep 'Setting:')
-          echo $TXT
-          echo '-----------'
-          TXT=$(sbt 'inspect version' | grep 'Setting:' | cut -d '=' -f2)
-          echo $TXT
-          echo '-----------'
+        echo ----------- TXT=[info] Setting: java.lang.String = 0.6.3+18-8c53acad-SNAPSHOT echo echo ----------- TXT= 0.6.3+18-8c53acad-SNAPSHOT echo echo ----------- TXT=0.6.3+18-8c53acad-SNAPSHOT echo echo -----------
           TXT=$(sbt 'inspect version' | grep 'Setting:' | cut -d '=' -f2 | tr -d ' ')
           echo $TXT
-          echo '-----------'
+          echo "-----------\n"
 
           VERSION=$(sbt 'inspect version' | grep "Setting: java.lang.String" | cut -d '=' -f2 | tr -d ' ')
+          echo $VERSION
           echo '### Snapshot published !' >> $GITHUB_STEP_SUMMARY
           echo "version: $VERSION" >> $GITHUB_STEP_SUMMARY
   # We still want to be able to test out the library on newer Scala version.
