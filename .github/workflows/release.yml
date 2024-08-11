@@ -25,6 +25,12 @@ jobs:
       - name: Check git diff
         if: ${{ failure() }}
         run: git diff
+      - name: Print published version
+        if: github.ref == 'refs/heads/main'
+        run: |
+          VERSION=$(sbt -no-colors 'inspect version' | grep "Setting: java.lang.String" | cut -d '=' -f2 | tr -d ' ')
+          echo '### Snapshot version' >> $GITHUB_STEP_SUMMARY
+          echo "version: $VERSION" >> $GITHUB_STEP_SUMMARY
 
   website:
     runs-on: ubuntu-latest
