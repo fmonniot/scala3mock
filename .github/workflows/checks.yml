@@ -40,6 +40,7 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - run: sbt test
+      - run: sbt 'inspect actual version'
       - name: Print published version
         run: >
           VERSION=$(sbt 'inspect actual version' | grep "Setting: java.lang.String" | cut -d '=' -f2 | tr -d ' ')
