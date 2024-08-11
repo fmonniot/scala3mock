@@ -129,35 +129,168 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
     withExpectations() {
       val m = mock[ManyParamsClass]
 
-      when(m.methodWith1Ints).expects(1).returns(1)
-      assertEquals(m.methodWith1Ints(1), 1)
+      val result1 = 1
+      when(m.methodWith1Ints).expects(1).returns(result1)
+      assertEquals(m.methodWith1Ints(1), result1)
 
-      when(m.methodWith2Ints).expects(1, 1).returns(2)
-      assertEquals(m.methodWith2Ints(1, 1), 2)
+      val result2 = result1 + 2
+      when(m.methodWith2Ints).expects(1, 2).returns(result2)
+      assertEquals(m.methodWith2Ints(1, 2), result2)
 
-      when(m.methodWith3Ints).expects(1, 1, 1).returns(3)
-      assertEquals(m.methodWith3Ints(1, 1, 1), 3)
+      val result3 = result2 + 3
+      when(m.methodWith3Ints).expects(1, 2, 3).returns(result3)
+      assertEquals(m.methodWith3Ints(1, 2, 3), result3)
 
-      when(m.methodWith4Ints).expects(1, 1, 1, 1).returns(4)
-      assertEquals(m.methodWith4Ints(1, 1, 1, 1), 4)
+      val result4 = result3 + 4
+      when(m.methodWith4Ints).expects(1, 2, 3, 4).returns(result4)
+      assertEquals(m.methodWith4Ints(1, 2, 3, 4), result4)
 
-      when(m.methodWith5Ints).expects(1, 1, 1, 1, 1).returns(5)
-      assertEquals(m.methodWith5Ints(1, 1, 1, 1, 1), 5)
+      val result5 = result4 + 5
+      when(m.methodWith5Ints).expects(1, 2, 3, 4, 5).returns(result5)
+      assertEquals(m.methodWith5Ints(1, 2, 3, 4, 5), result5)
 
-      when(m.methodWith6Ints).expects(1, 1, 1, 1, 1, 1).returns(6)
-      assertEquals(m.methodWith6Ints(1, 1, 1, 1, 1, 1), 6)
+      val result6 = result5 + 6
+      when(m.methodWith6Ints).expects(1, 2, 3, 4, 5, 6).returns(result6)
+      assertEquals(m.methodWith6Ints(1, 2, 3, 4, 5, 6), result6)
 
-      when(m.methodWith7Ints).expects(1, 1, 1, 1, 1, 1, 1).returns(7)
-      assertEquals(m.methodWith7Ints(1, 1, 1, 1, 1, 1, 1), 7)
+      val result7 = result6 + 7
+      when(m.methodWith7Ints).expects(1, 2, 3, 4, 5, 6, 7).returns(result7)
+      assertEquals(m.methodWith7Ints(1, 2, 3, 4, 5, 6, 7), result7)
 
-      when(m.methodWith8Ints).expects(1, 1, 1, 1, 1, 1, 1, 1).returns(8)
-      assertEquals(m.methodWith8Ints(1, 1, 1, 1, 1, 1, 1, 1), 8)
+      val result8 = result7 + 8
+      when(m.methodWith8Ints).expects(1, 2, 3, 4, 5, 6, 7, 8).returns(result8)
+      assertEquals(m.methodWith8Ints(1, 2, 3, 4, 5, 6, 7, 8), result8)
 
-      when(m.methodWith9Ints).expects(1, 1, 1, 1, 1, 1, 1, 1, 1).returns(9)
-      assertEquals(m.methodWith9Ints(1, 1, 1, 1, 1, 1, 1, 1, 1), 9)
+      val result9 = result8 + 9
+      when(m.methodWith9Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9)
+        .returns(result9)
+      assertEquals(m.methodWith9Ints(1, 2, 3, 4, 5, 6, 7, 8, 9), result9)
 
-      when(m.methodWith10Ints).expects(1, 1, 1, 1, 1, 1, 1, 1, 1, 1).returns(10)
-      assertEquals(m.methodWith10Ints(1, 1, 1, 1, 1, 1, 1, 1, 1, 1), 10)
+      val result10 = result9 + 10
+      when(m.methodWith10Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        .returns(result10)
+      assertEquals(m.methodWith10Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), result10)
+
+      val result11 = result10 + 11
+      when(m.methodWith11Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+        .returns(result11)
+      assertEquals(
+        m.methodWith11Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
+        result11
+      )
+
+      val result12 = result11 + 12
+      when(m.methodWith12Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+        .returns(result12)
+      assertEquals(
+        m.methodWith12Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
+        result12
+      )
+
+      val result13 = result12 + 13
+      when(m.methodWith13Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+        .returns(result13)
+      assertEquals(
+        m.methodWith13Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
+        result13
+      )
+
+      val result14 = result13 + 14
+      when(m.methodWith14Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+        .returns(result14)
+      assertEquals(
+        m.methodWith14Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14),
+        result14
+      )
+
+      val result15 = result14 + 15
+      when(m.methodWith15Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+        .returns(result15)
+      assertEquals(
+        m.methodWith15Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
+        result15
+      )
+
+      val result16 = result15 + 16
+      when(m.methodWith16Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
+        .returns(result16)
+      assertEquals(
+        m.methodWith16Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16),
+        result16
+      )
+
+      val result17 = result16 + 17
+      when(m.methodWith17Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
+        .returns(result17)
+      assertEquals(
+        m.methodWith17Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16, 17),
+        result17
+      )
+
+      val result18 = result17 + 18
+      when(m.methodWith18Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
+        .returns(result18)
+      assertEquals(
+        m.methodWith18Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16, 17, 18),
+        result18
+      )
+
+      val result19 = result18 + 19
+      when(m.methodWith19Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+          19)
+        .returns(result19)
+      assertEquals(
+        m.methodWith19Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16, 17, 18, 19),
+        result19
+      )
+
+      val result20 = result19 + 20
+      when(m.methodWith20Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+          19, 20)
+        .returns(result20)
+      assertEquals(
+        m.methodWith20Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16, 17, 18, 19, 20),
+        result20
+      )
+
+      val result21 = result20 + 21
+      when(m.methodWith21Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+          19, 20, 21)
+        .returns(result21)
+      assertEquals(
+        m.methodWith21Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16, 17, 18, 19, 20, 21),
+        result21
+      )
+
+      val result22 = result21 + 22
+      when(m.methodWith22Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+          19, 20, 21, 22)
+        .returns(result22)
+      assertEquals(
+        m.methodWith22Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16, 17, 18, 19, 20, 21, 22),
+        result22
+      )
     }
   }
 
@@ -165,35 +298,168 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
     withExpectations() {
       val m = mock[ManyParamsTrait]
 
-      when(m.methodWith1Ints).expects(1).returns(1)
-      assertEquals(m.methodWith1Ints(1), 1)
+      val result1 = 1
+      when(m.methodWith1Ints).expects(1).returns(result1)
+      assertEquals(m.methodWith1Ints(1), result1)
 
-      when(m.methodWith2Ints).expects(1, 1).returns(2)
-      assertEquals(m.methodWith2Ints(1, 1), 2)
+      val result2 = result1 + 2
+      when(m.methodWith2Ints).expects(1, 2).returns(result2)
+      assertEquals(m.methodWith2Ints(1, 2), result2)
 
-      when(m.methodWith3Ints).expects(1, 1, 1).returns(3)
-      assertEquals(m.methodWith3Ints(1, 1, 1), 3)
+      val result3 = result2 + 3
+      when(m.methodWith3Ints).expects(1, 2, 3).returns(result3)
+      assertEquals(m.methodWith3Ints(1, 2, 3), result3)
 
-      when(m.methodWith4Ints).expects(1, 1, 1, 1).returns(4)
-      assertEquals(m.methodWith4Ints(1, 1, 1, 1), 4)
+      val result4 = result3 + 4
+      when(m.methodWith4Ints).expects(1, 2, 3, 4).returns(result4)
+      assertEquals(m.methodWith4Ints(1, 2, 3, 4), result4)
 
-      when(m.methodWith5Ints).expects(1, 1, 1, 1, 1).returns(5)
-      assertEquals(m.methodWith5Ints(1, 1, 1, 1, 1), 5)
+      val result5 = result4 + 5
+      when(m.methodWith5Ints).expects(1, 2, 3, 4, 5).returns(result5)
+      assertEquals(m.methodWith5Ints(1, 2, 3, 4, 5), result5)
 
-      when(m.methodWith6Ints).expects(1, 1, 1, 1, 1, 1).returns(6)
-      assertEquals(m.methodWith6Ints(1, 1, 1, 1, 1, 1), 6)
+      val result6 = result5 + 6
+      when(m.methodWith6Ints).expects(1, 2, 3, 4, 5, 6).returns(result6)
+      assertEquals(m.methodWith6Ints(1, 2, 3, 4, 5, 6), result6)
 
-      when(m.methodWith7Ints).expects(1, 1, 1, 1, 1, 1, 1).returns(7)
-      assertEquals(m.methodWith7Ints(1, 1, 1, 1, 1, 1, 1), 7)
+      val result7 = result6 + 7
+      when(m.methodWith7Ints).expects(1, 2, 3, 4, 5, 6, 7).returns(result7)
+      assertEquals(m.methodWith7Ints(1, 2, 3, 4, 5, 6, 7), result7)
 
-      when(m.methodWith8Ints).expects(1, 1, 1, 1, 1, 1, 1, 1).returns(8)
-      assertEquals(m.methodWith8Ints(1, 1, 1, 1, 1, 1, 1, 1), 8)
+      val result8 = result7 + 8
+      when(m.methodWith8Ints).expects(1, 2, 3, 4, 5, 6, 7, 8).returns(result8)
+      assertEquals(m.methodWith8Ints(1, 2, 3, 4, 5, 6, 7, 8), result8)
 
-      when(m.methodWith9Ints).expects(1, 1, 1, 1, 1, 1, 1, 1, 1).returns(9)
-      assertEquals(m.methodWith9Ints(1, 1, 1, 1, 1, 1, 1, 1, 1), 9)
+      val result9 = result8 + 9
+      when(m.methodWith9Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9)
+        .returns(result9)
+      assertEquals(m.methodWith9Ints(1, 2, 3, 4, 5, 6, 7, 8, 9), result9)
 
-      when(m.methodWith10Ints).expects(1, 1, 1, 1, 1, 1, 1, 1, 1, 1).returns(10)
-      assertEquals(m.methodWith10Ints(1, 1, 1, 1, 1, 1, 1, 1, 1, 1), 10)
+      val result10 = result9 + 10
+      when(m.methodWith10Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        .returns(result10)
+      assertEquals(m.methodWith10Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), result10)
+
+      val result11 = result10 + 11
+      when(m.methodWith11Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+        .returns(result11)
+      assertEquals(
+        m.methodWith11Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
+        result11
+      )
+
+      val result12 = result11 + 12
+      when(m.methodWith12Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+        .returns(result12)
+      assertEquals(
+        m.methodWith12Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
+        result12
+      )
+
+      val result13 = result12 + 13
+      when(m.methodWith13Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+        .returns(result13)
+      assertEquals(
+        m.methodWith13Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
+        result13
+      )
+
+      val result14 = result13 + 14
+      when(m.methodWith14Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+        .returns(result14)
+      assertEquals(
+        m.methodWith14Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14),
+        result14
+      )
+
+      val result15 = result14 + 15
+      when(m.methodWith15Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+        .returns(result15)
+      assertEquals(
+        m.methodWith15Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
+        result15
+      )
+
+      val result16 = result15 + 16
+      when(m.methodWith16Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
+        .returns(result16)
+      assertEquals(
+        m.methodWith16Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16),
+        result16
+      )
+
+      val result17 = result16 + 17
+      when(m.methodWith17Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
+        .returns(result17)
+      assertEquals(
+        m.methodWith17Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16, 17),
+        result17
+      )
+
+      val result18 = result17 + 18
+      when(m.methodWith18Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
+        .returns(result18)
+      assertEquals(
+        m.methodWith18Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16, 17, 18),
+        result18
+      )
+
+      val result19 = result18 + 19
+      when(m.methodWith19Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+          19)
+        .returns(result19)
+      assertEquals(
+        m.methodWith19Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16, 17, 18, 19),
+        result19
+      )
+
+      val result20 = result19 + 20
+      when(m.methodWith20Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+          19, 20)
+        .returns(result20)
+      assertEquals(
+        m.methodWith20Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16, 17, 18, 19, 20),
+        result20
+      )
+
+      val result21 = result20 + 21
+      when(m.methodWith21Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+          19, 20, 21)
+        .returns(result21)
+      assertEquals(
+        m.methodWith21Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16, 17, 18, 19, 20, 21),
+        result21
+      )
+
+      val result22 = result21 + 22
+      when(m.methodWith22Ints)
+        .expects(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+          19, 20, 21, 22)
+        .returns(result22)
+      assertEquals(
+        m.methodWith22Ints(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+          16, 17, 18, 19, 20, 21, 22),
+        result22
+      )
     }
   }
 
