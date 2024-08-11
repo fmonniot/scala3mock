@@ -139,5 +139,5 @@ trait MockFunctions {
       "MockFunction22"
     )
 
-  // format: off
+  // format: on
 }

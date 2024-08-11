@@ -274,4 +274,4 @@ trait ManyParamsTrait {
       v22: Int,
   ): Int
 }
-// format: off
+// format: on
