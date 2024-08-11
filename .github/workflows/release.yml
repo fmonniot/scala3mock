@@ -29,7 +29,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           VERSION=$(sbt -no-colors 'inspect version' | grep "Setting: java.lang.String" | cut -d '=' -f2 | tr -d ' ')
-          echo '### Snapshot published !' >> $GITHUB_STEP_SUMMARY
+          echo '### Snapshot version' >> $GITHUB_STEP_SUMMARY
           echo "version: $VERSION" >> $GITHUB_STEP_SUMMARY
 
   website:
