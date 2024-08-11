@@ -187,37 +187,6 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
       .map(_.tree.asInstanceOf[DefDef])
       .headOption
 
-  private def findMethodsToOverride(sym: Symbol): List[Symbol] =
-    val objectMembers = Symbol.requiredClass("java.lang.Object").methodMembers
-    val anyMembers = Symbol.requiredClass("scala.Any").methodMembers
-
-    // First we refine the methods by removing the methods inherited from Object and Any
-    val candidates = sym.methodMembers
-      .filter { m =>
-        !(objectMembers.contains(m) || anyMembers.contains(m))
-      }
-      .filterNot(_.flags.is(Flags.Private)) // Do not override private members
-
-    // We then generate a list of methods to ignore for default values. We do this because the
-    // compiler generate methods (following the `<methodName>$default$<parameterPosition>` naming
-    // scheme) to hold the default value of a parameter (and insert them automatically at call site).
-    // We do not want to override those.
-    val namesToIgnore = candidates
-      .flatMap { sym =>
-        sym.paramSymss
-          .filterNot(_.exists(_.isType))
-          .flatten
-          .zipWithIndex
-          .collect {
-            case (parameter, position)
-                if parameter.flags.is(Flags.HasDefault) =>
-              s"${sym.name}$$default$$${position + 1}"
-          }
-      }
-
-    candidates.filterNot(m => namesToIgnore.contains(m.name))
-  end findMethodsToOverride
-
   /** Walk the given symbol hierarchy to find all trait which have parameters */
   private def findParameterizedTraits(
       lookedUpSymbol: Symbol
@@ -264,7 +233,7 @@ private class MockImpl[T](ctx: Expr[MockContext], debug: Boolean)(using
     val objectMembers = Symbol.requiredClass("java.lang.Object").methodMembers
     val anyMembers = Symbol.requiredClass("scala.Any").methodMembers
 
-    val methodsToOverride = findMethodsToOverride(classSymbol)
+    val methodsToOverride = utils.findMethodsToOverride(classSymbol)
 
     // fields are values. TIL that scala has val without implementation :)
     val fieldsToOverride =
