@@ -5,6 +5,7 @@ import eu.monniot.scala3mock.Default
 
 object MockFunctions extends MockFunctions
 trait MockFunctions {
+  // format: off
   def mockFunction[R: Default](using ctx: MockContext) =
     new MockFunction0[R](ctx, "MockFunction0")
   def mockFunction[T1, R: Default](using ctx: MockContext) =
@@ -137,4 +138,6 @@ trait MockFunctions {
       ctx,
       "MockFunction22"
     )
+
+  // format: off
 }

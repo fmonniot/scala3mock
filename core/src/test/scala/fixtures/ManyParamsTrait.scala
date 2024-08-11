@@ -1,5 +1,6 @@
 package fixtures
 
+// format: off
 trait ManyParamsTrait {
 
   def methodWith1Ints(v1: Int): Int
@@ -273,3 +274,4 @@ trait ManyParamsTrait {
       v22: Int,
   ): Int
 }
+// format: off

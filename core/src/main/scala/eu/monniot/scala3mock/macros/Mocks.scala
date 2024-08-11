@@ -20,6 +20,7 @@ trait Mocks:
   // a mocked `Int => List[Int]` could be set up as `when(f).returns(List("a"))`
   // and the compiler would happily infer `MockFunction1[Int, Thing[? >: Int & String <: Int | String]]`
   // For some reasons with the type class constraint that is not the case anymore.
+  // format: off
 
   inline def when[R: Default](inline f: () => R): MockFunction0[R] =
     (${ WhenImpl('f) })
@@ -101,6 +102,8 @@ trait Mocks:
       inline f: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22) => R
   ): MockFunction22[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, R] =
     (${ WhenImpl('f) })
+    
+  // format: off
 
 object Mocks extends Mocks
 
