@@ -40,6 +40,11 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - run: sbt test
+      - name: Print published version
+        run: >
+          VERSION=$(sbt 'inspect actual version' | grep "Setting: java.lang.String" | cut -d '=' -f2 | tr -d ' ')
+          echo '### Snapshot published !' >> $GITHUB_STEP_SUMMARY
+          echo 'version: $VERSION' >> $GITHUB_STEP_SUMMARY
   # We still want to be able to test out the library on newer Scala version.
   # For those version, we compile the library using 3.2 and then run the tests
   # against the newer version. This effectively emulate what our users are doing.
