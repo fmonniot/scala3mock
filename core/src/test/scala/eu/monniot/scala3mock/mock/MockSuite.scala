@@ -52,7 +52,7 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
       assertEquals(m.curriedFuncReturn(2), doubleToString)
 
       // Polymorphic methods
-      when(m.polymorphic _).expects(List(2)).returns("a1")
+      when(m.polymorphic).expects(List(2)).returns("a1")
       assertEquals(m.polymorphic(List(2)), "a1")
 
       val javaObject = Object()
@@ -65,7 +65,7 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
       when(m.polymorphicParam).expects((1, 2.0)).returns("ok")
       assertEquals(m.polymorphicParam((1, 2.0)), "ok")
 
-      when(m.repeatedParam _).expects(0, Seq.empty).returning("hello")
+      when(m.repeatedParam).expects(0, Seq.empty).returning("hello")
       assertEquals(m.repeatedParam(0), "hello")
 
       // Partially supported. Issue with type inference still. See https://github.com/fmonniot/scala3mock/issues/4
@@ -97,7 +97,7 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
       assertEquals(m.contextBound("arg"), "ok")
 
       // type bound methods
-      when(m.upperBound _).expects(TestException()).returns(1)
+      when(m.upperBound).expects(TestException()).returns(1)
       assertEquals(m.upperBound(TestException()), 1)
 
       val animal = Animal()
