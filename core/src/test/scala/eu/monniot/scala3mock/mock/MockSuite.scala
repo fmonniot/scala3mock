@@ -294,6 +294,159 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
     }
   }
 
+  test("Match predicate") {
+    withExpectations() {
+      // format: off
+      val mock1 = mockFunction[Int, Unit]
+      mock1.expects(where {
+        (v1: Int) => v1 == 1
+      }).returning(())
+      mock1(1)
+
+      val mock2 = mockFunction[Int, Int, Unit]
+      mock2.expects(where {
+        (v1: Int, v2: Int) => v1 == 1 && v2 == 2
+      }).returning(())
+      mock2(1, 2)
+
+      val mock3 = mockFunction[Int, Int, Int, Unit]
+      mock3.expects(where {
+        (v1: Int, v2: Int, v3: Int) => v1 == 1 && v2 == 2 && v3 == 3
+      }).returning(())
+      mock3(1, 2, 3)
+
+      val mock4 = mockFunction[Int, Int, Int, Int, Unit]
+      mock4.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int) => v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4
+      }).returning(())
+      mock4(1, 2, 3, 4)
+
+      val mock5 = mockFunction[Int, Int, Int, Int, Int, Unit]
+      mock5.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int) => v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5
+      }).returning(())
+      mock5(1, 2, 3, 4, 5)
+
+      val mock6 = mockFunction[Int, Int, Int, Int, Int, Int, Unit]
+      mock6.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int) => v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6
+      }).returning(())
+      mock6(1, 2, 3, 4, 5, 6)
+
+      val mock7 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock7.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int) => v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7
+      }).returning(())
+      mock7(1, 2, 3, 4, 5, 6, 7)
+
+      val mock8 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock8.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int) => v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8
+      }).returning(())
+      mock8(1, 2, 3, 4, 5, 6, 7, 8)
+
+      val mock9 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock9.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int) =>
+          v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9
+      }).returning(())
+      mock9(1, 2, 3, 4, 5, 6, 7, 8, 9)
+
+      val mock10 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock10.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int) =>
+          v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10
+      }).returning(())
+      mock10(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+
+      val mock11 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock11.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int) =>
+          v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11
+      }).returning(())
+      mock11(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+
+      val mock12 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock12.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int) =>
+          v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12
+      }).returning(())
+      mock12(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+
+      val mock13 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock13.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int) =>
+          v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13
+      }).returning(())
+      mock13(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+
+      val mock14 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock14.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int) =>
+          v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
+            v14 == 14
+      }).returning(())
+      mock14(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+
+      val mock15 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock15.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int) =>
+          v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
+            v14 == 14 && v15 == 15
+      }).returning(())
+      mock15(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+
+      val mock16 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock16.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int) =>
+          v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
+            v14 == 14 && v15 == 15 && v16 == 16
+      }).returning(())
+      mock16(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
+
+      val mock17 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock17.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int) =>
+          v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
+            v14 == 14 && v15 == 15 && v16 == 16 && v17 == 17
+      }).returning(())
+      mock17(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
+
+      val mock18 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock18.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int, v18: Int) =>
+          v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
+            v14 == 14 && v15 == 15 && v16 == 16 && v17 == 17 && v18 == 18
+      }).returning(())
+      mock18(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
+
+      val mock19 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock19.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int, v18: Int, v19: Int) =>
+          v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
+            v14 == 14 && v15 == 15 && v16 == 16 && v17 == 17 && v18 == 18 && v19 == 19
+      }).returning(())
+      mock19(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
+
+      val mock20 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock20.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int, v18: Int, v19: Int, v20: Int) =>
+          v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
+            v14 == 14 && v15 == 15 && v16 == 16 && v17 == 17 && v18 == 18 && v19 == 19 && v20 == 20
+      }).returning(())
+      mock20(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)
+
+      val mock21 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
+      mock21.expects(where {
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int, v18: Int, v19: Int, v20: Int, v21: Int) =>
+          v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
+            v14 == 14 && v15 == 15 && v16 == 16 && v17 == 17 && v18 == 18 && v19 == 19 && v20 == 20 && v21 == 21
+      }).returning(())
+      mock21(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)
+      // format: off
+    }
+  }
+
   test("ManyParams") {
     withExpectations() {
       val m = mock[ManyParamsTrait]
