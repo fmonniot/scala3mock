@@ -347,42 +347,42 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
 
       val mock9 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
       mock9.expects(where {
-        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int) => 
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int) =>
           v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9
       }).returning(())
       mock9(1, 2, 3, 4, 5, 6, 7, 8, 9)
 
       val mock10 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
       mock10.expects(where {
-        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int) => 
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int) =>
           v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10
       }).returning(())
       mock10(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
       val mock11 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
       mock11.expects(where {
-        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int) => 
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int) =>
           v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11
       }).returning(())
       mock11(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
 
       val mock12 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
       mock12.expects(where {
-        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int) => 
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int) =>
           v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12
       }).returning(())
       mock12(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
 
       val mock13 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
       mock13.expects(where {
-        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int) => 
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int) =>
           v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13
       }).returning(())
       mock13(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
 
       val mock14 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
       mock14.expects(where {
-        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int) => 
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int) =>
           v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
             v14 == 14
       }).returning(())
@@ -390,7 +390,7 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
 
       val mock15 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
       mock15.expects(where {
-        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int) => 
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int) =>
           v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
             v14 == 14 && v15 == 15
       }).returning(())
@@ -398,7 +398,7 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
 
       val mock16 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
       mock16.expects(where {
-        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int) => 
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int) =>
           v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
             v14 == 14 && v15 == 15 && v16 == 16
       }).returning(())
@@ -406,7 +406,7 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
 
       val mock17 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
       mock17.expects(where {
-        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int) => 
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int) =>
           v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
             v14 == 14 && v15 == 15 && v16 == 16 && v17 == 17
       }).returning(())
@@ -414,7 +414,7 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
 
       val mock18 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
       mock18.expects(where {
-        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int, v18: Int) => 
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int, v18: Int) =>
           v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
             v14 == 14 && v15 == 15 && v16 == 16 && v17 == 17 && v18 == 18
       }).returning(())
@@ -422,7 +422,7 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
 
       val mock19 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
       mock19.expects(where {
-        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int, v18: Int, v19: Int) => 
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int, v18: Int, v19: Int) =>
           v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
             v14 == 14 && v15 == 15 && v16 == 16 && v17 == 17 && v18 == 18 && v19 == 19
       }).returning(())
@@ -430,7 +430,7 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
 
       val mock20 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
       mock20.expects(where {
-        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int, v18: Int, v19: Int, v20: Int) => 
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int, v18: Int, v19: Int, v20: Int) =>
           v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
             v14 == 14 && v15 == 15 && v16 == 16 && v17 == 17 && v18 == 18 && v19 == 19 && v20 == 20
       }).returning(())
@@ -438,7 +438,7 @@ class MockSuite extends munit.FunSuite with ScalaMocks {
 
       val mock21 = mockFunction[Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Unit]
       mock21.expects(where {
-        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int, v18: Int, v19: Int, v20: Int, v21: Int) => 
+        (v1: Int, v2: Int, v3: Int, v4: Int, v5: Int, v6: Int, v7: Int, v8: Int, v9: Int, v10: Int, v11: Int, v12: Int, v13: Int, v14: Int, v15: Int, v16: Int, v17: Int, v18: Int, v19: Int, v20: Int, v21: Int) =>
           v1 == 1 && v2 == 2 && v3 == 3 && v4 == 4 && v5 == 5 && v6 == 6 && v7 == 7 && v8 == 8 && v9 == 9 && v10 == 10 && v11 == 11 && v12 == 12 && v13 == 13 &&
             v14 == 14 && v15 == 15 && v16 == 16 && v17 == 17 && v18 == 18 && v19 == 19 && v20 == 20 && v21 == 21
       }).returning(())
