@@ -51,7 +51,7 @@ lazy val cats = project
     libraryDependencies += "org.typelevel" %% "cats-core" % "2.9.0",
     libraryDependencies ++= Seq(
       "org.scalameta" %% "munit" % "1.0.0-M11" % Test,
-      "org.typelevel" %% "cats-effect" % "3.5.4" % Test
+      "org.typelevel" %% "cats-effect" % "3.5.5" % Test
     )
   )
 
@@ -72,7 +72,7 @@ lazy val docs = project
     mdocVariables := Map(
       "VERSION" -> (core / version).value
     ),
-    libraryDependencies += "org.typelevel" %% "cats-effect" % "3.5.4"
+    libraryDependencies += "org.typelevel" %% "cats-effect" % "3.5.5"
   )
 
 /* This project is a bit particular in how it operates. Because compiling the library itself
