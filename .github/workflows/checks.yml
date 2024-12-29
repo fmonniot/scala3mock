@@ -14,6 +14,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+      - uses: sbt/setup-sbt@v1
       - run: sbt scalafmtCheckAll
   docs:
     name: Website
@@ -26,6 +27,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+      - uses: sbt/setup-sbt@v1
       - run: sbt 'docs/mdoc'
   # Note that the first Scala LTS 3.3 is unfortunately not compatible
   # So we consider 3.2.2 as our baseline until we get a LTS we
@@ -39,6 +41,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+      - uses: sbt/setup-sbt@v1
       - run: sbt test
   # We still want to be able to test out the library on newer Scala version.
   # For those version, we compile the library using 3.2 and then run the tests
@@ -59,6 +62,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+      - uses: sbt/setup-sbt@v1
       - run: |
           sbt 'core/publishLocal'
           sbt '++${{ matrix.scalaV }}! integration/test'
